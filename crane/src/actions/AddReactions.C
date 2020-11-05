@@ -77,11 +77,12 @@ AddReactions::AddReactions(InputParameters params) : ChemicalReactionsBase(param
 
   // Define reactant names for kernels
   // (In kernels, coupled variables are typically referred to as "v", "w", "x", etc...)
-  _reactant_names.resize(4);
+  _reactant_names.resize(5);
   _reactant_names[0] = "v";
   _reactant_names[1] = "w";
   _reactant_names[2] = "x";
   _reactant_names[3] = "y";
+  _reactant_names[4] = "z";
 }
 
 void
@@ -91,11 +92,12 @@ AddReactions::act()
   std::vector<int> other_index;
   std::vector<int> reactant_indices;
   std::vector<std::string> other_variables;
-  other_variables.resize(4);
+  other_variables.resize(5);
   other_variables[0] = "v";
   other_variables[1] = "w";
   other_variables[2] = "x";
   other_variables[3] = "y";
+  other_variables[4] = "z";
   bool find_other;
   bool find_aux;
   std::vector<bool> include_species;
@@ -344,6 +346,8 @@ AddReactions::getReactionKernelName(const unsigned & num_reactants, const bool &
     name += "ThirdOrder";
   if (num_reactants == 4)
     name += "FourthOrder";
+  if (num_reactants == 5)
+    name += "FifthOrder";
 
   return (name + _log_append);
 }

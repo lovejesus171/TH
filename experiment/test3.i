@@ -34,6 +34,11 @@
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
+  [./O2]
+    block = 'Solution'
+    order = FIRST
+    initial_condition = 0 #[mol/m3]
+  [../]
   [./T]
     block = 'Solution'
     order = FIRST
@@ -85,6 +90,11 @@
     type = TimeDerivative
     variable = SO42-
   [../]
+  [./dO2_dt]
+    block = 'Solution'
+    type = TimeDerivative
+    variable = O2
+  [../]
 # Diffusion terms
   [./DgradHS]
     block = 'Solution'
@@ -122,6 +132,12 @@
     coef = 4.82e-9 #[m2/s], to be added
     variable = SO42-
   [../]
+  [./DgradO2]
+    block = 'Solution'
+    type = CoefDiffusion
+    coef = 2e-9 #[m2/s], to be added
+    variable = O2
+  [../]
 # HeatConduction terms
   [./heat]
     block = 'Solution'
@@ -139,8 +155,8 @@
 [ChemicalReactions]
  [./Network]
    block = 'Solution'
-   species = 'H+ OH- H2O H2O2 SO42-'
-   track_rates = True
+   species = 'H+ OH- H2O H2O2 SO42- O2'
+   track_rates = False
 
    equation_constants = 'Ea R'
    equation_values = '20 8.314'
@@ -148,10 +164,20 @@
 
    reactions = 'H2O -> OH- + H+ : {2294.41*exp(-45.4e3/(R*T))}
                 OH- + H+ -> H2O : {2.25775e10*exp(-12.6e3/(R*T))}
-                HS- + H2O2 -> OH- + H+ + H+ + SO42- : {1e-4}               
-                '
+                HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {473885.3561*exp(-51e3/(R*T))}
+                HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}'
  [../]
 []
+
+# Equilibrium assumption (very fast reactions)
+[ReactionNetwork]
+  [./AqueousEquilibriumReactions]
+    primary_species = 'SO42- H+'
+    secondary_species = 'HSO4-'
+    reactions = 'SO42- + H+ = HSO4- -9'
+  [../]
+[]
+
 
 [BCs]
   [./right_chemical]
@@ -174,12 +200,17 @@
     prop_names = density
     prop_values = 997.10 #[kg/m3]
   [../]
+  [./equilibrium_dif]
+    type = GenericConstantMaterial
+    prop_names = 'diffusivity porosity'
+    prop_values = '1e-9 1'
+  [../]
 []
 
 [Executioner]
   type = Transient
-  start_time = 1e-9 #[s]
-  end_time = 6048000 #[s]
+  start_time = 0 #[s]
+  end_time = 10 #[s]
   solve_type = 'NEWTON'
   l_abs_tol = 1e-11
   nl_abs_tol = 1e-11
@@ -187,7 +218,7 @@
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.9
-    dt = 1e-9
+    dt = 0.1
     growth_factor = 1.2
   [../]
 []

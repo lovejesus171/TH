@@ -1,5 +1,5 @@
 [Mesh]
-   file = '3D_Real_Circle_Copper.msh'
+   file = '2D_Experiment.msh'
 []
 
 [Variables]
@@ -27,9 +27,14 @@
   [./H2O2]
     block = 'Solution'
     order = FIRST
-    initial_condition = 1 #[mol/m3]
+    initial_condition = 1  #[mol/m3]
   [../]
   [./SO42-]
+    block = 'Solution'
+    order = FIRST
+    initial_condition = 0 #[mol/m3]
+  [../]
+  [./O2]
     block = 'Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
@@ -85,6 +90,11 @@
     type = TimeDerivative
     variable = SO42-
   [../]
+  [./dO2_dt]
+    block = 'Solution'
+    type = TimeDerivative
+    variable = O2
+  [../]
 # Diffusion terms
   [./DgradHS]
     block = 'Solution'
@@ -122,6 +132,12 @@
     coef = 4.82e-9 #[m2/s], to be added
     variable = SO42-
   [../]
+  [./DgradO2]
+    block = 'Solution'
+    type = CoefDiffusion
+    coef = 2e-9 #[m2/s], to be added
+    variable = O2
+  [../]
 # HeatConduction terms
   [./heat]
     block = 'Solution'
@@ -135,32 +151,25 @@
   [../]
 []
 
-
+#unit = 1/hour
 [ChemicalReactions]
  [./Network]
    block = 'Solution'
-   species = 'H+ OH- H2O H2O2 SO42-'
-   track_rates = True
+   species = 'H+ OH- H2O H2O2 SO42- O2 HS-'
+   track_rates = False
 
-   equation_constants = 'Ea R'
-   equation_values = '20 8.314'
+   equation_constants = 'Ea R T_Re'
+   equation_values = '20 8.314 298.15'
    equation_variables = 'T pH'
 
-   reactions = 'H2O -> OH- + H+ : {2294.41*exp(-45.4e3/(R*T))}
-                OH- + H+ -> H2O : {2.25775e10*exp(-12.6e3/(R*T))}
-                HS- + H2O2 -> OH- + H+ + H+ + SO42- : {1e-4}               
-                '
- [../]
+   reactions = 'H2O -> OH- + H+ : {2.5e-5*exp(-45.4e3/R*(1/T_Re-1/T))}
+                OH- + H+ -> H2O : {1.4e8*exp(-12.2e3/R*(1/T_Re-1/T))}
+                HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {5.5e-4*exp(-51.3e3/R*(1/T_Re-1/T))}
+                HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}'
+[../]
 []
 
-[BCs]
-  [./right_chemical]
-    type = DirichletBC
-    variable = HS-
-    boundary = Copper_top
-    value = 0 #[mol/m2]
-  [../]
-[]
+
 
 [Materials]
   [./hcm]
@@ -178,17 +187,21 @@
 
 [Executioner]
   type = Transient
-  start_time = 1e-9 #[s]
-  end_time = 6048000 #[s]
-  solve_type = 'NEWTON'
+  start_time = 0 #[s]
+  end_time = 10000 #[s]
+  solve_type = 'PJFNK'
   l_abs_tol = 1e-11
+  l_tol = 1e-7 #default = 1e-5
   nl_abs_tol = 1e-11
-  dtmax = 1000 
+  nl_rel_tol = 1e-9 #default = 1e-7
+  l_max_its = 10
+  nl_max_its = 10
+  dtmax = 10000 
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.9
-    dt = 1e-9
-    growth_factor = 1.2
+    dt = 0.1
+    growth_factor = 1.1
   [../]
 []
 
@@ -200,19 +213,6 @@
 []
 
 
-[Postprocessors]
-  [./Consumed_HS_mol_per_s]
-    type = SideFluxIntegral
-    variable = HS-
-    diffusivity = 7.31e-10 #m2/s
-    boundary = Copper_top
-  [../]
-  [./Volume_tegetral_of_HS-]
-    type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
-    variable = HS-
-  [../]
-[]
 
 [Outputs]
   exodus = true

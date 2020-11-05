@@ -498,11 +498,12 @@ ChemicalReactions::act()
   std::vector<int> other_index;
   std::vector<int> reactant_indices;
   std::vector<std::string> other_variables;
-  other_variables.resize(4);
+  other_variables.resize(5);
   other_variables[0] = "v";
   other_variables[1] = "w";
   other_variables[2] = "x";
   other_variables[3] = "y";
+  other_variables[4] = "z";
   bool find_other;
   std::vector<bool> include_species;
   unsigned int target; // stores index of target species for electron-impact reactions
@@ -935,12 +936,17 @@ ChemicalReactions::act()
           product_kernel_name = "ProductThirdOrder";
           reactant_kernel_name = "ReactantThirdOrder";
         }
-        else
+        else if (_reactants[i].size() == 4)
         {
           product_kernel_name = "ProductFourthOrder";
           reactant_kernel_name = "ReactantFourthOrder";
         }
-       if (_use_log)
+         else
+        {
+          product_kernel_name = "ProductFifthOrder";
+          reactant_kernel_name = "ReactantFifthOrder";
+        }
+        if (_use_log)
         {
           product_kernel_name += "Log";
           reactant_kernel_name += "Log";
