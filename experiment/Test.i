@@ -393,13 +393,6 @@
    equation_variables = 'T pH'
 
    reactions = '
-HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {5.5e-4*exp(-51.3e3/R*(1/T_Re-1/T))}
-HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}
-
-H2O2 -> H2O : {1.15E7*exp(-25400/(R*T))}
-H2O2 -> H2O + O2 : {1.15E7*exp(-25400/(R*T))}
-
-
 H+ + OH- -> H2O : {1.4E11/1000}
 H2O -> H+ + OH- : {1.4E11*k2/CH2O}
 H2O2 -> HO2- + H+ : {5E10*k3}
@@ -506,12 +499,6 @@ HO3 -> O2 + OH : {1.1E5}
    boundary = Copper_top
    value = 0
  [../]
- [./Cu_side]
-   type = DirichletBC
-   variable = HS-
-   boundary = Copper_side
-   value = 0
- [../]
 []
 
 
@@ -522,7 +509,7 @@ HO3 -> O2 + OH : {1.1E5}
   solve_type = 'PJFNK'
   l_abs_tol = 1e-5 #1e-11 for HS- + H2O2
 #  l_tol = 1e-5 #default = 1e-5
-  nl_abs_tol = 1e-4 #1e-11 for HS- + H2O2
+  nl_abs_tol = 1e-5 #1e-11 for HS- + H2O2
 #  nl_rel_tol = 1e-7  #default = 1e-7
   l_max_its = 100
   nl_max_its = 100

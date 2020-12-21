@@ -396,90 +396,6 @@
 HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {5.5e-4*exp(-51.3e3/R*(1/T_Re-1/T))}
 HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}
 
-H2O2 -> H2O : {1.15E7*exp(-25400/(R*T))}
-H2O2 -> H2O + O2 : {1.15E7*exp(-25400/(R*T))}
-
-
-H+ + OH- -> H2O : {1.4E11/1000}
-H2O -> H+ + OH- : {1.4E11*k2/CH2O}
-H2O2 -> HO2- + H+ : {5E10*k3}
-H+ + HO2- -> H2O2 : {5E10/1000}
-H2O2 + OH- -> HO2- + H2O : {1.3E10/1000}
-HO2- + H2O -> H2O2 + OH- : {1.3E10*k2/k3*CH2O/1000}
-eaq- + H2O -> H + OH- : {1.9E1/1000}
-H + OH- -> eaq- + H2O : {2.2E7/1000}
-H -> eaq- + H+ : {2.3E10*k6}
-eaq- + H+ -> H : {2.3E10/1000}
-OH + OH- -> O- + H2O : {1.3E10/1000}
-O- + H2O -> OH + OH- : {1.3E10*k2/k4*CH2O/1000}
-OH -> O- + H+ : {1E11*k4}
-O- + H+ -> OH : {1E11/1000}
-HO2 -> O2- + H+ : {5E10*k5}
-O2- + H+ -> HO2 : {5E10/1000}
-HO2 + OH- -> O2- + H2O : {5E10/1000}
-O2- + H2O -> HO2 + OH- : {5E10*k2/k5*CH2O/1000}
-
-eaq- + OH -> OH- : {3E10/1000}
-eaq- + H2O2 -> OH + OH- : {1.1E10/1000}
-eaq- + O2- + H2O -> HO2- + OH- : {1.3E10/CH2O/1000}
-eaq- + HO2 -> HO2- : {2E10/1000}
-eaq- + O2 -> O2- : {1.9E10/1000}
-eaq- + eaq- + H2O + H2O -> H2 + OH- + OH- : {5.5E9/CH2O/1000}
-eaq- + H + H2O -> H2 + OH- : {2.5E10/CH2O/1000}
-eaq- + HO2- -> O- + OH- : {3.5E9/1000}
-eaq- + O- + H2O -> OH- + OH- : {2.2E10/CH2O/1000}
-eaq- + O3- + H2O -> O2 + OH- + OH- : {1.6E10/CH2O/1000}
-eaq- + O3 -> O3- : {3.6E10/1000}
-
-H + H2O -> H2 + OH : {1.1E1/1000}
-H + O- -> OH- : {1E10/1000}
-H + HO2- -> OH + OH- : {9E7/1000}
-H + O3- -> OH- + O2 : {1E10/1000}
-H + H -> H2 : {7.8E9/1000}
-H + OH -> H2O : {7E9/1000}
-H + H2O2 -> OH + H2O : {9E7/1000}
-H + O2 -> HO2 : {2.1E10/1000}
-H + HO2 -> H2O2 : {1.8E10/1000}
-H + O2- -> HO2- : {1.8E10/1000}
-H + O3 -> HO3 : {3.8E10/1000}
-
-OH + OH -> H2O2 : {3.6E9/1000}
-OH + HO2 -> H2O + O2 : {6E9/1000}
-OH + O2- -> OH- + O2 : {8.2E9/1000}
-OH + H2 -> H + H2O : {4.3E7/1000}
-OH + H2O2 -> HO2 + H2O : {2.7E7/1000}
-OH + O- -> HO2- : {2.5E10/1000}
-OH + HO2- -> HO2 + OH- : {7.5E9/1000}
-OH + O3- -> O3 + OH- : {2.6E9/1000}
-OH + O3- -> O2- + O2- + H+ : {6E9/1000}
-OH + O3 -> HO2 + O2 : {1.1E8/1000}
-
-HO2 + O2- -> HO2- + O2 : {8E7/1000}
-HO2 + HO2 -> H2O2 + O2 : {7E5/1000}
-HO2 + O- -> O2 + OH- : {6E9/1000}
-HO2 + H2O2 -> OH + O2 + H2O : {5E-1/1000}
-HO2 + HO2- -> OH + O2 + OH- : {5E-1/1000}
-HO2 + O3- -> O2 + O2 + OH- : {6E9/1000}
-HO2 + O3 -> HO3 + O2 : {5E8/1000}
-
-O2- + O2- + H2O + H2O -> H2O2 + O2 + OH- + OH- : {1E2/(2*CH2O)/1000}
-O2- + O- + H2O -> O2 + OH- + OH- : {6E8/CH2O/1000}
-O2- + H2O2 -> OH + O2 + OH- : {1.3E-1/1000}
-O2- + HO2- -> O- + O2 + OH- : {1.3E-1/1000}
-O2- + O3- + H2O -> O2 + O2 + OH- + OH- : {1E4/CH2O/1000}
-O2- + O3 -> O3- + O2 : {1.5E9/1000}
-
-O- + O- + H2O -> HO2- + OH- : {1E9/CH2O/1000}
-O- + O2 -> O3- : {3.6E9/1000}
-O- + H2 -> H + OH- : {8E7/1000}
-O- + H2O2 -> O2- + H2O : {5E8/1000}
-O- + HO2- -> O2- + OH- : {4E8/1000}
-O- + O3- -> O2- + O2- : {7E8/1000}
-O- + O3 -> O2- + O2 : {5E9/1000}
-
-O3- -> O2 + O- : {3.3E3}
-O3- + H+ -> O2 + OH : {9E10/1000}
-HO3 -> O2 + OH : {1.1E5}
 '
  [../]
 []
@@ -506,12 +422,12 @@ HO3 -> O2 + OH : {1.1E5}
    boundary = Copper_top
    value = 0
  [../]
- [./Cu_side]
-   type = DirichletBC
-   variable = HS-
-   boundary = Copper_side
-   value = 0
- [../]
+# [./Cu_side]
+#   type = DirichletBC
+#   variable = HS-
+#   boundary = Copper_side
+#   value = 0
+# [../]
 []
 
 
@@ -520,10 +436,10 @@ HO3 -> O2 + OH : {1.1E5}
   start_time = 0 #[s]
   end_time = 100 #[s]
   solve_type = 'PJFNK'
-  l_abs_tol = 1e-5 #1e-11 for HS- + H2O2
-#  l_tol = 1e-5 #default = 1e-5
-  nl_abs_tol = 1e-4 #1e-11 for HS- + H2O2
-#  nl_rel_tol = 1e-7  #default = 1e-7
+  l_abs_tol = 1e-11 #1e-11 for HS- + H2O2
+  l_tol = 1e-5 #default = 1e-5
+  nl_abs_tol = 1e-11 #1e-11 for HS- + H2O2
+  nl_rel_tol = 1e-7  #default = 1e-7
   l_max_its = 100
   nl_max_its = 100
   dtmax = 10 

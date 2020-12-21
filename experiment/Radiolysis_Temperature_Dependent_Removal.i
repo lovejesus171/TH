@@ -100,7 +100,7 @@
 #    block = 'Solution'
     order = FIRST
     family = LAGRANGE
-    initial_condition = 600 #[K]
+    initial_condition = 298.15 #[K]
   [../]
   [./pH]
 #    block = 'Solution'
