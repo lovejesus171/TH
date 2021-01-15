@@ -223,49 +223,49 @@
 #     block = 'Solution'
   type = Source
   variable = H+
-  Source = 0.8008
+  Source = 8.00838E-5
   [../]
   [./Source_OHm]
 #     block = 'Solution'
   type = Source
   variable = OH-
-  Source = 0.1292 
+  Source = 1.29167E-5
   [../]  
   [./Source_eaqm]
 #     block = 'Solution'
   type = Source
   variable = eaq-
-  Source = 0.6717 
+  Source = 6.71671E-5
   [../] 
   [./Source_H]
 #     block = 'Solution'
   type = Source
   variable = H
-  Source = 0.1705 
+  Source = 1.70501E-5
   [../] 
   [./Source_H2]
 #     block = 'Solution'
   type = Source
   variable = H2
-  Source = 0.1163 
+  Source = 1.16251E-5
   [../]  
   [./Source_OH]
 #     block = 'Solution'
   type = Source
   variable = OH
-  Source = 0.6975 
+  Source = 6.97504E-5
   [../]
   [./Source_H2O2]
 #     block = 'Solution'
   type = Source
   variable = H2O2
-  Source = 0.1808 
+  Source = 1.80834E-5
   [../]   
   [./Source_HO2]
 #     block = 'Solution'
   type = Source
   variable = HO2
-  Source = 0.0052 
+  Source = 5.1667E-7
   [../] 
 []
 
@@ -384,14 +384,14 @@ HO3 -> O2 + OH : {1.1E5*exp(Ea/R*(1/T_Re-1/T))}
 [Executioner]
   type = Transient
   start_time = 0 #[s]
-  end_time = 100 #[s]
+  end_time = 10000 #[s]
   solve_type = 'PJFNK'
-  l_abs_tol = 1e-3 #1e-11 for HS- + H2O2
-  l_tol = 1e-5 #default = 1e-5
-  nl_abs_tol = 1e-3 #1e-11 for HS- + H2O2
-  nl_rel_tol = 1e-7  #default = 1e-7
-  l_max_its = 40
-  nl_max_its = 40
+#  l_abs_tol = 1e-3 #1e-11 for HS- + H2O2
+#  l_tol = 1e-5 #default = 1e-5
+#  nl_abs_tol = 1e-3 #1e-11 for HS- + H2O2
+  nl_rel_tol = 1e-2  #default = 1e-7
+  l_max_its = 10
+  nl_max_its = 10
   dtmax = 10 
   [./TimeStepper]
     type = IterationAdaptiveDT

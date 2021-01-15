@@ -471,12 +471,13 @@ O2- + H2O2 -> OH + O2 + OH- : {16/1000*exp(-20E3/R*(1/T_Re-1/T))}
   l_max_its = 100
   nl_max_its = 100
   dtmax = 10 
-  [./TimeStepper]
-    type = IterationAdaptiveDT
-    cutback_factor = 0.99
-    dt = 1e-7
-    growth_factor = 1.01
-  [../]
+  dt = 1e-6
+#  [./TimeStepper]
+#    type = IterationAdaptiveDT
+#    cutback_factor = 0.99
+#    dt = 1e-7
+#    growth_factor = 1.01
+#  [../]
 []
 
 [Preconditioning]

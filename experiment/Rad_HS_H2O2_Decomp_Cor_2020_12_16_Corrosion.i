@@ -526,13 +526,14 @@ HO3 -> O2 + OH : {1.1E5}
 #  nl_rel_tol = 1e-7  #default = 1e-7
   l_max_its = 100
   nl_max_its = 100
-  dtmax = 10 
-  [./TimeStepper]
-    type = IterationAdaptiveDT
-    cutback_factor = 0.99
-    dt = 1e-7
-    growth_factor = 1.01
-  [../]
+  dtmax = 1e-3
+  dt = 1e-6
+#  [./TimeStepper]
+#    type = IterationAdaptiveDT
+#    cutback_factor = 0.99
+#    dt = 1e-7
+#    growth_factor = 1.01
+#  [../]
 []
 
 [Preconditioning]
@@ -553,5 +554,10 @@ HO3 -> O2 + OH : {1.1E5}
 
 
 [Outputs]
-  exodus = true
+  file_base = out
+  sync_times = '1e-6 1e-5 5e-5 1e-4 2e-4 3e-4 4e-4 5e-4 1e-3'
+  [./exodus]
+    type =  Exodus
+    sync_only = true
+  [../]
 []

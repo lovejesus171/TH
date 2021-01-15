@@ -229,7 +229,7 @@
 #     block = 'Solution'
   type = Source
   variable = OH-
-  Source = 1.29167E-5 
+  Source = 1.29167E-5
   [../]  
   [./Source_eaqm]
 #     block = 'Solution'
@@ -241,7 +241,7 @@
 #     block = 'Solution'
   type = Source
   variable = H
-  Source = 1.70501E-5 
+  Source = 1.70501E-5
   [../] 
   [./Source_H2]
 #     block = 'Solution'
@@ -259,7 +259,7 @@
 #     block = 'Solution'
   type = Source
   variable = H2O2
-  Source = 1.80834E-5 
+  Source = 1.80834E-5
   [../]   
   [./Source_HO2]
 #     block = 'Solution'
@@ -278,90 +278,90 @@
    track_rates = False
 
    equation_constants = 'Ea R T_Re CH2O k2 k3 k4 k5 k6'
-   equation_values = '20 8.314 298.15 55347 10^-13.999 10^-11.65 10^-11.9 10^-4.57 10^-9.77'
+   equation_values = '0 8.314 298.15 55347 10^-15.7 10^-11.7 10^-11.9 10^-4.8 10^-9.77'
    equation_variables = 'T pH'
 
    reactions = '
-H+ + OH- -> H2O : {1.4E11/1000}
-H2O -> H+ + OH- : {1.4E11*k2/CH2O}
-H2O2 -> HO2- + H+ : {5E10*k3}
-H+ + HO2- -> H2O2 : {5E10/1000}
-H2O2 + OH- -> HO2- + H2O : {1.3E10/1000}
-HO2- + H2O -> H2O2 + OH- : {1.3E10*k2/k3*CH2O/1000}
-eaq- + H2O -> H + OH- : {1.9E1/1000}
-H + OH- -> eaq- + H2O : {2.2E7/1000}
-H -> eaq- + H+ : {2.3E10*k6}
-eaq- + H+ -> H : {2.3E10/1000}
-OH + OH- -> O- + H2O : {1.3E10/1000}
-O- + H2O -> OH + OH- : {1.3E10*k2/k4*CH2O/1000}
-OH -> O- + H+ : {1E11*k4}
-O- + H+ -> OH : {1E11/1000}
-HO2 -> O2- + H+ : {5E10*k5}
-O2- + H+ -> HO2 : {5E10/1000}
-HO2 + OH- -> O2- + H2O : {5E10/1000}
-O2- + H2O -> HO2 + OH- : {5E10*k2/k5*CH2O/1000}
+H+ + OH- -> H2O : {1.4E11/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H2O -> H+ + OH- : {1.4E11*k2/CH2O*exp(-45.4E3/R*(1/T_Re-1/T))}
+H2O2 -> HO2- + H+ : {5E10*k3*exp(Ea/R*(1/T_Re-1/T))}
+H+ + HO2- -> H2O2 : {2E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H2O2 + OH- -> HO2- + H2O : {1.3E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+HO2- + H2O -> H2O2 + OH- : {1.3E10*k2/k3*CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+eaq- + H2O -> H + OH- : {1.9E1/1000*exp(Ea/R*(1/T_Re-1/T))}
+H + OH- -> eaq- + H2O : {1.8E7/1000*exp(-26E3/R*(1/T_Re-1/T))}
+H -> eaq- + H+ : {2.3E10*k6*exp(Ea/R*(1/T_Re-1/T))}
+eaq- + H+ -> H : {2.3E10/1000*exp(-12.2E3/R*(1/T_Re-1/T))}
+OH + OH- -> O- + H2O : {1.3E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + H2O -> OH + OH- : {1.3E10*k2/k4*CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+OH -> O- + H+ : {1E11*k4*exp(Ea/R*(1/T_Re-1/T))}
+O- + H+ -> OH : {1E11/1000*exp(Ea/R*(1/T_Re-1/T))}
+HO2 -> O2- + H+ : {5E10*k5*exp(-12.6E3/R*(1/T_Re-1/T))}
+O2- + H+ -> HO2 : {4.5E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+HO2 + OH- -> O2- + H2O : {5E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+O2- + H2O -> HO2 + OH- : {5E10*k2/k5*CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-eaq- + OH -> OH- : {3E10/1000}
-eaq- + H2O2 -> OH + OH- : {1.1E10/1000}
-eaq- + O2- + H2O -> HO2- + OH- : {1.3E10/CH2O/1000}
-eaq- + HO2 -> HO2- : {2E10/1000}
-eaq- + O2 -> O2- : {1.9E10/1000}
-eaq- + eaq- + H2O + H2O -> H2 + OH- + OH- : {5.5E9/CH2O/1000}
-eaq- + H + H2O -> H2 + OH- : {2.5E10/CH2O/1000}
-eaq- + HO2- -> O- + OH- : {3.5E9/1000}
-eaq- + O- + H2O -> OH- + OH- : {2.2E10/CH2O/1000}
-eaq- + O3- + H2O -> O2 + OH- + OH- : {1.6E10/CH2O/1000}
-eaq- + O3 -> O3- : {3.6E10/1000}
+eaq- + OH -> OH- : {3E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+eaq- + H2O2 -> OH + OH- : {1.1E10/1000*exp(-15.1E3/R*(1/T_Re-1/T))}
+eaq- + O2- + H2O -> HO2- + OH- : {1.3E10/CH2O/1000*exp(-18.8E3/R*(1/T_Re-1/T))}
+eaq- + HO2 -> HO2- : {2E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+eaq- + O2 -> O2- : {1.9E10/1000*exp(-13E3/R*(1/T_Re-1/T))}
+eaq- + eaq- + H2O + H2O -> H2 + OH- + OH- : {5.5E9/CH2O/1000*exp(-20.5E3/R*(1/T_Re-1/T))}
+eaq- + H + H2O -> H2 + OH- : {2.5E10/CH2O/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+eaq- + HO2- -> O- + OH- : {3.5E9/1000*exp(Ea/R*(1/T_Re-1/T))}
+eaq- + O- + H2O -> OH- + OH- : {2.2E10/CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+eaq- + O3- + H2O -> O2 + OH- + OH- : {1.6E10/CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+eaq- + O3 -> O3- : {3.6E10/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-H + H2O -> H2 + OH : {1.1E1/1000}
-H + O- -> OH- : {1E10/1000}
-H + HO2- -> OH + OH- : {9E7/1000}
-H + O3- -> OH- + O2 : {1E10/1000}
-H + H -> H2 : {7.8E9/1000}
-H + OH -> H2O : {7E9/1000}
-H + H2O2 -> OH + H2O : {9E7/1000}
-H + O2 -> HO2 : {2.1E10/1000}
-H + HO2 -> H2O2 : {1.8E10/1000}
-H + O2- -> HO2- : {1.8E10/1000}
-H + O3 -> HO3 : {3.8E10/1000}
+H + H2O -> H2 + OH : {1.1E1/1000*exp(Ea/R*(1/T_Re-1/T))}
+H + O- -> OH- : {1E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+H + HO2- -> OH + OH- : {9E7/1000*exp(Ea/R*(1/T_Re-1/T))}
+H + O3- -> OH- + O2 : {1E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+H + H -> H2 : {7.8E9/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H + OH -> H2O : {7E9/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H + H2O2 -> OH + H2O : {9E7/1000*exp(-13.6E3/R*(1/T_Re-1/T))}
+H + O2 -> HO2 : {2.1E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H + HO2 -> H2O2 : {1E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H + O2- -> HO2- : {2E10/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+H + O3 -> HO3 : {3.8E10/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-OH + OH -> H2O2 : {3.6E9/1000}
-OH + HO2 -> H2O + O2 : {6E9/1000}
-OH + O2- -> OH- + O2 : {8.2E9/1000}
-OH + H2 -> H + H2O : {4.3E7/1000}
-OH + H2O2 -> HO2 + H2O : {2.7E7/1000}
-OH + O- -> HO2- : {2.5E10/1000}
-OH + HO2- -> HO2 + OH- : {7.5E9/1000}
-OH + O3- -> O3 + OH- : {2.6E9/1000}
-OH + O3- -> O2- + O2- + H+ : {6E9/1000}
-OH + O3 -> HO2 + O2 : {1.1E8/1000}
+OH + OH -> H2O2 : {5.5E9/1000*exp(-8E3/R*(1/T_Re-1/T))}
+OH + HO2 -> H2O + O2 : {6E9/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+OH + O2- -> OH- + O2 : {8E9/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+OH + H2 -> H + H2O : {4.2E7/1000*exp(-18E3/R*(1/T_Re-1/T))}
+OH + H2O2 -> HO2 + H2O : {2.7E7/1000*exp(-14E3/R*(1/T_Re-1/T))}
+OH + O- -> HO2- : {2.5E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+OH + HO2- -> HO2 + OH- : {7.5E9/1000*exp(-12.6E3/R*(1/T_Re-1/T))}
+OH + O3- -> O3 + OH- : {2.6E9/1000*exp(Ea/R*(1/T_Re-1/T))}
+OH + O3- -> O2- + O2- + H+ : {6E9/1000*exp(Ea/R*(1/T_Re-1/T))}
+OH + O3 -> HO2 + O2 : {1.1E8/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-HO2 + O2- -> HO2- + O2 : {8E7/1000}
-HO2 + HO2 -> H2O2 + O2 : {7E5/1000}
-HO2 + O- -> O2 + OH- : {6E9/1000}
-HO2 + H2O2 -> OH + O2 + H2O : {5E-1/1000}
-HO2 + HO2- -> OH + O2 + OH- : {5E-1/1000}
-HO2 + O3- -> O2 + O2 + OH- : {6E9/1000}
-HO2 + O3 -> HO3 + O2 : {5E8/1000}
+HO2 + O2- -> HO2- + O2 : {9.5E7/1000*exp(-8.8E3/R*(1/T_Re-1/T))}
+HO2 + HO2 -> H2O2 + O2 : {8.1E5/1000*exp(-24.7E3/R*(1/T_Re-1/T))}
+HO2 + O- -> O2 + OH- : {6E9/1000*exp(Ea/R*(1/T_Re-1/T))}
+HO2 + H2O2 -> OH + O2 + H2O : {3.7/1000*exp(-20E3/R*(1/T_Re-1/T))}
+HO2 + HO2- -> OH + O2 + OH- : {5E-1/1000*exp(Ea/R*(1/T_Re-1/T))}
+HO2 + O3- -> O2 + O2 + OH- : {6E9/1000*exp(Ea/R*(1/T_Re-1/T))}
+HO2 + O3 -> HO3 + O2 : {5E8/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-O2- + O2- + H2O + H2O -> H2O2 + O2 + OH- + OH- : {1E2/(2*CH2O)/1000}
-O2- + O- + H2O -> O2 + OH- + OH- : {6E8/CH2O/1000}
-O2- + H2O2 -> OH + O2 + OH- : {1.3E-1/1000}
-O2- + HO2- -> O- + O2 + OH- : {1.3E-1/1000}
-O2- + O3- + H2O -> O2 + O2 + OH- + OH- : {1E4/CH2O/1000}
-O2- + O3 -> O3- + O2 : {1.5E9/1000}
+O2- + O2- + H2O + H2O -> H2O2 + O2 + OH- + OH- : {1E2/(2*CH2O)/1000*exp(Ea/R*(1/T_Re-1/T))}
+O2- + O- + H2O -> O2 + OH- + OH- : {6E8/CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+O2- + H2O2 -> OH + O2 + OH- : {16/1000*exp(-20E3/R*(1/T_Re-1/T))}
+O2- + HO2- -> O- + O2 + OH- : {1.3E-1/1000*exp(Ea/R*(1/T_Re-1/T))}
+O2- + O3- + H2O -> O2 + O2 + OH- + OH- : {1E4/CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+O2- + O3 -> O3- + O2 : {1.5E9/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-O- + O- + H2O -> HO2- + OH- : {1E9/CH2O/1000}
-O- + O2 -> O3- : {3.6E9/1000}
-O- + H2 -> H + OH- : {8E7/1000}
-O- + H2O2 -> O2- + H2O : {5E8/1000}
-O- + HO2- -> O2- + OH- : {4E8/1000}
-O- + O3- -> O2- + O2- : {7E8/1000}
-O- + O3 -> O2- + O2 : {5E9/1000}
+O- + O- + H2O -> HO2- + OH- : {1E9/CH2O/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + O2 -> O3- : {3.6E9/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + H2 -> H + OH- : {8E7/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + H2O2 -> O2- + H2O : {5E8/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + HO2- -> O2- + OH- : {4E8/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + O3- -> O2- + O2- : {7E8/1000*exp(Ea/R*(1/T_Re-1/T))}
+O- + O3 -> O2- + O2 : {5E9/1000*exp(Ea/R*(1/T_Re-1/T))}
 
-O3- -> O2 + O- : {3.3E3}
-O3- + H+ -> O2 + OH : {9E10/1000}
-HO3 -> O2 + OH : {1.1E5}
+O3- -> O2 + O- : {3.3E3*exp(Ea/R*(1/T_Re-1/T))}
+O3- + H+ -> O2 + OH : {9E10/1000*exp(Ea/R*(1/T_Re-1/T))}
+HO3 -> O2 + OH : {1.1E5*exp(Ea/R*(1/T_Re-1/T))}
 '
  [../]
 []
@@ -384,19 +384,19 @@ HO3 -> O2 + OH : {1.1E5}
 [Executioner]
   type = Transient
   start_time = 0 #[s]
-  end_time = 100 #[s]
+  end_time = 10000 #[s]
   solve_type = 'PJFNK'
-#  l_abs_tol = 1e-2 #1e-11 for HS- + H2O2
+#  l_abs_tol = 1e-3 #1e-11 for HS- + H2O2
 #  l_tol = 1e-5 #default = 1e-5
-  nl_abs_tol = 1e-3 #1e-11 for HS- + H2O2
-#  nl_rel_tol = 1e-7  #default = 1e-7
-  l_max_its = 40
-  nl_max_its = 40
+  nl_abs_tol = 1e-5 #1e-11 for HS- + H2O2
+  nl_rel_tol = 0.1  #default = 1e-7
+  l_max_its = 10
+  nl_max_its = 10
   dtmax = 10 
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.9
-    dt = 1e-7
+    dt = 1e-8
     growth_factor = 1.1
   [../]
 []

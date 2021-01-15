@@ -29,7 +29,7 @@
   [./H2O2]
 #    block = 'Solution'
     order = FIRST
-    initial_condition = 0  #[mol/m3]
+    initial_condition = 0.114  #[mol/m3]
   [../]
   [./SO42-]
 #    block = 'Solution'
@@ -223,49 +223,49 @@
 #     block = 'Solution'
   type = Source
   variable = H+
-  Source = 8.00838E-5
+  Source = 2.1142
   [../]
   [./Source_OHm]
 #     block = 'Solution'
   type = Source
   variable = OH-
-  Source = 1.29167E-5 
+  Source = 0.341 
   [../]  
   [./Source_eaqm]
 #     block = 'Solution'
   type = Source
   variable = eaq-
-  Source = 6.71671E-5
+  Source = 1.7732 
   [../] 
   [./Source_H]
 #     block = 'Solution'
   type = Source
   variable = H
-  Source = 1.70501E-5 
+  Source = 0.4501 
   [../] 
   [./Source_H2]
 #     block = 'Solution'
   type = Source
   variable = H2
-  Source = 1.16251E-5
+  Source = 0.3069 
   [../]  
   [./Source_OH]
 #     block = 'Solution'
   type = Source
   variable = OH
-  Source = 6.97504E-5
+  Source = 1.8414 
   [../]
   [./Source_H2O2]
 #     block = 'Solution'
   type = Source
   variable = H2O2
-  Source = 1.80834E-5 
+  Source = 0.4774 
   [../]   
   [./Source_HO2]
 #     block = 'Solution'
   type = Source
   variable = HO2
-  Source = 5.1667E-7
+  Source = 0.0136 
   [../] 
 []
 
@@ -384,20 +384,20 @@ HO3 -> O2 + OH : {1.1E5}
 [Executioner]
   type = Transient
   start_time = 0 #[s]
-  end_time = 100 #[s]
+  end_time = 600 #[s]
   solve_type = 'PJFNK'
-#  l_abs_tol = 1e-2 #1e-11 for HS- + H2O2
-#  l_tol = 1e-5 #default = 1e-5
+  l_abs_tol = 1e-3 #1e-11 for HS- + H2O2
+  l_tol = 1e-5 #default = 1e-5
   nl_abs_tol = 1e-3 #1e-11 for HS- + H2O2
-#  nl_rel_tol = 1e-7  #default = 1e-7
+  nl_rel_tol = 1e-7  #default = 1e-7
   l_max_its = 40
   nl_max_its = 40
   dtmax = 10 
   [./TimeStepper]
     type = IterationAdaptiveDT
-    cutback_factor = 0.9
-    dt = 1e-7
-    growth_factor = 1.1
+    cutback_factor = 0.999
+    dt = 1e-3
+    growth_factor = 1.001
   [../]
 []
 
