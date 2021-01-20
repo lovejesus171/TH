@@ -50,5 +50,5 @@ SolutionEP::SolutionEP(const InputParameters & parameters)
 ADReal
 SolutionEP::computeQpResidual()
 {
-  return (_z1  *  _C1[_qp] + _z2 * _C2[_qp]  + _z3 * _C3[_qp]  + _z4 * _C4[_qp]  + _z5 * _C5[_qp] ) * _F * _test[_i][_qp] + _grad_test[_i][_qp] * _grad_u[_qp];
+  return (_z1  *  _C1[_qp] + _z2 * _C2[_qp]  + _z3 * _C3[_qp]  + _z4 * _C4[_qp]  + _z5 * _C5[_qp] ) * _F * _test[_i][_qp] - _grad_test[_i][_qp] * _grad_u[_qp];
 }

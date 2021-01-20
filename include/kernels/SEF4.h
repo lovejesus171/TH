@@ -14,12 +14,12 @@
 /**
  * Adds contribution due to thermo-migration to the Cahn-Hilliard equation
  **/
-class SEP2 : public ADKernel
+class SEF4 : public ADKernel
 {
 public:
   static InputParameters validParams();
 
-  SEP2(const InputParameters & parameters);
+  SEF4(const InputParameters & parameters);
 
 protected:
   virtual ADReal computeQpResidual();
@@ -27,17 +27,15 @@ protected:
   // temperature variable
   const ADVariableValue & _C1;
   const ADVariableValue & _C2;
-
-
-
-
-
+  const ADVariableValue & _C3;
+  const ADVariableValue & _C4;
 //  const ADVariableGradient & _grad_C;
 
   // Mobility property name
   const Real & _z1;
   const Real & _z2;
-
+  const Real & _z3;
+  const Real & _z4;
 
   const Real _F;
 };
