@@ -95,7 +95,7 @@
 
 [ChemicalReactions]
  [./Network]
-   block = 'Copper'
+   block = 'Copper Solution'
    species = 'Cu Cu2S HS-'
    reaction_coefficient_format = 'rate'
    track_rates = True

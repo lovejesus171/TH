@@ -388,7 +388,7 @@ HO3 -> O2 + OH : {1.1E5*exp(Ea/R*(1/T_Re-1/T))}
   solve_type = 'PJFNK'
 #  l_abs_tol = 1e-3 #1e-11 for HS- + H2O2
 #  l_tol = 1e-5 #default = 1e-5
-  nl_abs_tol = 1e-5 #1e-11 for HS- + H2O2
+#  nl_abs_tol = 1e-5 #1e-11 for HS- + H2O2
   nl_rel_tol = 0.1  #default = 1e-7
   l_max_its = 10
   nl_max_its = 10

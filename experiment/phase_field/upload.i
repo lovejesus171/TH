@@ -239,13 +239,14 @@
 
   l_max_its = 10
   nl_max_its = 5
-  nl_abs_tol = 1e-12
+#  nl_abs_tol = 1e-12
+  nl_rel_tol = 1e-1
 
   start_time = 0
   end_time = 20
   [./TimeStepper]
    type = IterationAdaptiveDT
-   dt = 1e-11
+   dt = 1e-8
    growth_factor = 1.01
    optimal_iterations = 7
   [../]

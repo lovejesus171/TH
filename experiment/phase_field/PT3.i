@@ -7,8 +7,8 @@
   dim = 2
   nx = 100
   ny = 200
-  xmax = 100
-  ymax = 200
+  xmax = 20
+  ymax = 50
   elem_type = TRI3
 []
 
@@ -128,7 +128,8 @@
 
   l_max_its = 100
   nl_max_its = 100
-  nl_abs_tol = 1e-10
+#  nl_abs_tol = 1e-10
+  nl_rel_tol = 1e-1  
 
   start_time = 0
   end_time = 20
