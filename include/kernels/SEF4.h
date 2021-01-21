@@ -29,6 +29,11 @@ protected:
   const ADVariableValue & _C2;
   const ADVariableValue & _C3;
   const ADVariableValue & _C4;
+  const ADVariableValue & _C5;
+  const ADVariableValue & _C6;
+
+
+
 //  const ADVariableGradient & _grad_C;
 
   // Mobility property name
@@ -36,6 +41,10 @@ protected:
   const Real & _z2;
   const Real & _z3;
   const Real & _z4;
+  const Real & _z5;
+  const Real & _z6;
+
+  const Real & _Perm;
 
   const Real _F;
 };

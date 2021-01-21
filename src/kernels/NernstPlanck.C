@@ -20,7 +20,6 @@ NernstPlanck::validParams()
   params.addRequiredCoupledVar("Potential", "Potential distribution in ionic solution");
   params.addRequiredParam<MaterialPropertyName>("Charge_coef", "Charge valence of chemical species");
   params.addRequiredParam<MaterialPropertyName>("Diffusion_coef", "Diffusion coefficient in diluted solution (water base)");
-  params.addParam<MaterialPropertyName>("Permittivity", 1.0 ,"Permittivity unit: F/m");
   return params;
 }
 
@@ -31,7 +30,6 @@ NernstPlanck::NernstPlanck(const InputParameters & parameters)
     _grad_EP(adCoupledGradient("Potential")),
     _z(getADMaterialProperty<Real>("Charge_coef")),
     _D(getADMaterialProperty<Real>("Diffusion_coef")),
-    _eps(getADMaterialProperty<Real>("Permittivity")),
     _F(96485),
     _R(8.314)
 {
@@ -40,5 +38,5 @@ NernstPlanck::NernstPlanck(const InputParameters & parameters)
 ADReal
 NernstPlanck::computeQpResidual()
 {
-  return _eps[_qp] * _z[_qp] * _D[_qp] * _F * _grad_EP[_qp] * _u[_qp] / ( _R * _T[_qp]) * _grad_test[_i][_qp];
+  return _z[_qp] * _D[_qp] * _F * _grad_EP[_qp] * _u[_qp] / ( _R * _T[_qp]) * _grad_test[_i][_qp];
 }

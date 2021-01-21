@@ -35,8 +35,7 @@ protected:
   // Mobility property name
   const ADMaterialProperty<Real> & _z;
   const ADMaterialProperty<Real> & _D;
-  const ADMaterialProperty<Real> & _eps;
-
+  
   const Real _F;
   const Real _R;
 };

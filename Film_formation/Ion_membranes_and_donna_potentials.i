@@ -5,23 +5,23 @@
 [Variables]
   # Name of chemical species
   [./A]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
    order = FIRST
   [../]
   [./B]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
    order = FIRST
   [../]
   [./C]
-   block = 'S1 S2 M1'
-   order =FIRST
+   block = 'S1 S2 M1 M2'
+   order = FIRST
   [../]
   [./phi]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
    order = FIRST
   [../]
   [./fixed_space_charge]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
    order = FIRST
   [../]
 []
@@ -36,25 +36,25 @@
 
 [ICs]
   [./ICA]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
     type = ConstantIC
     variable = A
     value = 0.1E3
   [../]
   [./ICB]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
     type = ConstantIC
     variable = B
     value = 0.1E3
   [../]
   [./ICC]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
     type = ConstantIC
     variable = C
     value = 0.1E3
   [../]
   [./ICphi]
-   block = 'S1 S2 M1'
+   block = 'S1 S2 M1 M2'
     type = FunctionIC
     variable = phi
     function = IC_phi #unit: V
@@ -68,7 +68,7 @@
   [../]
 
   [./IC_membrane_charge_2]
-   block = 'M1'
+   block = 'M1 M2'
     type = ConstantIC
     variable = fixed_space_charge
     value = 1E3 #unit: mol/m3
@@ -80,52 +80,52 @@
 [Kernels]
 # dCi/dt
   [./dA_dt]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = TimeDerivative
     variable = A
   [../]
   [./dB_dt]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = TimeDerivative
     variable = B
   [../]
   [./dC_dt]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = TimeDerivative
     variable = C
   [../]
   [./dphi_dt]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = TimeDerivative
     variable = phi
   [../]
   [./dfC_dt]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = TimeDerivative
     variable = fixed_space_charge
   [../]
   
 
   [./DA]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = CoefDiffusion
     coef = 1e-9 
     variable = A
   [../]
   [./DB]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = CoefDiffusion
     coef = 1e-9 
     variable = B
   [../]
   [./DC]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = CoefDiffusion
     coef = 1e-9 
     variable = C
   [../]
   [./Dfixed_space_charge]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = CoefDiffusion
     coef = 0
     variable = fixed_space_charge
@@ -133,7 +133,7 @@
 
 
   [./Cal_Potential_dist]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = SEF4
     variable = phi
     CS1 = A
@@ -148,7 +148,7 @@
 
 
   [./Migration_A]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = NernstPlanck
     T = 298.15
     variable = A
@@ -157,7 +157,7 @@
     Diffusion_coef = 1E-9
   [../]
   [./Migration_B]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = NernstPlanck
     T = 298.15
     variable = B
@@ -166,7 +166,7 @@
     Diffusion_coef = 1E-9    
   [../]
   [./Migration_C]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = NernstPlanck
     T = 298.15
     variable = C
@@ -175,7 +175,7 @@
     Diffusion_coef = 1E-9    
   [../]
   [./Migration_fixed_space_charge]
-    block = 'S1 S2 M1'
+    block = 'S1 S2 M1 M2'
     type = NernstPlanck
     T = 298.15
     variable = fixed_space_charge
@@ -282,7 +282,7 @@
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.99
-    dt = 1
+    dt = 1e-2
     growth_factor = 1.01
   [../]
   
