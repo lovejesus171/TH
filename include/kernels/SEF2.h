@@ -37,7 +37,6 @@ protected:
   // Mobility property name
   const Real & _z1;
   const Real & _z2;
-
-
+  const Real & _Perm;
   const Real _F;
 };

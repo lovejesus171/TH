@@ -22,12 +22,12 @@ SEF4::validParams()
   params.addCoupledVar("CS4", 0,"Add name of chemical species");
   params.addCoupledVar("CS5", 0,"Add name of chemical species");
   params.addCoupledVar("CS6", 0,"Add name of chemical species");
-  params.addParam<Real>("Charge1", "Charge valence of chemical species");
-  params.addParam<Real>("Charge2", "Charge valence of chemical species");
-  params.addParam<Real>("Charge3", "Charge valence of chemical species");
-  params.addParam<Real>("Charge4", "Charge valence of chemical species");
-  params.addParam<Real>("Charge5", "Charge valence of chemical species");
-  params.addParam<Real>("Charge6", "Charge valence of chemical species");
+  params.addParam<Real>("Charge1",0.0, "Charge valence of chemical species");
+  params.addParam<Real>("Charge2",0.0, "Charge valence of chemical species");
+  params.addParam<Real>("Charge3",0.0, "Charge valence of chemical species");
+  params.addParam<Real>("Charge4",0.0, "Charge valence of chemical species");
+  params.addParam<Real>("Charge5",0.0, "Charge valence of chemical species");
+  params.addParam<Real>("Charge6",0.0, "Charge valence of chemical species");
 
 
 

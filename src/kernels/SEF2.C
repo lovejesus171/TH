@@ -20,6 +20,7 @@ SEF2::validParams()
   params.addCoupledVar("CS2", 0,"Add name of chemical species");
   params.addParam<Real>("Charge1", "Charge valence of chemical species");
   params.addParam<Real>("Charge2", "Charge valence of chemical species");
+  params.addParam<Real>("Permittivity",1.0,"Permittivity by fixed space charge, unit: F/m, 1F = 1C/V F is not a faraday constant, F is called farad");
   return params;
 }
 
@@ -29,6 +30,7 @@ SEF2::SEF2(const InputParameters & parameters)
     _C2(adCoupledValue("CS2")),
     _z1(getParam<Real>("Charge1")),
     _z2(getParam<Real>("Charge2")),
+    _Perm(getParam<Real>("Permittivity")),
     _F(96485)
 {
 }
@@ -36,5 +38,5 @@ SEF2::SEF2(const InputParameters & parameters)
 ADReal
 SEF2::computeQpResidual()
 {
-  return (_z1  *  _C1[_qp] + _z2 * _C2[_qp]) * _F * _test[_i][_qp] - _grad_test[_i][_qp] * _grad_u[_qp];
+  return (_z1  *  _C1[_qp] + _z2 * _C2[_qp]) * _F * _test[_i][_qp] -  _Perm * _grad_test[_i][_qp] * _grad_u[_qp];
 }
