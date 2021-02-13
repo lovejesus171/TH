@@ -71,21 +71,37 @@
 
 [BCs]
   [./left_bc_A]
-    type = ES
+    type = ES2
     boundary = left
     variable = HS-
     Charge_number = -1
-    Kinetic = 1e-9
-    Reactant = HS- 
-    Kinetic_order = 2
+    Kinetic = 600E-4
     AlphaS = 0.5
-    Corrosion_potential = -0.80
+    Corrosion_potential = -0.95
     R = 8.314
     T = 298.15
     AlphaS3 = 0.5
     Standard_potential2 = -0.78
     Standard_potential3 = -0.78
   [../]
+  [./left_bc_B]
+    type = ESP
+    boundary = left
+    variable = Cu2S
+    Charge_number = 1
+    Kinetic = 600E-4
+    AlphaS = 0.5
+    Corrosion_potential = -0.95
+    Reactant = HS-
+    R = 8.314
+    T = 298.15
+    AlphaS3 = 0.5
+    Standard_potential2 = -0.78
+    Standard_potential3 = -0.78
+  [../]
+
+
+
 
   [./right_bc_A]
     type = DirichletBC

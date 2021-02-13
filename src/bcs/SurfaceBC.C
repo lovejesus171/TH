@@ -48,6 +48,3 @@ SurfaceBC::computeQpFluxJacobian()
  
    return -_eps * _n * _S * _D * _tau * _F * _grad_phi[_j][_qp];   
 }
-
-
-

@@ -3,14 +3,14 @@
   dim = 1
   xmin = 0
   xmax = 1E-3
-  nx = 300
+  nx = 1000
 []
 
 [Variables]
   # Name of chemical species
   [./HS-]
    order = FIRST
-   initial_condition = 1 #mol/m3
+   initial_condition = 0 #mol/m3
   [../]
   [./Cu2S]
    order = FIRST
@@ -40,17 +40,17 @@
 
   [./DA]
     type = CoefDiffusion
-    coef = 1e-9 
+    coef = 3600e-9 
     variable = HS-
   [../]
   [./DB]
     type = CoefDiffusion
-    coef = 1e-9 
+    coef = 3600e-9 
     variable = Cu2S
   [../]
   [./DC]
     type = CoefDiffusion
-    coef = 1e-9 
+    coef = 3600e-9 
     variable = OH-
   [../]
 []
@@ -70,23 +70,29 @@
 
 
 [BCs]
+#  [./left_bc_A]
+#    type = ES2
+#    boundary = left
+#    variable = HS-
+#    Charge_number = -1
+#    Kinetic = 2160000e-4
+#    AlphaS = 0.5
+#    Corrosion_potential = -0.90
+#    R = 8.314
+#    T = 298.15
+#    AlphaS3 = 0.5
+#    Standard_potential2 = -0.78
+#    Standard_potential3 = -0.78
+#  [../]
+
   [./left_bc_A]
-    type = ES
+    type = DirichletBC
     boundary = left
     variable = HS-
-    Charge_number = -1
-    Kinetic = 1e-9
-    Reactant = HS- 
-    Kinetic_order = 2
-    AlphaS = 0.5
-    Corrosion_potential = -0.80
-    R = 8.314
-    T = 298.15
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.78
-    Standard_potential3 = -0.78
+    value = 0
   [../]
 
+ 
   [./right_bc_A]
     type = DirichletBC
     boundary = right
@@ -113,11 +119,11 @@
 #  l_tol = 1e-5 #default = 1e-5
 #  nl_abs_tol = 1e-2 #1e-11 for HS- + H2O2
 #  l_rel_tol = 1e-1
-  nl_rel_tol = 1e-4  #default = 1e-7
+  nl_rel_tol = 1e-1  #default = 1e-7
   l_max_its = 10
   nl_max_its = 10
   dtmax = 0.1
-#  dt = 0.5
+#  dt = 0.1
 
   automatic_scaling = true
   compute_scaling_once = false

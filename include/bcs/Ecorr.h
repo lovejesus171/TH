@@ -9,28 +9,28 @@
 
 #pragma once
 
-#include "AuxKernel.h"
+#include "IntegratedBC.h"
 
 // Forward Declarations
-class Test;
+class Ecorr;
 
 template <>
-InputParameters validParams<Test>();
+InputParameters validParams<Ecorr>();
 
 /**
- * Coupled auxiliary value
+ * Implements a simple coupled boundary condition where u=v on the boundary.
  */
-class Test : public AuxKernel
+class Ecorr : public IntegratedBC
 {
 public:
-  /**
-   * Factory constructor, takes parameters so that all derived classes can be built using the same
-   * constructor.
-   */
-  Test(const InputParameters & parameters);
+  static InputParameters validParams();
+
+  Ecorr(const InputParameters & parameters);
 
 protected:
-  virtual Real computeValue() override;
+  virtual Real computeQpResidual() override;
+  virtual Real computeQpJacobian() override;
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar) override;
 
   const VariableValue & _C;
 
@@ -47,4 +47,3 @@ protected:
   const Real & _kE;
   const Real & _kS;
 };
-

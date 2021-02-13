@@ -1,5 +1,5 @@
 [Mesh]
-   file = '2D_Experiment.msh'
+  file = 'Full_2D_Paper.msh'
 []
 
 [Variables]
@@ -45,7 +45,54 @@
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
+  [./Cl-]
+    block = 'Solution'
+    order = FIRST
+    initial_condition = 1 #[mol/m3]
+  [../]
+  [./CuCl2-]
+    block = 'Solution'
+    order = FIRST
+    initial_condition = 0 #[mol/m3]
+  [../]
+  [./E_field]
+    block = 'Solution'
+    order = FIRST
+    initial_condition = 0
+  [../]
 []
+
+[AuxVariables]
+  [./E]
+    block = 'Solution'
+    order = FIRST
+    family = LAGRANGE
+    initial_condition = -0.7
+  [../]
+[]
+
+
+[AuxKernels]
+  [./Calculate_Corrosion_Potential]
+    block = 'Solution'
+    type = Test
+    variable = E
+    Reactant = HS-
+    Reaction_order = 1
+    AlphaE = 0.5
+    AlphaS = 0.5
+    AlphaS12 = 0.5
+    AlphaS3 = 0.5
+    PotentialE = -0.1005
+    PotentialS12 = -0.747
+    PotentialE3 = -0.747
+    CoefE = 1
+    CoefS = 1
+    Kinetic_coefE = 7.2E-6
+    Kinetic_coefS = 216
+  [../]
+[]
+
 
 [Kernels]
 # dCi/dt
@@ -84,49 +131,82 @@
     type = TimeDerivative
     variable = O2
   [../]
+  [./dCl-_dt]
+    block = 'Solution'
+    type = TimeDerivative
+    variable = Cl-
+  [../]
+  [./dCuCl2-_dt]
+    block = 'Solution'
+    type = TimeDerivative
+    variable = CuCl2-
+  [../]
+  [./dE_field_dt]
+    block = 'Solution'
+    type = TimeDerivative
+    variable = E_field
+  [../]
+
+
+
 # Diffusion terms
   [./DgradHS]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 7.31e-10 #[m2/s]
+    coef = 26316e-10 #[m2/s]
     variable = HS-
   [../]
   [./DgradH2O]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 2.31e-9 #[m2/s], at 25C
+    coef = 8316e-9 #[m2/s], at 25C
     variable = H2O
   [../]
   [./DgradHp]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 1.008e-8 #[m2/s], at 25C
+    coef = 3628.8e-8 #[m2/s], at 25C
     variable = H+
   [../]
   [./DgradOHm]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 4.82e-9 #[m2/s], at 25C
+    coef = 17352e-9 #[m2/s], at 25C
     variable = OH-
   [../]
   [./DgradH2O2]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 4.82e-9 #[m2/s], to be added
+    coef = 17352e-9 #[m2/s], to be added
     variable = H2O2
   [../]
   [./DgradSO42m]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 4.82e-9 #[m2/s], to be added
+    coef = 17352e-9 #[m2/s], to be added
     variable = SO42-
   [../]
   [./DgradO2]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 2e-9 #[m2/s], to be added
+    coef = 7200e-9 #[m2/s], to be added
     variable = O2
   [../]
+  [./DgradCl-]
+    block = 'Solution'
+    type = CoefDiffusion
+    coef = 7200e-9 #[m2/s], to be added
+    variable = Cl-
+  [../]
+  [./DgradCuCl2-]
+    block = 'Solution'
+    type = CoefDiffusion
+    coef = 7200e-9 #[m2/s], to be added
+    variable = CuCl2-
+  [../]
+
+
+
 # HeatConduction terms
   [./heat]
     block = 'Solution'
@@ -140,38 +220,74 @@
   [../]
 []
 
-#unit = 1/hour
-[ChemicalReactions]
- [./Network]
-   block = 'Solution'
-   species = 'H+ OH- H2O H2O2 SO42- O2 HS-'
-   track_rates = False
-
-   equation_constants = 'Ea R T_Re'
-   equation_values = '20 8.314 298.15'
-   equation_variables = 'T'
-
-   reactions = 'H2O -> OH- + H+ : {2.5e-5*exp(-45.4e3/R*(1/T_Re-1/T))}
-                OH- + H+ -> H2O : {1.4e8*exp(-12.2e3/R*(1/T_Re-1/T))}
-                HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {5.5e-4*exp(-51.3e3/R*(1/T_Re-1/T))}
-                HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}'
-[../]
-[]
 
 [BCs]
-  [./copper_boundary1]
-    type = DirichletBC
+#  [./copper_boundary1]
+#    type = DirichletBC
+#    variable = HS-
+#    boundary = Copper_top
+#    value = 0 #[mol/m2]
+#  [../]
+#  [./copper_boundary2]
+#    type = DirichletBC
+#    variable = HS-
+#    boundary = Copper_side
+#    value = 0 #[mol/m2]
+#  [../]
+  [./BC_HS-]
+    type = ES2
     variable = HS-
-    boundary = Copper_top
-    value = 0 #[mol/m2]
-  [../]
-  [./copper_boundary2]
-    type = DirichletBC
-    variable = HS-
-    boundary = Copper_side
-    value = 0 #[mol/m2]
-  [../]
+#    boundary = 'Copper_top Copper_side'
+    boundary = 'Copper_top'
+#    boundary = left
+    Faraday_constant = 96485
+    Kinetic = 216 #m4mol/hr at 25C
+    AlphaS = 0.5
+    Corrosion_potential = E
+#    Temperature = T
+    AlphaS3 = 0.5
+    Standard_potential2 = -0.747 
+    Standard_potential3 = -0.747
+    Num = -1
+ [../]
+ [./BC_Cl-]
+   type = Clm
+   variable = Cl-
+   Reactant1 = CuCl2-
+#   boundary = 'Copper_top Copper_side'
+   boundary = Copper_top
+   Corrosion_potential = E
+   Temperature = 298.15
+   kF = 1.188E-4
+   kB = 5.112E-1
+   StandardPotential = -0.105
+   TransferCoef = 0.5
+   Num  = -2
+ [../]
+ [./BC_CuCl2-]
+   type = CuCl2m
+   variable = CuCl2-
+   Reactant1 = Cl-
+#   boundary = 'Copper_top Copper_side'
+   boundary = Copper_top
+   Corrosion_potential = E
+   Temperature = 298.15
+   kF = 1.188E-4
+   kB = 5.112E-1
+   StandardPotential = -0.105
+   TransferCoef = 0.5
+   Num  = 1
+ [../]
+ [./ElectricfieldBC]
+   type = DirichletBC
+   variable = E_field
+   boundary = Copper_top
+   value = -0.7
+ [../]
 []
+
+  
+
 
 [Materials]
   [./hcm]
@@ -189,24 +305,25 @@
 
 [Executioner]
   type = Transient
-  start_time = 0 #[s]
-  end_time = 3628800 #[s]
+  start_time = 0 #[hr]
+  end_time = 1680 #[hr]
   solve_type = 'PJFNK'
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
 #  nl_abs_tol = 1e-12
   nl_rel_tol = 1e-1 #default = 1e-7
   l_max_its = 10
-  nl_max_its = 10
-  dtmax = 100000 
+  nl_max_its = 30
+  dtmax = 1
 
   automatic_scaling = true
   compute_scaling_once = false
+ 
 
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.99
-    dt = 0.1
+    dt = 1e-5
     growth_factor = 1.01
   [../]
 []
@@ -223,14 +340,16 @@
   [./Consumed_HS_mol_per_s]
     type = SideFluxIntegral
     variable = HS-
-    diffusivity = 7.31e-10 #m2/s
+    diffusivity = 26316e-10 #m2/hr
+#    boundary = left
     boundary = Copper_top
   [../]
-  [./Volume_tegetral_of_HS-]
-    type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
-    variable = HS-
-  [../]
+#  [./Volume_tegetral_of_HS-]
+#    type = ElementIntegralVariablePostprocessor
+#   boundary = Copper_top
+#    block = 'Solution'
+#    variable = HS-
+#  [../]
 []
 
 [Outputs]

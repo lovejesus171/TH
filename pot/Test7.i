@@ -3,7 +3,7 @@
   dim = 1
   xmin = 0
   xmax = 1E-3
-  nx = 200
+  nx = 1000
 []
 
 
@@ -26,6 +26,10 @@
    initial_condition = 0
   [../]
   [./phi]
+   order = FIRST
+   initial_condition = 0
+  [../]
+  [Fe2+]
    order = FIRST
    initial_condition = 0
   [../]
@@ -64,6 +68,11 @@
     type = TimeDerivative
     variable = phi
   [../]
+  [./dFe2+_dt]
+    type = TimeDerivative
+    variable = Fe2+
+  [../]
+
 
 
 # D*dC/dx
@@ -74,28 +83,38 @@
   [../]
   [./DgradCuHS]
     type = CoefDiffusion
-    coef = 0
+    coef = 1e-9
     variable = CuHS
   [../]
   [./DgradCu2S]
     type = CoefDiffusion
-    coef = 0
+    coef = 1e-9
     variable = Cu2S
   [../]
   [./DgradHS-]
     type = CoefDiffusion
-    coef = 1e-9
+    coef = 5e-9
     variable = HS-
   [../]
+  [./DgradFe2+]
+    type = CoefDiffusion
+    coef = 5e-9
+    variable = Fe2+
+  [../]
+
 
 # sum of charge = per * grad * grad * electrolyte_potential
   [./Cal_Potential_dist]
-    type = SEF2
+    type = SEF4
     variable = phi
     CS1 = Cu+
     CS2 = HS-
+    CS3 = Fe2+
+    CS4 = CuHS
     Charge1 = 1
     Charge2 = -1
+    Charge3 = 2
+    Charge4 = 0
   [../]
 
 # migration of cations and anions
@@ -113,21 +132,31 @@
     variable = Cu+
     Potential = phi
     Charge_coef = 1
-    Diffusion_coef = 1E-9    
+    Diffusion_coef = 5E-9    
   [../]
+  [./Migration_Fe2+]
+    type = NernstPlanck
+    T = 298.15
+    variable = Fe2+
+    Potential = phi
+    Charge_coef = 2
+    Diffusion_coef = 5E-9    
+  [../]
+
+
 []
 
 [ChemicalReactions]
  [./Network]
-   block = 'Solution_domain'
+#   block = 'Solution_domain'
+   block = 0
    species = 'Cu+ CuHS Cu2S HS-'
    track_rates = False
-   equation_constants = 'Ea R T_Re'
-   equation_values = '0 8.314 298.15'
-   equation_variables = 'T'
-
-   reactions = 'Cu+ + HS- -> CuHS : {1E1}
-                CuHS + HS- -> Cu2S : {1E1}
+#   equation_constants = 'Ea R T_Re'
+#   equation_values = '0 8.314 298.15'
+#   equation_variables = 'T'
+   reactions = 'Cu+ + HS- -> CuHS : {1E-2}
+                CuHS + HS- -> Cu2S : {1E-1}
 '
  []
 []
@@ -140,7 +169,7 @@
     variable = Cu+
     Reactant1 = HS-
     Saturation = 1
-    Diffusion_coef = 1e-9
+    Diffusion_coef = 5e-9
     Tortuosity = 1
     Faraday_constant = 1
     Charge_number = 1
@@ -151,7 +180,7 @@
     boundary = left
     variable = HS-
     Saturation = 1
-    Diffusion_coef = -1e9
+    Diffusion_coef = -5e9
     Tortuosity = 1
     Faraday_constant = 1
     Charge_number = 1
@@ -170,6 +199,14 @@
     variable = HS-
     value = 1
   [../]
+  [./right_bc_Fe2+]
+    type = DirichletBC
+    boundary = right
+    variable = Fe2+
+    value = 1
+  [../]
+
+
 []
 
 [Executioner]

@@ -12,22 +12,22 @@
 #include "AuxKernel.h"
 
 // Forward Declarations
-class Test;
+class Test2;
 
 template <>
-InputParameters validParams<Test>();
+InputParameters validParams<Test2>();
 
 /**
  * Coupled auxiliary value
  */
-class Test : public AuxKernel
+class Test2 : public AuxKernel
 {
 public:
   /**
    * Factory constructor, takes parameters so that all derived classes can be built using the same
    * constructor.
    */
-  Test(const InputParameters & parameters);
+  Test2(const InputParameters & parameters);
 
 protected:
   virtual Real computeValue() override;
@@ -46,5 +46,10 @@ protected:
   const Real & _nS;
   const Real & _kE;
   const Real & _kS;
+  const Real & _aF;
+  const Real & _EF;
+  const Real & _kF;
+  const Real & _nF;
+
 };
 

@@ -7,15 +7,16 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "Test.h"
+#include "Ecorr.h"
 
-registerMooseObject("corrosionApp", Test);
+registerMooseObject("corrosionApp", Ecorr);
 
-template <>
+defineLegacyParams(Ecorr);
+
 InputParameters
-validParams<Test>()
+Ecorr::validParams()
 {
-  InputParameters params = validParams<AuxKernel>();
+  InputParameters params = IntegratedBC::validParams();
   params.addRequiredCoupledVar("Reactant", "The variable whose value we are to match.");
   params.addParam<Real>("Reaction_order","Reaction order parameters");
   params.addParam<Real>("AlphaE","Transfer coefficient, unitless");
@@ -27,13 +28,17 @@ validParams<Test>()
   params.addParam<Real>("PotentialE3","Standard potential of reaction, V");
   params.addParam<Real>("CoefE","Number of electron participate in reaction");
   params.addParam<Real>("CoefS","Number of electron participate in reaction");
-  params.addParam<Real>("Kinetic_coefE","Kinetic constant");
-  params.addParam<Real>("Kinetic_coefS","Kinetic constant");
+  params.addParam<Real>("Kinetic_coefE","Kinetic constant"); 
+  params.addParam<Real>("Kinetic_coefS","Kinetic constant"); 
+
+
+  params.addClassDescription("Implements a NodalBC which equates two different Variables' values "
+                             "on a specified boundary.");
   return params;
 }
 
-Test::Test(const InputParameters & parameters)
-  : AuxKernel(parameters),
+Ecorr::Ecorr(const InputParameters & parameters)
+  : IntegratedBC(parameters),
     _C(coupledValue("Reactant")),
     _m(getParam<Real>("Reaction_order")),
     _aE(getParam<Real>("AlphaE")),
@@ -50,14 +55,21 @@ Test::Test(const InputParameters & parameters)
 {
 }
 
-/**
- * Auxiliary Kernels override computeValue() instead of computeQpResidual().  Aux Variables
- * are calculated either one per elemenet or one per node depending on whether we declare
- * them as "Elemental (Constant Monomial)" or "Nodal (First Lagrange)".  No changes to the
- * source are necessary to switch from one type or the other.
- */
 Real
-Test::computeValue()
+Ecorr::computeQpResidual()
 {
-  return  1/(1 + _aE + _aS)* (_aE * _EE + _ES12 + _aS3 * _E3 - 8.314 * 298.15 / 96485 * log10(_nS * _kS / (_nE * _kE)*_C[_qp])) ;
+  return  -_test[_i][_qp] * 1/(1 + _aE + _aS)* (_aE * _EE + _ES12 + _aS3 * _E3 - 8.314 * 298.15 / 96485 * log10(_nS * _kS / (_nE * _kE * 1000)/_C[_qp])) ;
+}
+
+Real
+Ecorr::computeQpJacobian()
+{
+  return  0.0;
+}
+
+Real
+Ecorr::computeQpOffDiagJacobian(unsigned int jvar)
+{
+  return 0.0;
+//  return  -_test[_i][_qp] * 1/(1 + _aE + _aS)* (_aE * _EE + _ES12 + _aS3 * _E3 - 8.314 * 298.15 / 96485 * log10(_nS * _kS / (_nE * _kE)) / (_C[_qp] * _C[_qp])) ;
 }

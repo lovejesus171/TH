@@ -141,36 +141,46 @@
 []
 
 #unit = 1/hour
-[ChemicalReactions]
- [./Network]
-   block = 'Solution'
-   species = 'H+ OH- H2O H2O2 SO42- O2 HS-'
-   track_rates = False
+#[ChemicalReactions]
+# [./Network]
+#   block = 'Solution'
+#   species = 'H+ OH- H2O H2O2 SO42- O2 HS-'
+#   track_rates = False
+#
+#   equation_constants = 'Ea R T_Re'
+#   equation_values = '20 8.314 298.15'
+#   equation_variables = 'T'
 
-   equation_constants = 'Ea R T_Re'
-   equation_values = '20 8.314 298.15'
-   equation_variables = 'T'
-
-   reactions = 'H2O -> OH- + H+ : {2.5e-5*exp(-45.4e3/R*(1/T_Re-1/T))}
-                OH- + H+ -> H2O : {1.4e8*exp(-12.2e3/R*(1/T_Re-1/T))}
-                HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {5.5e-4*exp(-51.3e3/R*(1/T_Re-1/T))}
-                HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}'
-[../]
-[]
+#   reactions = 'H2O -> OH- + H+ : {2.5e-5*exp(-45.4e3/R*(1/T_Re-1/T))}                OH- + H+ -> H2O : {1.4e8*exp(-12.2e3/R*(1/T_Re-1/T))}                HS- + H2O2 + H2O2 + H2O2 + H2O2 -> OH- + H+ + H+ + SO42- : {5.5e-4*exp(-51.3e3/R*(1/T_Re-1/T))}        HS- + O2 -> SO42- + H+ : {3.6*10^(11.78-3000/T)}'
+#[../]
+#[]
 
 [BCs]
-  [./copper_boundary1]
-    type = DirichletBC
+#  [./copper_boundary1]
+#    type = DirichletBC
+#    variable = HS-
+#    boundary = Copper_top
+#    value = 0 #[mol/m2]
+#  [../]
+#  [./copper_boundary2]
+#    type = DirichletBC
+#    variable = HS-
+#    boundary = Copper_side
+#    value = 0 #[mol/m2]
+#  [../]
+  [./BC_HS-]
+    type = ES2
     variable = HS-
-    boundary = Copper_top
-    value = 0 #[mol/m2]
-  [../]
-  [./copper_boundary2]
-    type = DirichletBC
-    variable = HS-
-    boundary = Copper_side
-    value = 0 #[mol/m2]
-  [../]
+    boundary = 'Copper_top Copper_side'
+    Charge_number = -1
+    Kinetic = 600E-4 #m4mol/s at 25C
+    AlphaS = 0.5
+    Corrosion_potential = 0
+    T = 298.15
+    AlphaS3 = 0.5
+    Standard_potential2 = 0 
+    Standard_potential3 = 0
+ [../]
 []
 
 [Materials]
@@ -206,7 +216,7 @@
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.99
-    dt = 0.1
+    dt = 1e-3
     growth_factor = 1.01
   [../]
 []
