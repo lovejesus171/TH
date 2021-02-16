@@ -1,5 +1,5 @@
 [Mesh]
-  file = 'Full_2D_Paper.msh'
+  file = '2D_Experiment_02_01.msh'
 []
 
 [Variables]
@@ -48,7 +48,7 @@
   [./Cl-]
     block = 'Solution'
     order = FIRST
-    initial_condition = 0.1E3 #[mol/m3]
+    initial_condition = 0 #[mol/m3]
   [../]
   [./CuCl2-]
     block = 'Solution'
@@ -235,8 +235,8 @@
   [./BC_HS-]
     type = ES2
     variable = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+    boundary = 'Copper_top Copper_side'
+#    boundary = 'Copper_top'
 #    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
@@ -252,8 +252,8 @@
     type = Cu2S
     variable = Cu2S
     Reactant1 = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+    boundary = 'Copper_top Copper_side'
+#    boundary = 'Copper_top'
 #    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
@@ -269,8 +269,8 @@
    type = Clm
    variable = Cl-
    Reactant1 = CuCl2-
-#   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
+   boundary = 'Copper_top Copper_side'
+#   boundary = Copper_top
    Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
@@ -283,8 +283,8 @@
    type = CuCl2m
    variable = CuCl2-
    Reactant1 = Cl-
-#   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
+   boundary = 'Copper_top Copper_side'
+#   boundary = Copper_top
    Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4

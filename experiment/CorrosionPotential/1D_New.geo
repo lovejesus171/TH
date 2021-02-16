@@ -1,4 +1,4 @@
-// Gmsh project created on Mon Dec 21 13:02:03 2020
+// Gmsh project created on Wed Jan 20 14:30:19 2021
 SetFactory("OpenCASCADE");
 //+
 Point(1) = {0, 0, 0, 1.0};
@@ -9,5 +9,6 @@ Line(1) = {1,2};
 //+
 Transfinite Curve {1} = 3000 Using Progression 1.005;
 //+
-Physical Curve("Solution") = {1};//+
+Physical Curve("Solution") = {1};
+//+
 Physical Point("Copper_top") = {1};

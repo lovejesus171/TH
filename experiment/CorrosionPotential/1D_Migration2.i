@@ -1,62 +1,63 @@
 [Mesh]
-  file = 'Full_2D_Paper.msh'
+  file = '1D_New.msh'
+  construct_side_list_from_node_list = true
 []
 
 [Variables]
   # Name of chemical species
   [./H+]
-   block = 'Solution'
+#   block = 'Solution'
    order = FIRST
    initial_condition = 1.0079e-8 #[mol/m3] at 25 C with 1mol/l of HS- in solution (Na2S)
   [../]
   [./OH-]
-   block = 'Solution'
+#   block = 'Solution'
    order =FIRST
    initial_condition = 1.0001 #[mol/m3]
   [../]
   [./H2O]
-   block = 'Solution'
+#   block = 'Solution'
    order = FIRST
    initial_condition = 55347 #[mol/m3] at 25 C
   [../]
   [./HS-]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     initial_condition = 1 #[mol/m3]
   [../]
   [./H2O2]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     initial_condition = 0  #[mol/m3]
   [../]
   [./SO42-]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
   [./O2]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
   [./T]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
   [./Cl-]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
-    initial_condition = 0.1E3 #[mol/m3]
+    initial_condition = 1 #[mol/m3]
   [../]
   [./CuCl2-]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
-  [./Cu2S]
-    block = 'Solution'
+  [./E_field]
+#   block = 'Solution'
     order = FIRST
     initial_condition = 0
   [../]
@@ -64,16 +65,17 @@
 
 [AuxVariables]
   [./E]
-    block = 'Solution'
+#   block = 'Solution'
     order = FIRST
     family = LAGRANGE
+#    initial_condition = -0.7
   [../]
 []
 
 
 [AuxKernels]
   [./Calculate_Corrosion_Potential]
-    block = 'Solution'
+#   block = 'Solution'
     type = Test
     variable = E
     Reactant = HS-
@@ -96,123 +98,162 @@
 [Kernels]
 # dCi/dt
   [./dHS_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = HS-
   [../]
   [./dH2O_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = H2O
   [../]
   [./dHp_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = H+
   [../]
   [./dOHm_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = OH-
   [../]
   [./dH2O2_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = H2O2
   [../]
   [./dSO42m_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = SO42-
   [../]
   [./dO2_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = O2
   [../]
   [./dCl-_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = Cl-
   [../]
   [./dCuCl2-_dt]
-    block = 'Solution'
+#   block = 'Solution'
     type = TimeDerivative
     variable = CuCl2-
   [../]
-  [./dCu2S_dt]
-    block = 'Solution'
+  [./dE_field_dt]
+#   block = 'Solution'
     type = TimeDerivative
-    variable = Cu2S
+    variable = E_field
   [../]
+
 
 
 # Diffusion terms
   [./DgradHS]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 26316e-10 #[m2/s]
     variable = HS-
   [../]
   [./DgradH2O]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 8316e-9 #[m2/s], at 25C
     variable = H2O
   [../]
   [./DgradHp]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 3628.8e-8 #[m2/s], at 25C
     variable = H+
   [../]
   [./DgradOHm]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], at 25C
     variable = OH-
   [../]
   [./DgradH2O2]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], to be added
     variable = H2O2
   [../]
   [./DgradSO42m]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], to be added
     variable = SO42-
   [../]
   [./DgradO2]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = O2
   [../]
   [./DgradCl-]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = Cl-
   [../]
   [./DgradCuCl2-]
-    block = 'Solution'
+#   block = 'Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = CuCl2-
   [../]
+# I have to add the migration and electrochemical potential terms~~
+# Migration
+  [./Migration_HS-]
+#   block = 'Solution'
+    type = NernstPlanck
+    variable = HS-
+    Potential = E_field
+    Charge_coef = -1
+    Diffusion_coef = 26316e-10 #[m2/s]
+    T = T
+  [../]
+#  [./Migration_Cl-]
+##   block = 'Solution'
+#    type = NernstPlanck
+#    variable = Cl-
+#    Potential = E_field
+#    Charge_coef = -1
+#    Diffusion_coef = 7200e-9 #[m2/s]
+#    T = T
+#  [../]
+  [./Migration_H+]
+#   block = 'Solution'
+    type = NernstPlanck
+    variable = H+
+    Potential = E_field
+    Charge_coef = 1
+    Diffusion_coef = 3628.8e-8 #[m2/s]
+    T = T
+  [../]
 
-
+# Potential calculation
+  [./Cal_Potential_dist]
+#   block = 'Solution'
+    type = SEF4
+    variable = E_field
+    CS1 = HS-
+    CS2 = H+
+    Charge1 = -1
+    Charge2 = 1
+  [../]
 
 # HeatConduction terms
   [./heat]
-    block = 'Solution'
+#   block = 'Solution'
     type = HeatConduction
     variable = T
   [../]
   [./ie]
-    block = 'Solution'
+#   block = 'Solution'
     type = HeatConductionTimeDerivative
     variable = T
   [../]
@@ -236,7 +277,7 @@
     type = ES2
     variable = HS-
 #    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+    boundary = Copper_top
 #    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
@@ -248,29 +289,13 @@
     Standard_potential3 = -0.747
     Num = -1
  [../]
- [./BC_Cu2S]
-    type = Cu2S
-    variable = Cu2S
-    Reactant1 = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
-#    boundary = left
-    Faraday_constant = 96485
-    Kinetic = 216 #m4mol/hr at 25C
-    AlphaS = 0.5
-    Corrosion_potential = E
-#    Temperature = T
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.747 
-    Standard_potential3 = -0.747
-    Num = 1
- [../]
  [./BC_Cl-]
    type = Clm
    variable = Cl-
    Reactant1 = CuCl2-
 #   boundary = 'Copper_top Copper_side'
    boundary = Copper_top
+#   boundary = left
    Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
@@ -285,6 +310,7 @@
    Reactant1 = Cl-
 #   boundary = 'Copper_top Copper_side'
    boundary = Copper_top
+#   boundary = left
    Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
@@ -293,7 +319,13 @@
    TransferCoef = 0.5
    Num  = 1
  [../]
-
+ [./ElectricfieldBC]
+   type = EcorrBC
+   variable = E_field
+   boundary = Copper_top
+#   boundary = left
+   value = E
+ [../]
 []
 
   
@@ -316,7 +348,7 @@
 [Executioner]
   type = Transient
   start_time = 0 #[hr]
-  end_time = 2000 #[hr]
+  end_time = 1680 #[hr]
   solve_type = 'PJFNK'
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
@@ -354,16 +386,12 @@
 #    boundary = left
     boundary = Copper_top
   [../]
-  [./Volume_integetral_of_HS-]
-    type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
-    variable = HS-
-  [../]
-  [./Volume_integetral_of_Cu2S]
-    type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
-    variable = Cu2S
-  [../]
+#  [./Volume_tegetral_of_HS-]
+#    type = ElementIntegralVariablePostprocessor
+#   boundary = Copper_top
+##   block = 'Solution'
+#    variable = HS-
+#  [../]
 []
 
 [Outputs]
