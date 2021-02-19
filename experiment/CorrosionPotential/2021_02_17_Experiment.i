@@ -1,93 +1,95 @@
 [Mesh]
-  file = 'Full_2D_Paper.msh'
+  file = '2D_Cu2S.msh'
+  construct_side_list_from_node_list = true
 []
 
 [Variables]
   # Name of chemical species
   [./H+]
-   block = 'Solution'
+   block = 'Film Solution'
    order = FIRST
    initial_condition = 1.0079e-8 #[mol/m3] at 25 C with 1mol/l of HS- in solution (Na2S)
   [../]
   [./OH-]
-   block = 'Solution'
+   block = 'Film Solution'
    order =FIRST
    initial_condition = 1.0001 #[mol/m3]
   [../]
   [./H2O]
-   block = 'Solution'
+   block = 'Film Solution'
    order = FIRST
    initial_condition = 55347 #[mol/m3] at 25 C
   [../]
   [./HS-]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 1 #[mol/m3]
   [../]
   [./H2O2]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0  #[mol/m3]
   [../]
   [./SO42-]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
   [./O2]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
-    initial_condition = 1E-6 #[mol/m3]
+    initial_condition = 0 #[mol/m3]
   [../]
   [./T]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
   [./Cl-]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
-    initial_condition = 0.1E3 #[mol/m3]
+    initial_condition = 0 #[mol/m3]
   [../]
   [./CuCl2-]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
-    initial_condition = 1E-6 #[mol/m3]
+    initial_condition = 0 #[mol/m3]
   [../]
   [./Cu2S]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0
   [../]
-  [./Cu2+]
-    block = 'Solution'
-    order = FIRST
-    initial_condition = 1E-6
-  [../]
-
 []
 
 [AuxVariables]
   [./E]
-    block = 'Solution'
+    block = 'Film Solution'
     order = FIRST
     family = LAGRANGE
-    initial_condition = -1.0
   [../]
 []
 
 
 [AuxKernels]
   [./Calculate_Corrosion_Potential]
-    block = 'Solution'
+    block = 'Film Solution'
     type = Test
     variable = E
-    C1 = CuCl2-
-    C0 = O2
-    C3 = Cu2+
-    C9 = HS-
-    C6 = Cl-
+    Reactant = HS-
+    Reaction_order = 1
+    AlphaE = 0.5
+    AlphaS = 0.5
+    AlphaS12 = 0.5
+    AlphaS3 = 0.5
+    PotentialE = -0.1005
+    PotentialS12 = -0.747
+    PotentialE3 = -0.747
+    CoefE = 1
+    CoefS = 1
+    Kinetic_coefE = 7.2E-6
+    Kinetic_coefS = 216
   [../]
 []
 
@@ -95,59 +97,54 @@
 [Kernels]
 # dCi/dt
   [./dHS_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = HS-
   [../]
   [./dH2O_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = H2O
   [../]
   [./dHp_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = H+
   [../]
   [./dOHm_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = OH-
   [../]
   [./dH2O2_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = H2O2
   [../]
   [./dSO42m_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = SO42-
   [../]
   [./dO2_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = O2
   [../]
   [./dCl-_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = Cl-
   [../]
   [./dCuCl2-_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = CuCl2-
   [../]
   [./dCu2S_dt]
-    block = 'Solution'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = Cu2S
-  [../]
-  [./dCu2+_dt]
-    block = 'Solution'
-    type = TimeDerivative
-    variable = Cu2+
   [../]
 
 
@@ -158,71 +155,71 @@
     coef = 26316e-10 #[m2/s]
     variable = HS-
   [../]
+  [./DgradHS2]
+    block = 'Film'
+    type = CoefDiffusion
+    coef = 26316e-12 #[m2/s]
+    variable = HS-
+  [../]
   [./DgradH2O]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 8316e-9 #[m2/s], at 25C
     variable = H2O
   [../]
   [./DgradHp]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 3628.8e-8 #[m2/s], at 25C
     variable = H+
   [../]
   [./DgradOHm]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], at 25C
     variable = OH-
   [../]
   [./DgradH2O2]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], to be added
     variable = H2O2
   [../]
   [./DgradSO42m]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], to be added
     variable = SO42-
   [../]
   [./DgradO2]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = O2
   [../]
   [./DgradCl-]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = Cl-
   [../]
   [./DgradCuCl2-]
-    block = 'Solution'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = CuCl2-
-  [../]
-  [./DgradCu2+]
-    block = 'Solution'
-    type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
-    variable = Cu2+
   [../]
 
 
 
 # HeatConduction terms
   [./heat]
-    block = 'Solution'
+    block = 'Film Solution'
     type = HeatConduction
     variable = T
   [../]
   [./ie]
-    block = 'Solution'
+    block = 'Film Solution'
     type = HeatConductionTimeDerivative
     variable = T
   [../]
@@ -245,13 +242,13 @@
   [./BC_HS-]
     type = ES2
     variable = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+    boundary = 'Copper_top Copper_side'
+#    boundary = 'Copper_top'
 #    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = E
+    Corrosion_potential = -1
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -262,13 +259,13 @@
     type = Cu2S
     variable = Cu2S
     Reactant1 = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+    boundary = 'Copper_top Copper_side'
+#    boundary = 'Copper_top'
 #    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = E
+    Corrosion_potential = -1
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -279,9 +276,9 @@
    type = Clm
    variable = Cl-
    Reactant1 = CuCl2-
-#   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
-   Corrosion_potential = E
+   boundary = 'Copper_top Copper_side'
+#   boundary = Copper_top
+   Corrosion_potential = -1
    Temperature = 298.15
    kF = 1.188E-4
    kB = 5.112E-1
@@ -293,9 +290,9 @@
    type = CuCl2m
    variable = CuCl2-
    Reactant1 = Cl-
-#   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
-   Corrosion_potential = E
+   boundary = 'Copper_top Copper_side'
+#   boundary = Copper_top
+   Corrosion_potential = -1
    Temperature = 298.15
    kF = 1.188E-4
    kB = 5.112E-1
@@ -360,18 +357,18 @@
   [./Consumed_HS_mol_per_s]
     type = SideFluxIntegral
     variable = HS-
-    diffusivity = 26316e-10 #m2/hr
-#    boundary = left
+    diffusivity = 26316e-12 #m2/hr
+##    boundary = left
     boundary = Copper_top
   [../]
   [./Volume_integetral_of_HS-]
     type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
+    block = 'Film Solution'
     variable = HS-
   [../]
   [./Volume_integetral_of_Cu2S]
     type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
+    block = 'Film Solution'
     variable = Cu2S
   [../]
 []

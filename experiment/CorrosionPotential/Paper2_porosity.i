@@ -81,7 +81,7 @@
 [AuxKernels]
   [./Calculate_Corrosion_Potential]
     block = 'Solution'
-    type = Test
+    type = CorrosionPotential
     variable = E
     C1 = CuCl2-
     C0 = O2
@@ -155,7 +155,7 @@
   [./DgradHS]
     block = 'Solution'
     type = CoefDiffusion
-    coef = 26316e-10 #[m2/s]
+    coef = 26316e-11 #[m2/s]
     variable = HS-
   [../]
   [./DgradH2O]
@@ -360,7 +360,7 @@
   [./Consumed_HS_mol_per_s]
     type = SideFluxIntegral
     variable = HS-
-    diffusivity = 26316e-10 #m2/hr
+    diffusivity = 26316e-11 #m2/hr
 #    boundary = left
     boundary = Copper_top
   [../]

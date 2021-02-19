@@ -111,5 +111,5 @@ CorrosionPotential::computeValue()
 {
   Real Alpha = 2 + _aS - _aC - _aD - _aE - _aF;
   Real n = _nO + _nD + _nE + _nF / (_nA * _nS);
-  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485 / Alpha * log(n * _kBB* _C1[_qp] / (_kA * _C6[_qp] * _C6[_qp]) * _kC * _C0[_qp] /_kS/(_C9[_qp] * _C9[_qp]) * _kD * _C3[_qp] * _kE * _C9[_qp] / _kF ) ;
+  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485 / Alpha * log10(n * _kBB* _C1[_qp] / (_kA * _C6[_qp] * _C6[_qp]) * _kC * _C0[_qp] /_kS/(_C9[_qp] * _C9[_qp]) * _kD * _C3[_qp] * _kE * _C9[_qp] / _kF ) ;
 }
