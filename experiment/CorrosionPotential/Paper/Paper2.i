@@ -54,7 +54,7 @@
   [./CuCl2-]
     block = 'Solution'
     order = FIRST
-    initial_condition = 1E-20 #[mol/m3]
+    initial_condition = 1E-12 #[mol/m3]
   [../]
   [./Cu2S]
     block = 'Solution'
