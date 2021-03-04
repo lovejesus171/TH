@@ -37,7 +37,7 @@
   [./O2]
     block = 'Solution'
     order = FIRST
-    initial_condition = 0 #[mol/m3]
+    initial_condition = 1E-6 #[mol/m3]
   [../]
   [./T]
     block = 'Solution'
@@ -53,13 +53,19 @@
   [./CuCl2-]
     block = 'Solution'
     order = FIRST
-    initial_condition = 0 #[mol/m3]
+    initial_condition = 1E-6 #[mol/m3]
   [../]
   [./Cu2S]
     block = 'Solution'
     order = FIRST
     initial_condition = 0
   [../]
+  [./Cu2+]
+    block = 'Solution'
+    order = FIRST
+    initial_condition = 1E-6
+  [../]
+
 []
 
 [AuxVariables]
@@ -67,6 +73,7 @@
     block = 'Solution'
     order = FIRST
     family = LAGRANGE
+    initial_condition = -1.0
   [../]
 []
 
@@ -76,19 +83,11 @@
     block = 'Solution'
     type = Test
     variable = E
-    Reactant = HS-
-    Reaction_order = 1
-    AlphaE = 0.5
-    AlphaS = 0.5
-    AlphaS12 = 0.5
-    AlphaS3 = 0.5
-    PotentialE = -0.1005
-    PotentialS12 = -0.747
-    PotentialE3 = -0.747
-    CoefE = 1
-    CoefS = 1
-    Kinetic_coefE = 7.2E-6
-    Kinetic_coefS = 216
+    C1 = CuCl2-
+    C0 = O2
+    C3 = Cu2+
+    C9 = HS-
+    C6 = Cl-
   [../]
 []
 
@@ -144,6 +143,11 @@
     block = 'Solution'
     type = TimeDerivative
     variable = Cu2S
+  [../]
+  [./dCu2+_dt]
+    block = 'Solution'
+    type = TimeDerivative
+    variable = Cu2+
   [../]
 
 
@@ -201,6 +205,12 @@
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = CuCl2-
+  [../]
+  [./DgradCu2+]
+    block = 'Solution'
+    type = CoefDiffusion
+    coef = 7200e-9 #[m2/s], to be added
+    variable = Cu2+
   [../]
 
 
