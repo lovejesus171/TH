@@ -8,9 +8,9 @@
     type = ActivateElementsCoupled
     execute_on = timestep_begin
     coupled_var = Cu2S
-    activate_value = 1
+    activate_value = 100
     activate_type = above
-    active_subdomain_id = 2
+    active_subdomain_id = 4
     expand_boundary_name = Interface
   [../]
 []
@@ -227,7 +227,7 @@
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
-    coef = 26316e-12 #[m2/s], to be added
+    coef = 26316e-20 #[m2/s], to be added
     variable = Cu2S
   [../]
 
