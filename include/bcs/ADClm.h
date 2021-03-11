@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include "IntegratedBC.h"
+#include "ADIntegratedBC.h"
 
-class Clm;
+class ADClm;
 
 template <>
-InputParameters validParams<Clm>();
+InputParameters validParams<ADClm>();
 
 /**
  * A FluxBC which is consistent with the boundary terms arising from
@@ -28,21 +28,19 @@ InputParameters validParams<Clm>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class Clm : public IntegratedBC
+class ADClm : public ADIntegratedBC
 {
 public:
   static InputParameters validParams();
 
-  Clm(const InputParameters & parameters);
+  ADClm(const InputParameters & parameters);
 
 protected:
-  virtual Real computeQpResidual();
-  virtual Real computeQpJacobian();
-  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
+  virtual ADReal computeQpResidual();
 
-  const VariableValue & _E;
-  const VariableValue & _C1;
-  const VariableValue & _T;
+  const ADVariableValue & _E;
+  const ADVariableValue & _C1;
+  const ADVariableValue & _T;
 
   const Real & _F;
   const Real & _eps;
@@ -50,8 +48,5 @@ protected:
   const Real & _kF;
   const Real & _kB;
   const Real & _EA;
-  unsigned int _E_id;
-  unsigned int _T_id;
-  unsigned int _C1_id;
   const Real & _Num;
 };

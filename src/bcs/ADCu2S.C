@@ -1,15 +1,15 @@
 // 2021.01.24 I have to add reaction products terms. ex) HS- -> Cu+
 
-#include "Cu2S.h"
+#include "ADCu2S.h"
 
-registerMooseObject("corrosionApp", Cu2S);
+registerMooseObject("corrosionApp", ADCu2S);
 
-defineLegacyParams(Cu2S);
+defineLegacyParams(ADCu2S);
 
 InputParameters
-Cu2S::validParams()
+ADCu2S::validParams()
 {
-  InputParameters params = IntegratedBC::validParams();
+  InputParameters params = ADIntegratedBC::validParams();
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
   params.addParam<Real>("Porosity",1.0,"Porosity of porous medium");
   params.addParam<Real>("Kinetic",1.0,"Kinetic constant");
@@ -30,57 +30,26 @@ Cu2S::validParams()
   return params;
 }
 
-Cu2S::Cu2S(const InputParameters & parameters)
-  : IntegratedBC(parameters),
+ADCu2S::ADCu2S(const InputParameters & parameters)
+  : ADIntegratedBC(parameters),
    _F(getParam<Real>("Faraday_constant")),
    _eps(getParam<Real>("Porosity")),
    _kS(getParam<Real>("Kinetic")),
    _aS(getParam<Real>("AlphaS")),
-   _E(coupledValue("Corrosion_potential")),
+   _E(adCoupledValue("Corrosion_potential")),
    _R(getParam<Real>("R")),
-   _T(coupledValue("Temperature")),
+   _T(adCoupledValue("Temperature")),
    _aS3(getParam<Real>("AlphaS3")),
    _ES12(getParam<Real>("Standard_potential2")),
    _ES3(getParam<Real>("Standard_potential3")),
    _Num(getParam<Real>("Num")),
-   _E_id(coupled("Corrosion_potential")),
-   _T_id(coupled("Temperature")),
-   _C1(coupledValue("Reactant1")),
-   _C1_id(coupled("Reactant1"))
-
+   _C1(adCoupledValue("Reactant1"))
 {
 }
 
-Real
-Cu2S::computeQpResidual()
+ADReal
+ADCu2S::computeQpResidual()
 {
    return -_Num * _test[_i][_qp] * _eps * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
 
-}
-
-Real
-Cu2S::computeQpJacobian()
-{
-   return 0.0;
-}
-
-Real
-Cu2S::computeQpOffDiagJacobian(unsigned int jvar)
-{
-   Real Front;
-   Front = -_Num * _test[_i][_qp] * _eps * _kS;
-
-   Real Factor;
-   Factor = _F / _R;
-
-   Real ExFactor;
-   ExFactor = exp((1+_aS) * _F / _R / _T[_qp]*_E[_qp]) * exp(-_F/_R/_T[_qp] * (_ES12 + _aS3 * _ES3));
-   if (jvar == _C1_id)
-     return Front * 2 * _phi[_j][_qp] * _C1[_qp] * ExFactor;
-   else if (jvar == _E_id)
-     return Front * _C1[_qp] * _C1[_qp] * (1.0 + _aS)/(_R * _T[_qp]) * _F * _phi[_j][_qp] * ExFactor;
-   else if (jvar == _T_id)
-     return Front * _C1[_qp] * _C1[_qp] * Factor / (_T[_qp] * _phi[_j][_qp]) * ExFactor * (-(1+_aS) * _E[_qp] + _ES12 + _aS3 * _ES3);
-   else
-     return 0.0;
 }

@@ -1,19 +1,19 @@
 [Mesh]
-  file = 'Film_Solution5.msh'
+  file = 'Line3.msh'
   construct_side_list_from_node_list = true
 []
-[UserObjects]
-  [./changeID]
-    block = 'Film Solution Copper'
-    type = ActivateElementsCoupled
-    execute_on = timestep_begin
-    coupled_var = Cu2S
-    activate_value = 31666.25
-    activate_type = above
-    active_subdomain_id = 3
-    expand_boundary_name = Interface
-  [../]
-[]
+#[UserObjects]
+#  [./changeID]
+#    block = 'Film Solution Copper'
+#    type = ActivateElementsCoupled
+#    execute_on = timestep_begin
+#    coupled_var = Cu2S
+#    activate_value = 2.487
+#    activate_type = above
+#    active_subdomain_id = 3
+#    expand_boundary_name = Interface
+#  [../]
+#[]
 
 
 [Variables]
@@ -67,7 +67,7 @@
   [./CuCl2-]
     block = 'Film Solution Copper'
     order = FIRST
-    initial_condition = 0 #[mol/m3]
+    initial_condition = 1E-10 #[mol/m3]
   [../]
   [./Cu2S]
     block = 'Film Solution Copper'
@@ -89,21 +89,13 @@
 [AuxKernels]
   [./Calculate_Corrosion_Potential]
     block = 'Film Solution Copper'
-    type = Test
+    type = TT   #exclude O2 reduction reaction
     variable = E
-    Reactant = HS-
-    Reaction_order = 1
-    AlphaE = 0.5
-    AlphaS = 0.5
-    AlphaS12 = 0.5
-    AlphaS3 = 0.5
-    PotentialE = -0.1005
-    PotentialS12 = -0.747
-    PotentialE3 = -0.747
-    CoefE = 1
-    CoefS = 1
-    Kinetic_coefE = 7.2E-6
-    Kinetic_coefS = 216
+#    C0 = O2
+    C1 = CuCl2-
+#    C3 = Cu2+  #default: 0
+    C6 = Cl-
+    C9 = HS-
   [../]
 []
 
@@ -166,13 +158,13 @@
   [./DgradHSF]
     block = 'Film'
     type = CoefDiffusion
-    coef = 26316e-12 #[m2/s]
+    coef = 9.70244e-8 #[m2/hr], from SKI report and I assumed Cu+ ion diffusion coef = HS- diffusion coefficient in Cu2S
     variable = HS-
   [../]
   [./DgradHSS]
     block = 'Solution Copper'
     type = CoefDiffusion
-    coef = 26316e-10 #[m2/s]
+    coef = 6.2316e-6 #[m2/hr], from hand book, original: 1.731E-5 [cm2/s]
     variable = HS-
   [../]
 
@@ -215,19 +207,25 @@
   [./DgradCl-]
     block = 'Film Solution Copper'
     type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
+    coef = 7.3152E-6 #[m2/hr], from the handbook original: 2.032E-5 cm2/s
     variable = Cl-
   [../]
-  [./DgradCuCl2-]
-    block = 'Film Solution Copper'
+  [./DgradCuCl2-_SC]
+    block = 'Solution Copper'
     type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
+    coef = 4.6692E-6 #[m2/hr], from the paper : 1.297E-9 m2/s
+    variable = CuCl2-
+  [../]
+  [./DgradCuCl2-_F]
+    block = 'Film'
+    type = CoefDiffusion
+    coef = 4.6692E-8 #[m2/hr], assumption: 1/100 to the CuCl2- in solution
     variable = CuCl2-
   [../]
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
-    coef = 26316e-20 #[m2/s], to be added
+    coef = 0.5e-16 #[m2/hr], to be added
     variable = Cu2S
   [../]
 
@@ -268,7 +266,7 @@
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = -1
+    Corrosion_potential = E
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -285,7 +283,7 @@
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = -1
+    Corrosion_potential = E
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -299,12 +297,11 @@
 #   boundary = 'Copper_top Copper_side'
    boundary = 'Copper_top'
 #   boundary = Interface
-   Corrosion_potential = -1
+   Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
-   kB = 5.112E-1
+   kB = 2.4444E-3
    StandardPotential = -0.105
-   TransferCoef = 0.5
    Num  = -2
  [../]
  [./BC_CuCl2-]
@@ -314,12 +311,11 @@
 #   boundary = 'Copper_top Copper_side'
    boundary = 'Copper_top'
 #   boundary = Interface
-   Corrosion_potential = -1
+   Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
-   kB = 5.112E-1
+   kB = 2.4444E-3
    StandardPotential = -0.105
-   TransferCoef = 0.5
    Num  = 1
  [../]
 
@@ -417,7 +413,7 @@
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
 #  nl_abs_tol = 1e-12
-  nl_rel_tol = 1e-1 #default = 1e-7
+  nl_rel_tol = 1e-3 #default = 1e-7
   l_max_its = 10
   nl_max_its = 30
   dtmax = 100
@@ -446,7 +442,7 @@
   [./Consumed_HS_mol_per_s]
     type = SideFluxIntegral
     variable = HS-
-    diffusivity = 26316e-10 #m2/hr
+    diffusivity = 6.2316E-6 #m2/hr
 #    boundary = left
     boundary = Copper_top
 #    boundary = Interface

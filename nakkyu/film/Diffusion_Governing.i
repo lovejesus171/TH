@@ -1,18 +1,6 @@
 [Mesh]
-  file = 'Film_Solution5.msh'
+  file = 'Line3.msh'
   construct_side_list_from_node_list = true
-[]
-[UserObjects]
-  [./changeID]
-    block = 'Film Solution Copper'
-    type = ActivateElementsCoupled
-    execute_on = timestep_begin
-    coupled_var = Cu2S
-    activate_value = 31666.25
-    activate_type = above
-    active_subdomain_id = 3
-    expand_boundary_name = Interface
-  [../]
 []
 
 
@@ -166,13 +154,13 @@
   [./DgradHSF]
     block = 'Film'
     type = CoefDiffusion
-    coef = 26316e-12 #[m2/s]
+    coef = 9.70244e-8 #[m2/hr], from SKI report and I assumed Cu+ ion diffusion coef = HS- diffusion coefficient in Cu2S
     variable = HS-
   [../]
   [./DgradHSS]
     block = 'Solution Copper'
     type = CoefDiffusion
-    coef = 26316e-10 #[m2/s]
+    coef = 6.2316e-6 #[m2/hr], from hand book, original: 1.731E-5 [cm2/s]
     variable = HS-
   [../]
 
@@ -215,7 +203,7 @@
   [./DgradCl-]
     block = 'Film Solution Copper'
     type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
+    coef = 7.3152E-6 #[m2/hr], from the handbook original: 2.032E-5 cm2/s
     variable = Cl-
   [../]
   [./DgradCuCl2-]
@@ -227,7 +215,7 @@
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
-    coef = 26316e-20 #[m2/s], to be added
+    coef = 1e-16 #[m2/hr], to be added
     variable = Cu2S
   [../]
 
@@ -248,80 +236,19 @@
 
 [BCs]
 #  [./copper_boundary1]
-#    type = DirichletBC
-#    variable = HS-
+#    type = DGBC
+#    variable = Cu2S
+#    Reactant = HS-
 #    boundary = Copper_top
-#    value = 0 #[mol/m2]
+#    value = -6.2316e-6 #[m2/hr]
 #  [../]
-#  [./copper_boundary2]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = Copper_side
-#    value = 0 #[mol/m2]
-#  [../]
-  [./BC_HS-]
-    type = ES2
+
+  [./copper_boundary2]
+    type = DirichletBC
     variable = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
-#    boundary = Interface
-    Faraday_constant = 96485
-    Kinetic = 216 #m4mol/hr at 25C
-    AlphaS = 0.5
-    Corrosion_potential = -1
-#    Temperature = T
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.747 
-    Standard_potential3 = -0.747
-    Num = -1
- [../]
- [./BC_Cu2S]
-    type = Cu2S
-    variable = Cu2S
-    Reactant1 = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
-#    boundary = Interface
-    Faraday_constant = 96485
-    Kinetic = 216 #m4mol/hr at 25C
-    AlphaS = 0.5
-    Corrosion_potential = -1
-#    Temperature = T
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.747 
-    Standard_potential3 = -0.747
-    Num = 1
- [../]
- [./BC_Cl-]
-   type = Clm
-   variable = Cl-
-   Reactant1 = CuCl2-
-#   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = -1
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 5.112E-1
-   StandardPotential = -0.105
-   TransferCoef = 0.5
-   Num  = -2
- [../]
- [./BC_CuCl2-]
-   type = CuCl2m
-   variable = CuCl2-
-   Reactant1 = Cl-
-#   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = -1
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 5.112E-1
-   StandardPotential = -0.105
-   TransferCoef = 0.5
-   Num  = 1
- [../]
+    boundary = Copper_top
+    value = 0
+  [../]
 
 
  [./Isolated_H+]
@@ -443,14 +370,14 @@
 
 
 [Postprocessors]
-  [./Consumed_HS_mol_per_s]
-    type = SideFluxIntegral
-    variable = HS-
-    diffusivity = 26316e-10 #m2/hr
+#  [./Consumed_HS_mol_per_s]
+#    type = SideFluxIntegral
+#    variable = HS-
+#    diffusivity = 6.2316E-6 #m2/hr
 #    boundary = left
-    boundary = Copper_top
+#    boundary = Copper_top
 #    boundary = Interface
-  [../]
+#  [../]
   [./Volume_integetral_of_HS-]
     type = ElementIntegralVariablePostprocessor
     block = 'Film Solution Copper'

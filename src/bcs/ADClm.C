@@ -1,15 +1,15 @@
 // 2021.01.24 I have to add reaction products terms. ex) HS- -> Cu+
 
-#include "Clm.h"
+#include "ADClm.h"
 
-registerMooseObject("corrosionApp", Clm);
+registerMooseObject("corrosionApp", ADClm);
 
-defineLegacyParams(Clm);
+defineLegacyParams(ADClm);
 
 InputParameters
-Clm::validParams()
+ADClm::validParams()
 {
-  InputParameters params = IntegratedBC::validParams();
+  InputParameters params = ADIntegratedBC::validParams();
   params.addCoupledVar("Corrosion_potential",0.0,"Corrosion potential");
   params.addCoupledVar("Reactant1",0.0,"CuCl2-");
   params.addCoupledVar("Temperature",0.0,"Temperature of the system");
@@ -25,54 +25,24 @@ Clm::validParams()
   return params;
 }
 
-Clm::Clm(const InputParameters & parameters)
-  : IntegratedBC(parameters),
-   _E(coupledValue("Corrosion_potential")),
-   _C1(coupledValue("Reactant1")),
-   _T(coupledValue("Temperature")),
+ADClm::ADClm(const InputParameters & parameters)
+  : ADIntegratedBC(parameters),
+   _E(adCoupledValue("Corrosion_potential")),
+   _C1(adCoupledValue("Reactant1")),
+   _T(adCoupledValue("Temperature")),
    _F(getParam<Real>("Faraday_constant")),
    _eps(getParam<Real>("Porosity")),
    _R(getParam<Real>("R")),
    _kF(getParam<Real>("kF")),
    _kB(getParam<Real>("kB")),
    _EA(getParam<Real>("StandardPotential")),
-   _E_id(coupled("Corrosion_potential")),
-   _T_id(coupled("Temperature")),
-   _C1_id(coupled("Reactant1")),
    _Num(getParam<Real>("Num"))
 {
 }
 
-Real
-Clm::computeQpResidual()
+ADReal
+ADClm::computeQpResidual()
 {
    return -_Num * _test[_i][_qp] * _eps * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]); 
 }
 
-
-Real
-Clm::computeQpJacobian()
-{
-   return -_Num * _test[_i][_qp] * _eps * 2 * _kF * _phi[_j][_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)); 
-}
-
-Real
-Clm::computeQpOffDiagJacobian(unsigned int jvar)
-{
-
-   Real Front;
-   Front =  -_Num * _test[_i][_qp] * _eps * _kF * _u[_qp] * _u[_qp];
-
-   Real Factor;
-   Factor = _F /_R;
-
-   if (jvar == _E_id)
-     return Front * (Factor/_T[_qp]) * _phi[_j][_qp] * exp(Factor / _T[_qp] * (_E[_qp] - _EA));
-   else if (jvar == _T_id)
-     return Front * (-Factor * (_E[_qp] - _EA) / _phi[_j][_qp] / _T[_qp]) * exp(Factor / _T[_qp] * (_E[_qp] - _EA));
-   else if (jvar == _C1_id)
-     return _Num * _test[_i][_qp] * _eps * _kB * _phi[_j][_qp];
-   else
-     return 0.0;
-   
-}

@@ -50,7 +50,6 @@ protected:
   const Real & _kF;
   const Real & _kB;
   const Real & _EA;
-  const Real & _a;
   unsigned int _E_id;
   unsigned int _T_id;
   unsigned int _C_id;

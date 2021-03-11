@@ -1,20 +1,7 @@
 [Mesh]
-  file = 'Film_Solution5.msh'
+  file = 'Line3.msh'
   construct_side_list_from_node_list = true
 []
-[UserObjects]
-  [./changeID]
-    block = 'Film Solution Copper'
-    type = ActivateElementsCoupled
-    execute_on = timestep_begin
-    coupled_var = Cu2S
-    activate_value = 31666.25
-    activate_type = above
-    active_subdomain_id = 3
-    expand_boundary_name = Interface
-  [../]
-[]
-
 
 [Variables]
   # Name of chemical species
@@ -166,13 +153,13 @@
   [./DgradHSF]
     block = 'Film'
     type = CoefDiffusion
-    coef = 26316e-12 #[m2/s]
+    coef = 9.70244e-8 #[m2/hr], from SKI report and I assumed Cu+ ion diffusion coef = HS- diffusion coefficient in Cu2S
     variable = HS-
   [../]
   [./DgradHSS]
     block = 'Solution Copper'
     type = CoefDiffusion
-    coef = 26316e-10 #[m2/s]
+    coef = 6.2316e-6 #[m2/hr], from hand book, original: 1.731E-5 [cm2/s]
     variable = HS-
   [../]
 
@@ -215,7 +202,7 @@
   [./DgradCl-]
     block = 'Film Solution Copper'
     type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
+    coef = 7.3152E-6 #[m2/hr], from the handbook original: 2.032E-5 cm2/s
     variable = Cl-
   [../]
   [./DgradCuCl2-]
@@ -227,7 +214,7 @@
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
-    coef = 26316e-20 #[m2/s], to be added
+    coef = 1e-16 #[m2/hr], to be added
     variable = Cu2S
   [../]
 
@@ -446,7 +433,7 @@
   [./Consumed_HS_mol_per_s]
     type = SideFluxIntegral
     variable = HS-
-    diffusivity = 26316e-10 #m2/hr
+    diffusivity = 6.2316E-6  #m2/hr
 #    boundary = left
     boundary = Copper_top
 #    boundary = Interface

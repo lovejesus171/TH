@@ -1,5 +1,5 @@
 [Mesh]
-  file = 'Film_Solution5.msh'
+  file = 'Line.msh'
   construct_side_list_from_node_list = true
 []
 [UserObjects]
@@ -227,7 +227,7 @@
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
-    coef = 26316e-20 #[m2/s], to be added
+    coef = 26316e-19 #[m2/s], to be added
     variable = Cu2S
   [../]
 

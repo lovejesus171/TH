@@ -1,5 +1,5 @@
 [Mesh]
-  file = 'Half.msh'
+  file = 'Full_2D_Paper.msh'
 []
 
 [Variables]
@@ -45,27 +45,6 @@
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
-  [./Cl-]
-    block = 'Solution'
-    order = FIRST
-    initial_condition = 0.1E3 #[mol/m3]
-  [../]
-  [./CuCl2-]
-    block = 'Solution'
-    order = FIRST
-    initial_condition = 0 #[mol/m3]
-  [../]
-  [./Cu2S]
-    block = 'Solution'
-    order = FIRST
-    initial_condition = 0
-  [../]
-  [./Cu2+]
-    block = 'Solution'
-    order = FIRST
-    initial_condition = 0
-  [../]
-
 []
 
 [AuxVariables]
@@ -97,6 +76,7 @@
     Kinetic_coefS = 216
   [../]
 []
+
 
 [Kernels]
 # dCi/dt
@@ -135,27 +115,6 @@
     type = TimeDerivative
     variable = O2
   [../]
-  [./dCl-_dt]
-    block = 'Solution'
-    type = TimeDerivative
-    variable = Cl-
-  [../]
-  [./dCuCl2-_dt]
-    block = 'Solution'
-    type = TimeDerivative
-    variable = CuCl2-
-  [../]
-  [./dCu2S_dt]
-    block = 'Solution'
-    type = TimeDerivative
-    variable = Cu2S
-  [../]
-  [./dCu2+_dt]
-    block = 'Solution'
-    type = TimeDerivative
-    variable = Cu2+
-  [../]
-
 
 # Diffusion terms
   [./DgradHS]
@@ -200,27 +159,6 @@
     coef = 7200e-9 #[m2/s], to be added
     variable = O2
   [../]
-  [./DgradCl-]
-    block = 'Solution'
-    type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
-    variable = Cl-
-  [../]
-  [./DgradCuCl2-]
-    block = 'Solution'
-    type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
-    variable = CuCl2-
-  [../]
-  [./DgradCu2+]
-    block = 'Solution'
-    type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
-    variable = Cu2+
-  [../]
-
-
-
 # HeatConduction terms
   [./heat]
     block = 'Solution'
@@ -251,8 +189,8 @@
   [./BC_HS-]
     type = ES2
     variable = HS-
-#    boundary = 'Copper_top Copper_side'
     boundary = 'Copper_top'
+#    boundary = 'Copper_top'
 #    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
@@ -264,56 +202,7 @@
     Standard_potential3 = -0.747
     Num = -1
  [../]
- [./BC_Cu2S]
-    type = Cu2S
-    variable = Cu2S
-    Reactant1 = HS-
-#    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
-#    boundary = left
-    Faraday_constant = 96485
-    Kinetic = 216 #m4mol/hr at 25C
-    AlphaS = 0.5
-    Corrosion_potential = E
-#    Temperature = T
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.747 
-    Standard_potential3 = -0.747
-    Num = 1
- [../]
- [./BC_Cl-]
-   type = Clm
-   variable = Cl-
-   Reactant1 = CuCl2-
-#   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
-   Corrosion_potential = E
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 5.112E-1
-   StandardPotential = -0.105
-   TransferCoef = 0.5
-   Num  = -2
- [../]
- [./BC_CuCl2-]
-   type = CuCl2m
-   variable = CuCl2-
-   Reactant1 = Cl-
-#   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
-   Corrosion_potential = E
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 5.112E-1
-   StandardPotential = -0.105
-   TransferCoef = 0.5
-   Num  = 1
- [../]
-
 []
-
-  
-
 
 [Materials]
   [./hcm]
@@ -332,7 +221,7 @@
 [Executioner]
   type = Transient
   start_time = 0 #[hr]
-  end_time = 2000 #[hr]
+  end_time = 1680 #[hr]
   solve_type = 'PJFNK'
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
@@ -340,7 +229,7 @@
   nl_rel_tol = 1e-1 #default = 1e-7
   l_max_its = 10
   nl_max_its = 30
-  dtmax = 1
+  dtmax = 100000 
 
   automatic_scaling = true
   compute_scaling_once = false
@@ -370,15 +259,10 @@
 #    boundary = left
     boundary = Copper_top
   [../]
-  [./Volume_integetral_of_HS-]
+  [./Volume_tegetral_of_HS-]
     type = ElementIntegralVariablePostprocessor
     block = 'Solution'
     variable = HS-
-  [../]
-  [./Volume_integetral_of_Cu2S]
-    type = ElementIntegralVariablePostprocessor
-    block = 'Solution'
-    variable = Cu2S
   [../]
 []
 
@@ -387,4 +271,3 @@
 #  sync_times = '0 1e-1 1 10 100 1000 1e4 2e4 3e4 4e4 5e4 6e4 7e4 8e4 9e4 1e5 2e5 3e5 4e5 5e5 6e5 7e5 8e5 9e5 1e6 2e6 3e6 4e6 5e6 6e6 6048000'
   exodus = true
 []
-

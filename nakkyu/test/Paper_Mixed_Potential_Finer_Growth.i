@@ -1,17 +1,18 @@
 [Mesh]
-  file = 'Film_Solution5.msh'
+  file = 'Half_e_finer.msh'
   construct_side_list_from_node_list = true
 []
+
 [UserObjects]
-  [./changeID]
-    block = 'Film Solution Copper'
-    type = ActivateElementsCoupled
-    execute_on = timestep_begin
-    coupled_var = Cu2S
-    activate_value = 31666.25
-    activate_type = above
-    active_subdomain_id = 3
-    expand_boundary_name = Interface
+  [./]
+   block = 'Film Solution'
+     type = ActivateElementsCoupled
+     execute_on = timestep_begin
+     coupled_var = Cu2S
+     activate_value = 31666.25
+     activate_type = above
+     activate_subdomain_id = 3
+     expand_boundary_name = Interface
   [../]
 []
 
@@ -19,67 +20,66 @@
 [Variables]
   # Name of chemical species
   [./H+]
-   block = 'Film Solution Copper'
+   block = 'Film Solution'
    order = FIRST
    initial_condition = 1.0079e-8 #[mol/m3] at 25 C with 1mol/l of HS- in solution (Na2S)
   [../]
   [./OH-]
-   block = 'Film Solution Copper'
+   block = 'Film Solution'
    order =FIRST
    initial_condition = 1.0001 #[mol/m3]
   [../]
   [./H2O]
-   block = 'Film Solution Copper'
+   block = 'Film Solution'
    order = FIRST
    initial_condition = 55347 #[mol/m3] at 25 C
   [../]
   [./HS-]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 1 #[mol/m3]
   [../]
   [./H2O2]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0  #[mol/m3]
   [../]
   [./SO42-]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
   [./O2]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
   [./T]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
   [./Cl-]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0.1E3 #[mol/m3]
   [../]
   [./CuCl2-]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0 #[mol/m3]
   [../]
   [./Cu2S]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     initial_condition = 0
   [../]
-
 []
 
 [AuxVariables]
   [./E]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     order = FIRST
     family = LAGRANGE
   [../]
@@ -88,7 +88,7 @@
 
 [AuxKernels]
   [./Calculate_Corrosion_Potential]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = Test
     variable = E
     Reactant = HS-
@@ -111,135 +111,123 @@
 [Kernels]
 # dCi/dt
   [./dHS_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = HS-
   [../]
   [./dH2O_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = H2O
   [../]
   [./dHp_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = H+
   [../]
   [./dOHm_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = OH-
   [../]
   [./dH2O2_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = H2O2
   [../]
   [./dSO42m_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = SO42-
   [../]
   [./dO2_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = O2
   [../]
   [./dCl-_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = Cl-
   [../]
   [./dCuCl2-_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = CuCl2-
   [../]
   [./dCu2S_dt]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = TimeDerivative
     variable = Cu2S
   [../]
 
 
 # Diffusion terms
-  [./DgradHSF]
-    block = 'Film'
-    type = CoefDiffusion
-    coef = 26316e-12 #[m2/s]
-    variable = HS-
-  [../]
-  [./DgradHSS]
-    block = 'Solution Copper'
+  [./DgradHS]
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 26316e-10 #[m2/s]
     variable = HS-
   [../]
-
   [./DgradH2O]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 8316e-9 #[m2/s], at 25C
     variable = H2O
   [../]
   [./DgradHp]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 3628.8e-8 #[m2/s], at 25C
     variable = H+
   [../]
   [./DgradOHm]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], at 25C
     variable = OH-
   [../]
   [./DgradH2O2]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], to be added
     variable = H2O2
   [../]
   [./DgradSO42m]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 17352e-9 #[m2/s], to be added
     variable = SO42-
   [../]
   [./DgradO2]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = O2
   [../]
   [./DgradCl-]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = Cl-
   [../]
   [./DgradCuCl2-]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = CoefDiffusion
     coef = 7200e-9 #[m2/s], to be added
     variable = CuCl2-
   [../]
-  [./DgradCu2S]
-    block = 'Film Copper'
-    type = CoefDiffusion
-    coef = 26316e-20 #[m2/s], to be added
-    variable = Cu2S
-  [../]
+
 
 
 # HeatConduction terms
   [./heat]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = HeatConduction
     variable = T
   [../]
   [./ie]
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     type = HeatConductionTimeDerivative
     variable = T
   [../]
@@ -264,11 +252,11 @@
     variable = HS-
 #    boundary = 'Copper_top Copper_side'
     boundary = 'Copper_top'
-#    boundary = Interface
+#    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = -1
+    Corrosion_potential = E
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -281,11 +269,11 @@
     Reactant1 = HS-
 #    boundary = 'Copper_top Copper_side'
     boundary = 'Copper_top'
-#    boundary = Interface
+#    boundary = left
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = -1
+    Corrosion_potential = E
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -297,9 +285,8 @@
    variable = Cl-
    Reactant1 = CuCl2-
 #   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = -1
+   boundary = Copper_top
+   Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
    kB = 5.112E-1
@@ -312,9 +299,8 @@
    variable = CuCl2-
    Reactant1 = Cl-
 #   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = -1
+   boundary = Copper_top
+   Corrosion_potential = E
    Temperature = 298.15
    kF = 1.188E-4
    kB = 5.112E-1
@@ -323,73 +309,6 @@
    Num  = 1
  [../]
 
-
- [./Isolated_H+]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = H+
- [../]
- [./Isolated_OH-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = OH-
- [../]
- [./Isolated_H2O]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = H2O
- [../]
- [./Isolated_HS-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = HS-
- [../]
- [./Isolated_H2O2]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = H2O2
- [../]
- [./Isolated_SO42-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = SO42-
- [../]
- [./Isolated_O2]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = O2
- [../]
- [./Isolated_T]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = T
- [../]
- [./Isolated_Cl-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = Cl-
- [../]
- [./Isolated_CuCl2-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = CuCl2-
- [../]
- [./Isolated_Cu2S]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = Cu2S
- [../]
 []
 
   
@@ -447,18 +366,17 @@
     type = SideFluxIntegral
     variable = HS-
     diffusivity = 26316e-10 #m2/hr
-#    boundary = left
+##    boundary = left
     boundary = Copper_top
-#    boundary = Interface
   [../]
   [./Volume_integetral_of_HS-]
     type = ElementIntegralVariablePostprocessor
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     variable = HS-
   [../]
   [./Volume_integetral_of_Cu2S]
     type = ElementIntegralVariablePostprocessor
-    block = 'Film Solution Copper'
+    block = 'Film Solution'
     variable = Cu2S
   [../]
 []

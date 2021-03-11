@@ -1,5 +1,6 @@
 [Mesh]
   file = 'Half.msh'
+  construct_side_list_from_node_list = true
 []
 
 [Variables]
@@ -60,43 +61,38 @@
     order = FIRST
     initial_condition = 0
   [../]
-  [./Cu2+]
-    block = 'Solution'
-    order = FIRST
-    initial_condition = 0
-  [../]
-
 []
 
-[AuxVariables]
-  [./E]
-    block = 'Solution'
-    order = FIRST
-    family = LAGRANGE
-  [../]
-[]
+#[AuxVariables]
+#  [./E]
+#    block = 'Solution'
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#[]
 
 
-[AuxKernels]
-  [./Calculate_Corrosion_Potential]
-    block = 'Solution'
-    type = Test
-    variable = E
-    Reactant = HS-
-    Reaction_order = 1
-    AlphaE = 0.5
-    AlphaS = 0.5
-    AlphaS12 = 0.5
-    AlphaS3 = 0.5
-    PotentialE = -0.1005
-    PotentialS12 = -0.747
-    PotentialE3 = -0.747
-    CoefE = 1
-    CoefS = 1
-    Kinetic_coefE = 7.2E-6
-    Kinetic_coefS = 216
-  [../]
-[]
+#[AuxKernels]
+#  [./Calculate_Corrosion_Potential]
+#    block = 'Solution'
+#    type = Test
+#    variable = E
+#    Reactant = HS-
+#    Reaction_order = 1
+#    AlphaE = 0.5
+#    AlphaS = 0.5
+#    AlphaS12 = 0.5
+#    AlphaS3 = 0.5
+#    PotentialE = -0.1005
+#    PotentialS12 = -0.747
+#    PotentialE3 = -0.747
+#    CoefE = 1
+#    CoefS = 1
+#    Kinetic_coefE = 7.2E-6
+#    Kinetic_coefS = 216
+#  [../]
+#[]
+
 
 [Kernels]
 # dCi/dt
@@ -149,11 +145,6 @@
     block = 'Solution'
     type = TimeDerivative
     variable = Cu2S
-  [../]
-  [./dCu2+_dt]
-    block = 'Solution'
-    type = TimeDerivative
-    variable = Cu2+
   [../]
 
 
@@ -212,12 +203,6 @@
     coef = 7200e-9 #[m2/s], to be added
     variable = CuCl2-
   [../]
-  [./DgradCu2+]
-    block = 'Solution'
-    type = CoefDiffusion
-    coef = 7200e-9 #[m2/s], to be added
-    variable = Cu2+
-  [../]
 
 
 
@@ -236,80 +221,79 @@
 
 
 [BCs]
-#  [./copper_boundary1]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = Copper_top
-#    value = 0 #[mol/m2]
-#  [../]
+  [./copper_boundary1]
+    type = DirichletBC
+    variable = HS-
+    boundary = Copper_top
+    value = 0 #[mol/m2]
+  [../]
 #  [./copper_boundary2]
 #    type = DirichletBC
 #    variable = HS-
 #    boundary = Copper_side
 #    value = 0 #[mol/m2]
 #  [../]
-  [./BC_HS-]
-    type = ES2
-    variable = HS-
+#  [./BC_HS-]
+#    type = ES2
+#    variable = HS-
 #    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+#    boundary = 'Copper_top'
 #    boundary = left
-    Faraday_constant = 96485
-    Kinetic = 216 #m4mol/hr at 25C
-    AlphaS = 0.5
-    Corrosion_potential = E
+#    Faraday_constant = 96485
+#    Kinetic = 216 #m4mol/hr at 25C
+#    AlphaS = 0.5
+#    Corrosion_potential = -1
 #    Temperature = T
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.747 
-    Standard_potential3 = -0.747
-    Num = -1
- [../]
- [./BC_Cu2S]
-    type = Cu2S
-    variable = Cu2S
-    Reactant1 = HS-
+#    AlphaS3 = 0.5
+#    Standard_potential2 = -0.747 
+#    Standard_potential3 = -0.747
+#    Num = -1
+# [../]
+# [./BC_Cu2S]
+#    type = Cu2S
+#    variable = Cu2S
+#    Reactant1 = HS-
 #    boundary = 'Copper_top Copper_side'
-    boundary = 'Copper_top'
+#    boundary = 'Copper_top'
 #    boundary = left
-    Faraday_constant = 96485
-    Kinetic = 216 #m4mol/hr at 25C
-    AlphaS = 0.5
-    Corrosion_potential = E
+#    Faraday_constant = 96485
+#    Kinetic = 216 #m4mol/hr at 25C
+#    AlphaS = 0.5
+#    Corrosion_potential = -1
 #    Temperature = T
-    AlphaS3 = 0.5
-    Standard_potential2 = -0.747 
-    Standard_potential3 = -0.747
-    Num = 1
- [../]
- [./BC_Cl-]
-   type = Clm
-   variable = Cl-
-   Reactant1 = CuCl2-
+#    AlphaS3 = 0.5
+#    Standard_potential2 = -0.747 
+#    Standard_potential3 = -0.747
+#    Num = 1
+# [../]
+# [./BC_Cl-]
+#   type = Clm
+#   variable = Cl-
+#   Reactant1 = CuCl2-
 #   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
-   Corrosion_potential = E
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 5.112E-1
-   StandardPotential = -0.105
-   TransferCoef = 0.5
-   Num  = -2
- [../]
- [./BC_CuCl2-]
-   type = CuCl2m
-   variable = CuCl2-
-   Reactant1 = Cl-
+#   boundary = Copper_top
+#   Corrosion_potential = -1
+#   Temperature = 298.15
+#   kF = 1.188E-4
+#   kB = 5.112E-1
+#   StandardPotential = -0.105
+#   TransferCoef = 0.5
+#   Num  = -2
+# [../]
+# [./BC_CuCl2-]
+#   type = CuCl2m
+#   variable = CuCl2-
+#   Reactant1 = Cl-
 #   boundary = 'Copper_top Copper_side'
-   boundary = Copper_top
-   Corrosion_potential = E
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 5.112E-1
-   StandardPotential = -0.105
-   TransferCoef = 0.5
-   Num  = 1
- [../]
-
+#   boundary = Copper_top
+#   Corrosion_potential = -1
+#   Temperature = 298.15
+#   kF = 1.188E-4
+#   kB = 5.112E-1
+#   StandardPotential = -0.105
+#   TransferCoef = 0.5
+#   Num  = 1
+# [../]
 []
 
   
@@ -332,7 +316,7 @@
 [Executioner]
   type = Transient
   start_time = 0 #[hr]
-  end_time = 2000 #[hr]
+  end_time = 1750 #[hr]
   solve_type = 'PJFNK'
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
@@ -340,7 +324,7 @@
   nl_rel_tol = 1e-1 #default = 1e-7
   l_max_its = 10
   nl_max_its = 30
-  dtmax = 1
+  dtmax = 100
 
   automatic_scaling = true
   compute_scaling_once = false
@@ -367,7 +351,7 @@
     type = SideFluxIntegral
     variable = HS-
     diffusivity = 26316e-10 #m2/hr
-#    boundary = left
+##    boundary = left
     boundary = Copper_top
   [../]
   [./Volume_integetral_of_HS-]
@@ -387,4 +371,3 @@
 #  sync_times = '0 1e-1 1 10 100 1000 1e4 2e4 3e4 4e4 5e4 6e4 7e4 8e4 9e4 1e5 2e5 3e5 4e5 5e5 6e5 7e5 8e5 9e5 1e6 2e6 3e6 4e6 5e6 6e6 6048000'
   exodus = true
 []
-

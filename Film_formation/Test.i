@@ -1,5 +1,5 @@
 [Mesh]
-  file = '2D_Sol.msh'
+  file = 'Line.msh'
 []
 
 [Variables]

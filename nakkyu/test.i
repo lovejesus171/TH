@@ -1,5 +1,5 @@
 [Mesh]
-  file = '1D_Ion_exchange_COMSOL.msh'
+  file = 'test.msh'
 []
 
 [Variables]

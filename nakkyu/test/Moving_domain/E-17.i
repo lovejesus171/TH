@@ -1,5 +1,5 @@
 [Mesh]
-  file = 'Film_Solution5.msh'
+  file = 'Line3.msh'
   construct_side_list_from_node_list = true
 []
 [UserObjects]
@@ -8,7 +8,7 @@
     type = ActivateElementsCoupled
     execute_on = timestep_begin
     coupled_var = Cu2S
-    activate_value = 31666.25
+    activate_value = 2.487
     activate_type = above
     active_subdomain_id = 3
     expand_boundary_name = Interface
@@ -227,7 +227,7 @@
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
-    coef = 26316e-20 #[m2/s], to be added
+    coef = 2.6316e-17 #[m2/s], to be added
     variable = Cu2S
   [../]
 
