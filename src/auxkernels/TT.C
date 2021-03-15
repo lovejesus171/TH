@@ -118,7 +118,10 @@ TT::computeValue()
   Real Alpha = 2 + _aS + _aE + _aF;
   Real E = _EA + _ES12 + _aS3 * _ES3 + _aE * _EE + _aF * _EF;
 
-  return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_kBB * _C1[_qp] * _nE * _kE * _nF * _kF * (1 - _Porosity)  * (1 - _Porosity)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
+  if (_C1[_qp] <= 1E-15)
+    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF * (1 - _Porosity)  * (1 - _Porosity)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
+  else
+    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_kBB * _C1[_qp] * _nE * _kE * _nF * _kF * (1 - _Porosity)  * (1 - _Porosity)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
 
 
 //  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485/ Alpha * log(n  / (_kA * _C6[_qp] * _C6[_qp]) / _kS /_C9[_qp] * _kE / _kF ) ;
