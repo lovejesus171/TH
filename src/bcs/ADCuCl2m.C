@@ -43,5 +43,8 @@ ADCuCl2m::ADCuCl2m(const InputParameters & parameters)
 ADReal
 ADCuCl2m::computeQpResidual()
 {
-   return -_Num * _test[_i][_qp] * _eps * (_kF * _C1[_qp] * _C1[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _u[_qp]); 
+   
+//   if (_u[_qp] - _Num * _test[_i][_qp] * _eps * (_kF * _C1[_qp] * _C1[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _u[_qp]) >= 0.0)
+     return -_Num * _test[_i][_qp] * _eps * (_kF * _C1[_qp] * _C1[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _u[_qp]); 
+//   else
 }

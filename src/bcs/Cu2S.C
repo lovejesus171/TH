@@ -75,6 +75,7 @@ Cu2S::computeQpOffDiagJacobian(unsigned int jvar)
 
    Real ExFactor;
    ExFactor = exp((1+_aS) * _F / _R / _T[_qp]*_E[_qp]) * exp(-_F/_R/_T[_qp] * (_ES12 + _aS3 * _ES3));
+
    if (jvar == _C1_id)
      return Front * 2 * _phi[_j][_qp] * _C1[_qp] * ExFactor;
    else if (jvar == _E_id)

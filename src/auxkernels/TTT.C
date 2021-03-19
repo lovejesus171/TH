@@ -7,13 +7,13 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "TT.h"
+#include "TTT.h"
 
-registerMooseObject("corrosionApp", TT);
+registerMooseObject("corrosionApp", TTT);
 
 template <>
 InputParameters
-validParams<TT>()
+validParams<TTT>()
 {
   InputParameters params = validParams<AuxKernel>();
   params.addCoupledVar("C1",0,"CuCl2-");
@@ -56,13 +56,12 @@ validParams<TT>()
   params.addParam<Real>("kBB",2.4444E-3,"Number of charge which is participate in reactions");
 
   params.addParam<Real>("Porosity",0,"porosity of film");
-  params.addParam<Real>("Area",0,"Fractional surface area for the cathodic reactions");
 
 
   return params;
 }
 
-TT::TT(const InputParameters & parameters)
+TTT::TTT(const InputParameters & parameters)
   : AuxKernel(parameters),
     _C1(coupledValue("C1")),
     _C0(coupledValue("C0")),
@@ -101,8 +100,7 @@ TT::TT(const InputParameters & parameters)
     _kF(getParam<Real>("kF")),
     _kBB(getParam<Real>("kBB")),
 
-    _Porosity(getParam<Real>("Porosity")),
-    _Area(getParam<Real>("Area"))
+    _Porosity(getParam<Real>("Porosity"))
 {
 }
 
@@ -113,7 +111,7 @@ TT::TT(const InputParameters & parameters)
  * source are necessary to switch from one type or the other.
  */
 Real
-TT::computeValue()
+TTT::computeValue()
 {
 //  Real Alpha = 2 + _aS - _aC - _aD - _aE - _aF;
 //  Real n = _nO + _nD + _nE + _nF / (_nA * _nS);
@@ -121,11 +119,11 @@ TT::computeValue()
   Real E = _EA + _ES12 + _aS3 * _ES3 + _aE * _EE + _aF * _EF;
 
   if (_C1[_qp] <= 1E-15 && _C6[_qp] > 1E-15)
-    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
+    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF / (_nA * _kA * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
   else if (_C6[_qp] <= 1E-15)
-    return (E - _EA) / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ ( _Porosity * _nS * _kS * _C9[_qp]));
+    return (E - _EA) / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF / ( _nS * _kS * _C9[_qp]));
   else
-    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_kBB * _C1[_qp] * _nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
+    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_kBB * _C1[_qp] * _nE * _kE * _nF * _kF / (_nA * _kA * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
 
 
 //  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485/ Alpha * log(n  / (_kA * _C6[_qp] * _C6[_qp]) / _kS /_C9[_qp] * _kE / _kF ) ;
