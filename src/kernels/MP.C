@@ -7,15 +7,15 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "TT.h"
+#include "MP.h"
 
-registerMooseObject("corrosionApp", TT);
+registerMooseObject("corrosionApp", MP);
 
 template <>
 InputParameters
-validParams<TT>()
+validParams<MP>()
 {
-  InputParameters params = validParams<AuxKernel>();
+  InputParameters params = validParams<ADKernel>();
   params.addCoupledVar("C1",0,"CuCl2-");
   params.addCoupledVar("C0",0,"O2(aq)");
   params.addCoupledVar("C3",0, "Cu2+");
@@ -62,14 +62,14 @@ validParams<TT>()
   return params;
 }
 
-TT::TT(const InputParameters & parameters)
-  : AuxKernel(parameters),
-    _C1(coupledValue("C1")),
-    _C0(coupledValue("C0")),
-    _C3(coupledValue("C3")),
-    _C9(coupledValue("C9")),
-    _C6(coupledValue("C6")),
-    _T(coupledValue("T")),
+MP::MP(const InputParameters & parameters)
+  : ADKernel(parameters),
+    _C1(adCoupledValue("C1")),
+    _C0(adCoupledValue("C0")),
+    _C3(adCoupledValue("C3")),
+    _C9(adCoupledValue("C9")),
+    _C6(adCoupledValue("C6")),
+    _T(adCoupledValue("T")),
 
     _aS(getParam<Real>("aS")),
     _aC(getParam<Real>("aC")),
@@ -106,36 +106,14 @@ TT::TT(const InputParameters & parameters)
 {
 }
 
-/**
- * Auxiliary Kernels override computeValue() instead of computeQpResidual().  Aux Variables
- * are calculated either one per elemenet or one per node depending on whether we declare
- * them as "Elemental (Constant Monomial)" or "Nodal (First Lagrange)".  No changes to the
- * source are necessary to switch from one type or the other.
- */
-Real
-TT::computeValue()
+
+
+ADReal
+MP::computeQpResidual()
 {
-//  Real Alpha = 2 + _aS - _aC - _aD - _aE - _aF;
-//  Real n = _nO + _nD + _nE + _nF / (_nA * _nS);
   Real Alpha = 2 + _aS + _aE + _aF;
   Real E = _EA + _ES12 + _aS3 * _ES3 + _aE * _EE + _aF * _EF;
+  
+  return _test[_i][_qp] * _u[_qp] - _test[_i][_qp] * ( E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_kBB * _C1[_qp] * _nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp])) );
 
-/**  if (_C1[_qp] <= 1E-7)
-    return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
-**/
-  /**  else if (_C6[_qp] <= 1E-10)
-    return (E - _EA) / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ ( _Porosity * _nS * _kS * _C9[_qp]));
-
-  else
-**/
-  return E / Alpha + 8.314 * 298.15 / (96485 * Alpha) * log(_kBB * _C1[_qp] * _nE * _kE * _nF * _kF * (1 - _Porosity + _Area)  * (1 - _Porosity + _Area)/ (_nA * _kA * _Porosity * _Porosity * _C6[_qp] * _C6[_qp] * _nS * _kS * _C9[_qp]));
-// In here, I considered CuCl2-, Cl-, HS-. So later I have to add O2 and Cu2+
-
-//  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485/ Alpha * log(n  / (_kA * _C6[_qp] * _C6[_qp]) / _kS /_C9[_qp] * _kE / _kF ) ;
-// Herein, I removed O2 concentration, reaction kinetics and Cu2+ concentration and reaction kinetics. And C1 (CuCl2-).
-
-/**  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485 / Alpha * log10(n * _kBB* _C1[_qp] / (_kA * _C6[_qp] * _C6[_qp]) * _kC * _C0[_qp] /_kS/(_C9[_qp] * _C9[_qp]) * _kD * _C3[_qp] * _kE * _C9[_qp] / _kF ) ;
-*/
-/**  return  (_EA + _ES12 + _aS3 * _ES3 - _aC * _EC - _aD * _ED - _aE * _EE - _aF * _EF) / Alpha + 8.314 * 298.15 / 96485 / Alpha * log10(n * _kBB* _C1[_qp] / (_kA * _C6[_qp] * _C6[_qp]) * _kC * _C0[_qp] /_kS/(_C9[_qp] * _C9[_qp]) * _kD * _C3[_qp] * _kE * _C9[_qp] / _kF ) ;
-*/
 }
