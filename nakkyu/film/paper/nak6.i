@@ -59,16 +59,16 @@
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
-  [./Cl-]
-    block = 'Film Solution Copper'
-    order = FIRST
-    initial_condition = 0.1E3 #[mol/m3]
-  [../]
-  [./CuCl2-]
-    block = 'Film Solution Copper'
-    order = FIRST
-    initial_condition = 2E-11 #[mol/m3]
-  [../]
+#  [./Cl-]
+#    block = 'Film Solution Copper'
+#    order = FIRST
+#    initial_condition = 0.1E3 #[mol/m3]
+#  [../]
+#  [./CuCl2-]
+#    block = 'Film Solution Copper'
+#    order = FIRST
+#    initial_condition = 2E-11 #[mol/m3]
+#  [../]
   [./Cu2S]
     block = 'Film Solution Copper'
     order = FIRST
@@ -77,7 +77,7 @@
   [./Ecorr]
     block = 'Film Solution Copper'
     order = FIRST
-    initial_condition = -0.978
+    initial_condition = -0.88
   [../]
 []
 
@@ -97,21 +97,21 @@
     order = FIRST
     family = LAGRANGE 
    [../]
-   [./IA]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE 
-   [../]
+#   [./IA]
+#    block = 'Film Solution Copper'
+#    order = FIRST
+#    family = LAGRANGE 
+#   [../]
    [./IS]
     block = 'Film Solution Copper'
     order = FIRST
     family = LAGRANGE 
    [../]
-   [./IE]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE 
-   [../]
+#   [./IE]
+#    block = 'Film Solution Copper'
+#    order = FIRST
+#    family = LAGRANGE 
+#   [../]
    [./IF]
     block = 'Film Solution Copper'
     order = FIRST
@@ -123,9 +123,9 @@
    [./Anodic]
      type = AnodicCurrent
      variable = ia
-     C6 = Cl-
+#     C6 = Cl-
      C9 = HS-
-     C1 = CuCl2-
+#     C1 = CuCl2-
      T = T
      Ecorr = Ecorr
      Porosity = 0.05
@@ -145,14 +145,14 @@
      CathodicCurrent = ic
    [../]
 
-   [./Atype]
-     type = IA
-     variable = IA
-     C6 = Cl-
-     T = T
-     Ecorr = Ecorr
-     Porosity = 0.05
-   [../]
+#   [./Atype]
+#     type = IA
+#     variable = IA
+#     C6 = Cl-
+#     T = T
+#     Ecorr = Ecorr
+#     Porosity = 0.05
+#   [../]
    [./Stype]
      type = ISS
      variable = IS
@@ -161,14 +161,14 @@
      Ecorr = Ecorr
      Porosity = 0.05
    [../]
-   [./Etype]
-     type = IE
-     variable = IE
-     C9 = HS-
-     T = T
-     Ecorr = Ecorr
-     Porosity = 0.05
-   [../]
+#   [./Etype]
+#     type = IE
+#     variable = IE
+#     C9 = HS-
+#     T = T
+#     Ecorr = Ecorr
+#     Porosity = 0.05
+#   [../]
    [./Ftype]
      type = IF
      variable = IF
@@ -216,16 +216,16 @@
     type = TimeDerivative
     variable = O2
   [../]
-  [./dCl-_dt]
-    block = 'Film Solution Copper'
-    type = TimeDerivative
-    variable = Cl-
-  [../]
-  [./dCuCl2-_dt]
-    block = 'Film Solution Copper'
-    type = TimeDerivative
-    variable = CuCl2-
-  [../]
+#  [./dCl-_dt]
+#    block = 'Film Solution Copper'
+#    type = TimeDerivative
+#    variable = Cl-
+#  [../]
+#  [./dCuCl2-_dt]
+#    block = 'Film Solution Copper'
+#    type = TimeDerivative
+#    variable = CuCl2-
+#  [../]
   [./dCu2S_dt]
     block = 'Film Solution Copper'
     type = TimeDerivative
@@ -283,24 +283,24 @@
     coef = 7200e-9 #[m2/s], to be added
     variable = O2
   [../]
-  [./DgradCl-]
-    block = 'Film Solution Copper'
-    type = CoefDiffusion
-    coef = 7.3152E-6 #[m2/hr], from the handbook original: 2.032E-5 cm2/s
-    variable = Cl-
-  [../]
-  [./DgradCuCl2-_SC]
-    block = 'Solution Copper'
-    type = CoefDiffusion
-    coef = 4.6692E-6 #[m2/hr], from the paper : 1.297E-9 m2/s
-    variable = CuCl2-
-  [../]
-  [./DgradCuCl2-_F]
-    block = 'Film'
-    type = CoefDiffusion
-    coef = 4.6692E-8 #[m2/hr], assumption: 1/100 to the CuCl2- in solution
-    variable = CuCl2-
-  [../]
+#  [./DgradCl-]
+#    block = 'Film Solution Copper'
+#    type = CoefDiffusion
+#    coef = 7.3152E-6 #[m2/hr], from the handbook original: 2.032E-5 cm2/s
+#    variable = Cl-
+#  [../]
+#  [./DgradCuCl2-_SC]
+#    block = 'Solution Copper'
+#    type = CoefDiffusion
+#    coef = 4.6692E-6 #[m2/hr], from the paper : 1.297E-9 m2/s
+#    variable = CuCl2-
+#  [../]
+#  [./DgradCuCl2-_F]
+#    block = 'Film'
+#    type = CoefDiffusion
+#    coef = 4.6692E-8 #[m2/hr], assumption: 1/100 to the CuCl2- in solution
+#    variable = CuCl2-
+#  [../]
   [./DgradCu2S]
     block = 'Film Copper'
     type = CoefDiffusion
@@ -330,10 +330,8 @@
   [../]
   [./CPE]
     block = 'Film Solution Copper'
-    type = MP
+    type = One
     variable = Ecorr
-    C1 = CuCl2-
-    C6 = Cl-
     C9 = HS-
     Porosity = 0.05
   [../]
@@ -416,34 +414,34 @@ H2O -> H+ + OH- : {0.09}
     Standard_potential3 = -0.747
     Num = 1
  [../]
- [./BC_Cl-]
-   type = ADClm
-   variable = Cl-
-   Reactant1 = CuCl2-
+# [./BC_Cl-]
+#   type = ADClm
+#   variable = Cl-
+#   Reactant1 = CuCl2-
 #   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
+#   boundary = 'Copper_top'
 #   boundary = Interface
-   Corrosion_potential = Ecorr
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 2.4444E-3
-   StandardPotential = -0.105
-   Num  = -2
- [../]
- [./BC_CuCl2-]
-   type = ADCuCl2m
-   variable = CuCl2-
-   Reactant1 = Cl-
+#   Corrosion_potential = Ecorr
+#   Temperature = 298.15
+#   kF = 1.188E-4
+#   kB = 2.4444E-3
+#   StandardPotential = -0.105
+#   Num  = -2
+# [../]
+# [./BC_CuCl2-]
+#   type = ADCuCl2m
+#   variable = CuCl2-
+#   Reactant1 = Cl-
 #   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
+#   boundary = 'Copper_top'
 #   boundary = Interface
-   Corrosion_potential = Ecorr
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 2.4444E-3
-   StandardPotential = -0.105
-   Num  = 1
- [../]
+#   Corrosion_potential = Ecorr
+#   Temperature = 298.15
+#   kF = 1.188E-4
+#   kB = 2.4444E-3
+#   StandardPotential = -0.105
+#   Num  = 1
+# [../]
 
 
  [./Isolated_H+]
@@ -494,18 +492,18 @@ H2O -> H+ + OH- : {0.09}
    value = 0
    variable = T
  [../]
- [./Isolated_Cl-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = Cl-
- [../]
- [./Isolated_CuCl2-]
-   type = NeumannBC
-   boundary = Isolated
-   value = 0
-   variable = CuCl2-
- [../]
+# [./Isolated_Cl-]
+#   type = NeumannBC
+#   boundary = Isolated
+#   value = 0
+#   variable = Cl-
+# [../]
+# [./Isolated_CuCl2-]
+#   type = NeumannBC
+#   boundary = Isolated
+#   value = 0
+#   variable = CuCl2-
+# [../]
  [./Isolated_Cu2S]
    type = NeumannBC
    boundary = Isolated
@@ -583,17 +581,6 @@ H2O -> H+ + OH- : {0.09}
     block = 'Film Solution Copper'
     variable = Cu2S
   [../]
-#  [./Anodic_Cur]
-#    type = AN
-#    C6 = Cl-
-#    C9 = HS-
-#    C1 = CuCl2-
-#    T  = T
-#    Ecorr = Ecorr
-#    Porosity = 0.05
-#  [../]
-
-
 []
 
 [Outputs]

@@ -42,7 +42,7 @@ protected:
   const Real & _eps;
   const Real & _kS;
   const Real & _aS;
-  const ADVariableValue & _E;
+  const ADMaterialProperty<Real> & _E;
   const Real & _R;
   const ADVariableValue & _T;
   const Real & _aS3;

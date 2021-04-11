@@ -9,34 +9,35 @@
 
 #pragma once
 
-#include "AuxKernel.h"
+#include "GeneralPostprocessor.h"
 
-// Forward Declarations
-class ISS;
+class AN;
 
 template <>
-InputParameters validParams<ISS>();
+InputParameters validParams<AN>();
 
 /**
- * Coupled auxiliary value
+ * Computes the difference between two postprocessors
+ *
+ * result = value1 - value2
  */
-class ISS : public AuxKernel
+class AN : public GeneralPostprocessor
 {
 public:
-  /**
-   * Factory constructor, takes parameters so that all derived classes can be built using the same
-   * constructor.
-   */
-  ISS(const InputParameters & parameters);
+  static InputParameters validParams();
+
+  AN(const InputParameters & parameters);
+
+  virtual void initialize() override;
+  virtual void execute() override;
+  virtual PostprocessorValue getValue() override;
 
 protected:
-  virtual Real computeValue() override;
-
-  const VariableValue & _C6;
-  const VariableValue & _C9;
-  const VariableValue & _C1;
-  const VariableValue & _T;
-  const ADMaterialProperty<Real> & _Ecorr;
+  const PostprocessorValue & _C6;
+  const PostprocessorValue & _C9;
+  const PostprocessorValue & _C1;
+  const PostprocessorValue & _T;
+  const PostprocessorValue & _Ecorr;
 
   const Real & _Porosity;
 

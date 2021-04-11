@@ -77,7 +77,7 @@
   [./Ecorr]
     block = 'Film Solution Copper'
     order = FIRST
-    initial_condition = -0.978
+    initial_condition = -0.88
   [../]
 []
 
@@ -323,14 +323,14 @@
 
 
 # Corrosion Potential Enforce Term
-  [./dEcorr_dt]
+#  [./dEcorr_dt]
+#    block = 'Film Solution Copper'
+#    type = TimeDerivative
+#    variable = Ecorr
+#  [../]
+  [./Mixed_potential]
     block = 'Film Solution Copper'
-    type = TimeDerivative
-    variable = Ecorr
-  [../]
-  [./CPE]
-    block = 'Film Solution Copper'
-    type = MP
+    type = Sum
     variable = Ecorr
     C1 = CuCl2-
     C6 = Cl-
@@ -551,7 +551,7 @@ H2O -> H+ + OH- : {0.09}
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.99
-    dt = 1e-5
+    dt = 1e-3
     growth_factor = 1.01
   [../]
 []
@@ -583,17 +583,6 @@ H2O -> H+ + OH- : {0.09}
     block = 'Film Solution Copper'
     variable = Cu2S
   [../]
-#  [./Anodic_Cur]
-#    type = AN
-#    C6 = Cl-
-#    C9 = HS-
-#    C1 = CuCl2-
-#    T  = T
-#    Ecorr = Ecorr
-#    Porosity = 0.05
-#  [../]
-
-
 []
 
 [Outputs]

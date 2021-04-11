@@ -14,7 +14,7 @@ ADCu2S::validParams()
   params.addParam<Real>("Porosity",1.0,"Porosity of porous medium");
   params.addParam<Real>("Kinetic",1.0,"Kinetic constant");
   params.addParam<Real>("AlphaS",0.5,"transfer coefficient");
-  params.addRequiredCoupledVar("Corrosion_potential","Corrosion potential");
+  params.addRequiredParam<MaterialPropertyName>("Corrosion_potential","Corrosion potential");
   params.addParam<Real>("R",8.314,"Reaction order");
   params.addCoupledVar("Temperature",298.15,"Temperature of the system");
   params.addParam<Real>("AlphaS3",0.5,"Transfer coefficient");
@@ -36,7 +36,7 @@ ADCu2S::ADCu2S(const InputParameters & parameters)
    _eps(getParam<Real>("Porosity")),
    _kS(getParam<Real>("Kinetic")),
    _aS(getParam<Real>("AlphaS")),
-   _E(adCoupledValue("Corrosion_potential")),
+   _E(getADMaterialProperty<Real>("Corrosion_potential")),
    _R(getParam<Real>("R")),
    _T(adCoupledValue("Temperature")),
    _aS3(getParam<Real>("AlphaS3")),

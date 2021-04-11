@@ -330,7 +330,7 @@
   [../]
   [./CPE]
     block = 'Film Solution Copper'
-    type = MP
+    type = MP2
     variable = Ecorr
     C1 = CuCl2-
     C6 = Cl-

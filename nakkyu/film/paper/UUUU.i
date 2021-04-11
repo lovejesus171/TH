@@ -67,7 +67,7 @@
   [./CuCl2-]
     block = 'Film Solution Copper'
     order = FIRST
-    initial_condition = 2E-11 #[mol/m3]
+    initial_condition = 1E-8 #[mol/m3]
   [../]
   [./Cu2S]
     block = 'Film Solution Copper'
@@ -77,7 +77,7 @@
   [./Ecorr]
     block = 'Film Solution Copper'
     order = FIRST
-    initial_condition = -0.978
+    initial_condition = -0.902
   [../]
 []
 
@@ -330,7 +330,7 @@
   [../]
   [./CPE]
     block = 'Film Solution Copper'
-    type = MP
+    type = MP5
     variable = Ecorr
     C1 = CuCl2-
     C6 = Cl-

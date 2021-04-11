@@ -20,7 +20,7 @@ validParams<ISS>()
   params.addCoupledVar("C9",0,"HS- ion");
   params.addCoupledVar("C1",0,"CuCl2- ion");
   params.addCoupledVar("T","Temperature");
-  params.addCoupledVar("Ecorr","Corroion potential");
+  params.addRequiredParam<MaterialPropertyName>("Ecorr","Corroion potential");
 
   params.addParam<Real>("Porosity",1,"Porosity of film");
 
@@ -48,7 +48,7 @@ ISS::ISS(const InputParameters & parameters)
     _C9(coupledValue("C9")),
     _C1(coupledValue("C1")),
     _T(coupledValue("T")),
-    _Ecorr(coupledValue("Ecorr")),
+    _Ecorr(getADMaterialProperty<Real>("Ecorr")),
 
     _Porosity(getParam<Real>("Porosity")),
 
@@ -78,5 +78,10 @@ ISS::computeValue()
   Real F = 96485;
   Real R = 8.314;
 
-  return -_nS * _Porosity * F * _kS * _C9[_qp] * _C9[_qp] * exp((1+_aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp] * (_ES12 + _aS3 * _ES3)));
+//  for (unsigned int qp = 0; _qrule->n_points(); ++qp)
+//      ava += _Ecorr[qp];
+//    	  return -_nS * _Porosity * _C9[_qp] * exp(_T[_qp]) * _Ecorr[_qp];
+   return 0;
+
+//  return -_nS * _Porosity * F * _kS * _C9[_qp] * _C9[_qp] * exp((1+_aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
 }

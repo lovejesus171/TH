@@ -74,14 +74,14 @@
     order = FIRST
     initial_condition = 0
   [../]
-  [./Ecorr]
-    block = 'Film Solution Copper'
-    order = FIRST
-    initial_condition = -0.978
-  [../]
 []
 
 [AuxVariables]
+   [./Ecorr]
+    block = 'Film Solution Copper'
+    order = FIRST
+    family = LAGRANGE
+   [../]
    [./ia]
     block = 'Film Solution Copper'
     order = FIRST
@@ -120,6 +120,15 @@
 []
 
 [AuxKernels]
+   [./PPP]
+     type = CP
+     variable = Ecorr
+     C1 = CuCl2-
+     C6 = Cl-
+     C9 = HS-
+     T = T
+     Porosity = 0.05
+   [../]
    [./Anodic]
      type = AnodicCurrent
      variable = ia
@@ -322,21 +331,6 @@
   [../]
 
 
-# Corrosion Potential Enforce Term
-  [./dEcorr_dt]
-    block = 'Film Solution Copper'
-    type = TimeDerivative
-    variable = Ecorr
-  [../]
-  [./CPE]
-    block = 'Film Solution Copper'
-    type = MP
-    variable = Ecorr
-    C1 = CuCl2-
-    C6 = Cl-
-    C9 = HS-
-    Porosity = 0.05
-  [../]
 []
 
 

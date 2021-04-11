@@ -20,7 +20,7 @@ validParams<IE>()
   params.addCoupledVar("C3",0,"Cu2+ ion");
   params.addCoupledVar("C9",0,"HS- ion");
   params.addCoupledVar("T","Temperature");
-  params.addCoupledVar("Ecorr","Corroion potential");
+  params.addRequiredParam<MaterialPropertyName>("Ecorr","Corroion potential");
 
   params.addParam<Real>("Porosity",1,"Porosity of film");
 
@@ -55,7 +55,7 @@ IE::IE(const InputParameters & parameters)
     _C3(coupledValue("C3")),
     _C9(coupledValue("C9")),
     _T(coupledValue("T")),
-    _Ecorr(coupledValue("Ecorr")),
+    _Ecorr(getADMaterialProperty<Real>("Ecorr")),
 
     _Porosity(getParam<Real>("Porosity")),
 
@@ -93,8 +93,9 @@ IE::computeValue()
   Real F = 96485;
   Real R = 8.314;
 
-  return + _nE * (1 - _Porosity) * F * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE))
-	  ;
+//  return  _nE * (1 - _Porosity) * F * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE))
+//	  ;
+    return 0;
     // Oxygen reduction 
     //_nO * (1 - _Porosity) * F * _kC * _C0[_qp] * exp(-_aC * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EC))
 

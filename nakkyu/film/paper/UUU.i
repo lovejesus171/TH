@@ -74,34 +74,9 @@
     order = FIRST
     initial_condition = 0
   [../]
-  [./Ecorr]
-    block = 'Film Solution Copper'
-    order = FIRST
-    initial_condition = -0.978
-  [../]
 []
 
 [AuxVariables]
-   [./ia]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE 
-   [../]
-   [./ic]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE 
-   [../]
-   [./i]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE 
-   [../]
-   [./IA]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE 
-   [../]
    [./IS]
     block = 'Film Solution Copper'
     order = FIRST
@@ -112,46 +87,25 @@
     order = FIRST
     family = LAGRANGE 
    [../]
-   [./IF]
+   [./Ecorr]
     block = 'Film Solution Copper'
     order = FIRST
-    family = LAGRANGE 
+    initial_condition = -0.995
    [../]
 []
 
 [AuxKernels]
-   [./Anodic]
-     type = AnodicCurrent
-     variable = ia
-     C6 = Cl-
-     C9 = HS-
+   [./Cal_Pot]
+     type = CP2
+     variable = Ecorr
+     Ecorr = Ecorr
+     T = T
      C1 = CuCl2-
-     T = T
-     Ecorr = Ecorr
-     Porosity = 0.05
-   [../]
-   [./Cathodic]
-     type = CathodicCurrent
-     variable = ic
-     C9 = HS-
-     T = T
-     Ecorr = Ecorr
-     Porosity = 0.05
-   [../]
-   [./Total_Current]
-     variable = i
-     type = SumCurrent
-     AnodicCurrent = ia
-     CathodicCurrent = ic
-   [../]
-
-   [./Atype]
-     type = IA
-     variable = IA
      C6 = Cl-
-     T = T
-     Ecorr = Ecorr
+     C9 = HS-
      Porosity = 0.05
+     Tol = 1E-10
+     Del_E = 1E-3
    [../]
    [./Stype]
      type = ISS
@@ -169,14 +123,6 @@
      Ecorr = Ecorr
      Porosity = 0.05
    [../]
-   [./Ftype]
-     type = IF
-     variable = IF
-     T = T
-     Ecorr = Ecorr
-     Porosity = 0.05
-   [../]
-
 []
 
 [Kernels]
@@ -322,21 +268,6 @@
   [../]
 
 
-# Corrosion Potential Enforce Term
-  [./dEcorr_dt]
-    block = 'Film Solution Copper'
-    type = TimeDerivative
-    variable = Ecorr
-  [../]
-  [./CPE]
-    block = 'Film Solution Copper'
-    type = MP
-    variable = Ecorr
-    C1 = CuCl2-
-    C6 = Cl-
-    C9 = HS-
-    Porosity = 0.05
-  [../]
 []
 
 
@@ -371,18 +302,6 @@ H2O -> H+ + OH- : {0.09}
 
 
 [BCs]
-#  [./copper_boundary1]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = Copper_top
-#    value = 0 #[mol/m2]
-#  [../]
-#  [./copper_boundary2]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = Copper_side
-#    value = 0 #[mol/m2]
-#  [../]
   [./BC_HS-]
     type = ADES2
     variable = HS-
@@ -416,35 +335,6 @@ H2O -> H+ + OH- : {0.09}
     Standard_potential3 = -0.747
     Num = 1
  [../]
- [./BC_Cl-]
-   type = ADClm
-   variable = Cl-
-   Reactant1 = CuCl2-
-#   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = Ecorr
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 2.4444E-3
-   StandardPotential = -0.105
-   Num  = -2
- [../]
- [./BC_CuCl2-]
-   type = ADCuCl2m
-   variable = CuCl2-
-   Reactant1 = Cl-
-#   boundary = 'Copper_top Copper_side'
-   boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = Ecorr
-   Temperature = 298.15
-   kF = 1.188E-4
-   kB = 2.4444E-3
-   StandardPotential = -0.105
-   Num  = 1
- [../]
-
 
  [./Isolated_H+]
    type = NeumannBC
