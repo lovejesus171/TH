@@ -11,7 +11,7 @@ ADCu2S::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
-  params.addParam<Real>("Porosity",1.0,"Porosity of porous medium");
+  params.addRequiredParam<MaterialPropertyName>("Area","Porosity of porous medium");
   params.addParam<Real>("Kinetic",1.0,"Kinetic constant");
   params.addParam<Real>("AlphaS",0.5,"transfer coefficient");
   params.addRequiredParam<MaterialPropertyName>("Corrosion_potential","Corrosion potential");
@@ -33,7 +33,7 @@ ADCu2S::validParams()
 ADCu2S::ADCu2S(const InputParameters & parameters)
   : ADIntegratedBC(parameters),
    _F(getParam<Real>("Faraday_constant")),
-   _eps(getParam<Real>("Porosity")),
+   _eps(getADMaterialProperty<Real>("Area")),
    _kS(getParam<Real>("Kinetic")),
    _aS(getParam<Real>("AlphaS")),
    _E(getADMaterialProperty<Real>("Corrosion_potential")),
@@ -51,6 +51,6 @@ ADReal
 ADCu2S::computeQpResidual()
 {
 //   if (_u[_qp] - _Num * _test[_i][_qp] * _eps * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3)) >= 0.0)   
-     return -_Num * _test[_i][_qp] * _eps * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
+     return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
 //   else 
 }

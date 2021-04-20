@@ -229,7 +229,7 @@
     C1 = CuCl2-
     C6 = Cl-
     C9 = HS-
-    Tol = 1E1
+    Tol = 5
     T = T
     DelE = 0.2E-3
     outputs = exodus

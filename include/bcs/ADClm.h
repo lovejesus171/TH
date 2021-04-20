@@ -38,12 +38,12 @@ public:
 protected:
   virtual ADReal computeQpResidual();
 
-  const ADVariableValue & _E;
+  const ADMaterialProperty<Real> & _E;
   const ADVariableValue & _C1;
   const ADVariableValue & _T;
 
   const Real & _F;
-  const Real & _eps;
+  const ADMaterialProperty<Real> & _eps;
   const Real & _R;
   const Real & _kF;
   const Real & _kB;

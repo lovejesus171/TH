@@ -30,6 +30,7 @@ protected:
   const ADVariableValue & _C3;
   const ADVariableValue & _C4;
   const ADVariableValue & _C5;
+  const ADVariableValue & _C6;
 
 
 
@@ -43,6 +44,7 @@ protected:
   const Real & _z3;
   const Real & _z4;
   const Real & _z5;
+  const Real & _z6;
 
 
 

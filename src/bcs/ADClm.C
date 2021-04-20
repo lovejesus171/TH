@@ -10,11 +10,11 @@ InputParameters
 ADClm::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
-  params.addCoupledVar("Corrosion_potential",0.0,"Corrosion potential");
+  params.addRequiredParam<MaterialPropertyName>("Corrosion_potential","Corrosion potential");
   params.addCoupledVar("Reactant1",0.0,"CuCl2-");
   params.addCoupledVar("Temperature",0.0,"Temperature of the system");
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
-  params.addParam<Real>("Porosity",1.0,"Porosity of porous medium");
+  params.addRequiredParam<MaterialPropertyName>("Area","Area of anode surface");
   params.addParam<Real>("R",8.314,"Reaction order");
   params.addParam<Real>("kF",0.0,"Kinetic constant");
   params.addParam<Real>("kB",0.0,"Kinetic constant");
@@ -27,11 +27,11 @@ ADClm::validParams()
 
 ADClm::ADClm(const InputParameters & parameters)
   : ADIntegratedBC(parameters),
-   _E(adCoupledValue("Corrosion_potential")),
+   _E(getADMaterialProperty<Real>("Corrosion_potential")),
    _C1(adCoupledValue("Reactant1")),
    _T(adCoupledValue("Temperature")),
    _F(getParam<Real>("Faraday_constant")),
-   _eps(getParam<Real>("Porosity")),
+   _eps(getADMaterialProperty<Real>("Area")),
    _R(getParam<Real>("R")),
    _kF(getParam<Real>("kF")),
    _kB(getParam<Real>("kB")),
@@ -44,7 +44,7 @@ ADReal
 ADClm::computeQpResidual()
 {
 //   if (_u[_qp] -_Num * _test[_i][_qp] * _eps * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]) >= 0.0)
-     return -_Num * _test[_i][_qp] * _eps * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]); 
+     return -_Num * _test[_i][_qp] * _eps[_qp] * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]); 
 //   else
 }
 

@@ -2,18 +2,18 @@
   file = 'Line3.msh'
   construct_side_list_from_node_list = true
 []
-[UserObjects]
-  [./changeID]
-    block = 'Film Solution Copper'
-    type = ActivateElementsCoupled
-    execute_on = timestep_begin
-    coupled_var = Cu2S
-    activate_value = 2.487
-    activate_type = above
-    active_subdomain_id = 3
-    expand_boundary_name = Interface
-  [../]
-[]
+#[UserObjects]
+#  [./changeID]
+#    block = 'Film Solution Copper'
+#    type = ActivateElementsCoupled
+#    execute_on = timestep_begin
+#    coupled_var = Cu2S
+#    activate_value = 2.487
+#    activate_type = above
+#    active_subdomain_id = 3
+#    expand_boundary_name = Interface
+#  [../]
+#[]
 
 
 [Variables]
@@ -67,39 +67,14 @@
   [./CuCl2-]
     block = 'Film Solution Copper'
     order = FIRST
-    initial_condition = 1E-10 #[mol/m3]
+    initial_condition = 0 #[mol/m3]
   [../]
   [./Cu2S]
     block = 'Film Solution Copper'
     order = FIRST
     initial_condition = 0
   [../]
-
 []
-
-[AuxVariables]
-  [./E]
-    block = 'Film Solution Copper'
-    order = FIRST
-    family = LAGRANGE
-  [../]
-[]
-
-
-[AuxKernels]
-  [./Calculate_Corrosion_Potential]
-    block = 'Film Solution Copper'
-    type = TT   #exclude O2 reduction reaction
-    variable = E
-#    C0 = O2
-    C1 = CuCl2-
-#    C3 = Cu2+  #default: 0
-    C6 = Cl-
-    C9 = HS-
-    Porosity = 0.15 # Porosity of film
-  [../]
-[]
-
 
 [Kernels]
 # dCi/dt
@@ -242,22 +217,30 @@
     type = HeatConductionTimeDerivative
     variable = T
   [../]
+
+[]
+
+[Materials]
+  [./Test]
+    block = 'Copper'
+    type = Nakkyu
+    initial_diffusivity = 0.1
+    multiplier = 10
+    C1 = CuCl2-
+    C6 = Cl-
+    C9 = HS-
+    Tol = 0.5
+    T = T
+    DelE = 0.005E-3
+    outputs = exodus
+    kF = 0
+    Porosity = 0.1
+  [../]
 []
 
 
+
 [BCs]
-#  [./copper_boundary1]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = Copper_top
-#    value = 0 #[mol/m2]
-#  [../]
-#  [./copper_boundary2]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = Copper_side
-#    value = 0 #[mol/m2]
-#  [../]
   [./BC_HS-]
     type = ADES2
     variable = HS-
@@ -267,7 +250,7 @@
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = E
+    Corrosion_potential = Ecorr
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -284,7 +267,7 @@
     Faraday_constant = 96485
     Kinetic = 216 #m4mol/hr at 25C
     AlphaS = 0.5
-    Corrosion_potential = E
+    Corrosion_potential = Ecorr
 #    Temperature = T
     AlphaS3 = 0.5
     Standard_potential2 = -0.747 
@@ -295,30 +278,27 @@
    type = ADClm
    variable = Cl-
    Reactant1 = CuCl2-
-#   boundary = 'Copper_top Copper_side'
    boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = E
+   Corrosion_potential = Ecorr
    Temperature = 298.15
    kF = 1.188E-4
    kB = 2.4444E-3
    StandardPotential = -0.105
-   Num  = -2
+   Num = -2
  [../]
  [./BC_CuCl2-]
    type = ADCuCl2m
    variable = CuCl2-
    Reactant1 = Cl-
-#   boundary = 'Copper_top Copper_side'
    boundary = 'Copper_top'
-#   boundary = Interface
-   Corrosion_potential = E
+   Corrosion_potential = Ecorr
    Temperature = 298.15
    kF = 1.188E-4
    kB = 2.4444E-3
    StandardPotential = -0.105
-   Num  = 1
+   Num = 1
  [../]
+
 
 
  [./Isolated_H+]
@@ -414,7 +394,7 @@
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
 #  nl_abs_tol = 1e-12
-  nl_rel_tol = 1e-5 #default = 1e-7
+  nl_rel_tol = 1e-1 #default = 1e-7
   l_max_its = 10
   nl_max_its = 30
   dtmax = 100
@@ -458,6 +438,17 @@
     block = 'Film Solution Copper'
     variable = Cu2S
   [../]
+#  [./Anodic_Cur]
+#    type = AN
+#    C6 = Cl-
+#    C9 = HS-
+#    C1 = CuCl2-
+#    T  = T
+#    Ecorr = Ecorr
+#    Porosity = 0.05
+#  [../]
+
+
 []
 
 [Outputs]

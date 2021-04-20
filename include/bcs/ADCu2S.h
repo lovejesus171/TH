@@ -39,7 +39,7 @@ protected:
   virtual ADReal computeQpResidual();
 
   const Real & _F;
-  const Real & _eps;
+  const ADMaterialProperty<Real> & _eps;
   const Real & _kS;
   const Real & _aS;
   const ADMaterialProperty<Real> & _E;

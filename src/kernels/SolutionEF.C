@@ -21,11 +21,13 @@ SolutionEP::validParams()
   params.addCoupledVar("CS3", 0,"Add name of chemical species");
   params.addCoupledVar("CS4", 0,"Add name of chemical species");
   params.addCoupledVar("CS5", 0,"Add name of chemical species");
+  params.addCoupledVar("CS6", 0,"Add name of chemical species");
   params.addParam<Real>("Charge1", "Charge valence of chemical species");
   params.addParam<Real>("Charge2", "Charge valence of chemical species");
   params.addParam<Real>("Charge3", "Charge valence of chemical species");
   params.addParam<Real>("Charge4", "Charge valence of chemical species");
   params.addParam<Real>("Charge5", "Charge valence of chemical species");
+  params.addParam<Real>("Charge6", "Charge valence of chemical species");
   return params;
 }
 
@@ -36,12 +38,14 @@ SolutionEP::SolutionEP(const InputParameters & parameters)
     _C3(adCoupledValue("CS3")),
     _C4(adCoupledValue("CS4")),
     _C5(adCoupledValue("CS5")),
+    _C6(adCoupledValue("CS6")),
 
     _z1(getParam<Real>("Charge1")),
     _z2(getParam<Real>("Charge2")),
     _z3(getParam<Real>("Charge3")),
     _z4(getParam<Real>("Charge4")),
     _z5(getParam<Real>("Charge5")),
+    _z6(getParam<Real>("Charge6")),
 
     _F(96485)
 {
@@ -50,5 +54,5 @@ SolutionEP::SolutionEP(const InputParameters & parameters)
 ADReal
 SolutionEP::computeQpResidual()
 {
-  return (_z1  *  _C1[_qp] + _z2 * _C2[_qp]  + _z3 * _C3[_qp]  + _z4 * _C4[_qp]  + _z5 * _C5[_qp] ) * _F * _test[_i][_qp] - _grad_test[_i][_qp] * _grad_u[_qp];
+  return (_z1  *  _C1[_qp] + _z2 * _C2[_qp]  + _z3 * _C3[_qp]  + _z4 * _C4[_qp]  + _z5 * _C5[_qp] + _z6 * _C6[_qp]) * _F * _test[_i][_qp] - _grad_test[_i][_qp] * _grad_u[_qp];
 }
