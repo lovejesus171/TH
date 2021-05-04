@@ -7,12 +7,12 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ECorr.h"
+#include "ECorr_mm_Scale.h"
 
-registerMooseObject("corrosionApp", ECorr);
+registerMooseObject("corrosionApp", ECorr_mm_Scale);
 
 InputParameters
-ECorr::validParams()
+ECorr_mm_Scale::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addCoupledVar("T",298.15,"T");
@@ -45,13 +45,13 @@ ECorr::validParams()
   params.addParam<Real>("nO",4,"Constant");
   params.addParam<Real>("nS",1,"Constant"); 
 
-  params.addParam<Real>("kA", 1.1880E-4, "Constant");
-  params.addParam<Real>("kC", 6.12E-7, "Constant");
-  params.addParam<Real>("kD", 7.2E-6, "Constant");
-  params.addParam<Real>("kE", 7.2E-6, "Constant");
-  params.addParam<Real>("kS", 2.16E2, "Constant");
-  params.addParam<Real>("kF", 2.4444E-3, "Constant");
-  params.addParam<Real>("kBB", 0.5112, "Constant");
+  params.addParam<Real>("kA", 1.1880E8, "Constant mm scale");
+  params.addParam<Real>("kC", 6.12E-4, "Constant ");
+  params.addParam<Real>("kD", 7.2E-3, "Constant mm scale");
+  params.addParam<Real>("kE", 7.2E-3, "Constant mm scale");
+  params.addParam<Real>("kS", 2.16E14, "Constant mm scale");
+  params.addParam<Real>("kF", 2.4444E-9, "Constant mm scale");
+  params.addParam<Real>("kBB", 511.2, "Constant mm scale");
 
 
   params.addParam<Real>("Porosity", 0.05, "Constant");
@@ -67,7 +67,7 @@ ECorr::validParams()
   return params;
 }
 
-ECorr::ECorr(const InputParameters & parameters)
+ECorr_mm_Scale::ECorr_mm_Scale(const InputParameters & parameters)
   : Material(parameters),
     _T(adCoupledValue("T")),
     _C9(adCoupledValue("C9")),
@@ -138,7 +138,7 @@ ECorr::ECorr(const InputParameters & parameters)
 }
 
 void
-ECorr::initQpStatefulProperties()
+ECorr_mm_Scale::initQpStatefulProperties()
 {
   _ISS[_qp] = 0;
   _IEE[_qp] = 0;
@@ -149,7 +149,7 @@ ECorr::initQpStatefulProperties()
 }
 
 void
-ECorr::computeQpProperties()
+ECorr_mm_Scale::computeQpProperties()
 {
   Real F = 96485;
   Real R = 8.314;

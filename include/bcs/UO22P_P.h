@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include "FluxBC.h"
+#include "ADIntegratedBC.h"
 
-class SurfacePBC;
+class UO22P_P;
 
 template <>
-InputParameters validParams<SurfacePBC>();
+InputParameters validParams<UO22P_P>();
 
 /**
  * A FluxBC which is consistent with the boundary terms arising from
@@ -28,27 +28,25 @@ InputParameters validParams<SurfacePBC>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class SurfacePBC : public FluxBC
+class UO22P_P : public ADIntegratedBC
 {
 public:
   static InputParameters validParams();
 
-  SurfacePBC(const InputParameters & parameters);
+  UO22P_P(const InputParameters & parameters);
 
 protected:
-  virtual RealGradient computeQpFluxResidual();
-  virtual RealGradient computeQpFluxJacobian();
+  virtual ADReal computeQpResidual();
 
-
-  const Real & _S;
-  const Real & _D;
-  const Real & _tau;
-  const Real & _n;
   const Real & _eps;
- 
-  const VariableValue & _R1;
-  const VariableGradient & _grad_R1;
-
-
+  const Real & _kA;
+  const Real & _DelH;
+  const ADMaterialProperty<Real> & _Ecorr;
+  const ADVariableValue & _T;
+  const Real & _aA;
+  const Real & _EA;
+  unsigned int _E_id;
+  unsigned int _T_id; 
+  const Real & _f;
 
 };

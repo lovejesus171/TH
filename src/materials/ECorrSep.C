@@ -7,12 +7,12 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ECorr.h"
+#include "ECorrSep.h"
 
-registerMooseObject("corrosionApp", ECorr);
+registerMooseObject("corrosionApp", ECorrSep);
 
 InputParameters
-ECorr::validParams()
+ECorrSep::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addCoupledVar("T",298.15,"T");
@@ -61,13 +61,14 @@ ECorr::validParams()
 
   params.addParam<Real>("Area",0,"Area of film");
 
-  params.addRequiredParam<Real>("AnodeAreaValue","Put the value for anode area");
+  params.addRequiredParam<Real>("SulfideAnodeAreaValue","Put the value for anode area");
+  params.addRequiredParam<Real>("ChlorideAnodeAreaValue","Put the value for anode area");
 
 
   return params;
 }
 
-ECorr::ECorr(const InputParameters & parameters)
+ECorrSep::ECorrSep(const InputParameters & parameters)
   : Material(parameters),
     _T(adCoupledValue("T")),
     _C9(adCoupledValue("C9")),
@@ -132,24 +133,27 @@ ECorr::ECorr(const InputParameters & parameters)
     _DelE(getParam<Real>("DelE")),
 
     _Area(getParam<Real>("Area")),
-    _AnodeAreaValue(getParam<Real>("AnodeAreaValue")),
-    _AnodeArea(declareADProperty<Real>("AnodeArea"))
+    _SulfideAnodeAreaValue(getParam<Real>("SulfideAnodeAreaValue")),
+    _ChlorideAnodeAreaValue(getParam<Real>("ChlorideAnodeAreaValue")),
+    _SulfideAnodeArea(declareADProperty<Real>("SulfideAnodeArea")),
+    _ChlorideAnodeArea(declareADProperty<Real>("ChlorideAnodeArea"))
 {
 }
 
 void
-ECorr::initQpStatefulProperties()
+ECorrSep::initQpStatefulProperties()
 {
   _ISS[_qp] = 0;
   _IEE[_qp] = 0;
   _Isum[_qp] = 0;
   _Ecorr[_qp] = _Ecorr_old[_qp];
-  _AnodeArea[_qp] = _AnodeAreaValue;
+  _SulfideAnodeArea[_qp] = _SulfideAnodeAreaValue;
+  _ChlorideAnodeArea[_qp] = _ChlorideAnodeAreaValue;
 
 }
 
 void
-ECorr::computeQpProperties()
+ECorrSep::computeQpProperties()
 {
   Real F = 96485;
   Real R = 8.314;
@@ -158,11 +162,11 @@ ECorr::computeQpProperties()
           while (true)
                 {
                   _Isum[_qp] = 
-	           F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp]) *(_Ecorr[_qp] - _EA))
-	         + F *_nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3)) 
+	           F * _nA * _ChlorideAnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp]) *(_Ecorr[_qp] - _EA))
+	         + F *_nS * _SulfideAnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3)) 
 		 - F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE))
 		 - F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EF))
-                 - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
+                 - F * _nA * _ChlorideAnodeArea[_qp] * _kBB * _C1[_qp];
  		  if (_Isum[_qp] < -_Tol)
                     _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
                   else if (_Isum[_qp] > _Tol)
@@ -172,8 +176,8 @@ ECorr::computeQpProperties()
 
 		}
   //Calculate current from each reaction
-  _IAA[_qp] = F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_Ecorr[_qp] - _EA)) - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
-  _ISS[_qp] = F *  _nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
+  _IAA[_qp] = F * _nA * _ChlorideAnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_Ecorr[_qp] - _EA)) - F * _nA * _ChlorideAnodeArea[_qp] * _kBB * _C1[_qp];
+  _ISS[_qp] = F *  _nS * _SulfideAnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
   _IEE[_qp] = -F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE));
   _IFF[_qp] = -F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
 }
