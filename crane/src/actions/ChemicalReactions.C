@@ -921,7 +921,7 @@ ChemicalReactions::act()
       // == true || getParam<bool>("track_electron_energy") == false)
       if (_coefficient_format == "rate")
       {
-        if (_reactants[i].size() == 1)
+	if (_reactants[i].size() == 1)
         {
           product_kernel_name = "ProductFirstOrder";
           reactant_kernel_name = "ReactantFirstOrder";

@@ -24,7 +24,7 @@
   [./UO2O24H2O]
    block = 'Alpha Solution'
    order = FIRST
-   initial_condition = 0 #mol/m3
+   initial_condition = 1E-1 #mol/m3
   [../]
   [./H2]
    block = 'Alpha Solution'
@@ -44,7 +44,7 @@
   [./CO32-]
    block = 'Alpha Solution'
    order = FIRST
-   initial_condition = 1E-6 #mol/m3
+   initial_condition = 1E-1 #mol/m3
   [../]
   [./Fe2+]
    block = 'Alpha Solution'
@@ -88,12 +88,26 @@
   [../]
 
 
+
   [./T]
     block = 'Alpha Solution'
     order = FIRST
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
+  [./ConsumedH2O2]
+   block = 'Alpha Solution'
+   order = FIRST
+   initial_condition = 0 #mol/m3
+  [../]
+[]
+
+
+[Functions]
+  [H2O2_produce]
+    type = ParsedFunction
+    value = 'exp(-x)'
+  []
 []
 
 [Kernels]
@@ -178,6 +192,13 @@
     type = TimeDerivative
     variable = UO2CO334-
   [../]
+  [./dConsumedH2O2_dt]
+    block = 'Alpha Solution'
+    type = TimeDerivative
+    variable = ConsumedH2O2
+  [../]
+
+
 
 
 # Diffusion terms
@@ -269,6 +290,16 @@
     type = HeatConductionTimeDerivative
     variable = T
   [../]
+
+## Radiolysis source
+# H2O2 production
+  [./H2O2_Radiolysis_product]
+    block = 'Alpha'
+    type = FunctionSource
+    variable = H2O2
+    Function_Name = H2O2_produce
+  [../]
+
 
 
 
@@ -638,21 +669,20 @@
   [../]
 []
 
+
 [ChemicalReactions]
   [./Network]
     block = 'Alpha Solution'
-    species = 'H2O2 Fe2+ OH- Fe2O3 O2 UO22+ UO2_precip UO2CO322-'
+    species = 'H2O2 O2'
     track_rates = False
+
     equation_constants = 'Ea R T_Re'
     equation_values = '-6E4 8.314 298.15'
-    equation_variables = 'T'  
- 
+    equation_variables = 'T'
+   
     reactions = '
-H2O2 + Fe2+ -> Fe2O3 : {6.9E-2 * exp(Ea/R * (1/T_Re - 1/T))}
-O2 + Fe2+ -> Fe2O3 + Fe2O3 : {5.9E-2 * exp(Ea/R * (1/T_Re - 1/T))}
-UO22+ + Fe2+ -> UO2_precip + Fe2O3 : {1E-2 * exp(Ea/R * (1/T_Re - 1/T))}
-UO2CO322- + Fe2+ -> UO2_precip + CO32- + CO32- + Fe2O3 : {1E-3 * exp(Ea/R * (1/T_Re - 1/T))}
-H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
+  H2O2 -> O2 : {2.25E-7*exp(Ea/R * (1/T_Re - 1/T))}
+  H2O2 -> ConsumedH2O2 : {2.25E-7*exp(Ea/R * (1/T_Re - 1/T))}
 '
 
   [../]
