@@ -9,7 +9,7 @@ defineLegacyParams(UO2BCCon);
 InputParameters
 UO2BCCon::validParams()
 {
-  InputParameters params = ADIntegratedBC::validParams();
+  InputParameters params = IntegratedBC::validParams();
   params.addParam<Real>("Num",1.0,"Put the number to decide production or consumption with + and - sign");
   params.addParam<Real>("Porosity",1.0,"Kinetic constant");
   params.addParam<Real>("Kinetic",1.3E-8,"Kinetic constant");
@@ -20,6 +20,7 @@ UO2BCCon::validParams()
   params.addParam<Real>("Standard_potential",0.046,"Standard_potential");
   params.addParam<Real>("m",1,"Reaction order constant");
   params.addParam<Real>("fraction",1,"Coverage fraction of NMP on UO2");
+  params.addRequiredParam<MaterialPropertyName>("Saturation","Saturation name");
   params.addClassDescription(
       "Computes a boundary residual contribution consistent with the Diffusion Kernel. "
       "Does not impose a boundary condition; instead computes the boundary "
@@ -29,26 +30,60 @@ UO2BCCon::validParams()
 }
 
 UO2BCCon::UO2BCCon(const InputParameters & parameters)
-  : ADIntegratedBC(parameters),
+  : IntegratedBC(parameters),
    _Num(getParam<Real>("Num")),
    _eps(getParam<Real>("Porosity")),
    _k(getParam<Real>("Kinetic")),
    _DelH(getParam<Real>("DelH")),
-   _Ecorr(getADMaterialProperty<Real>("Corrosion_potential")),
-   _T(adCoupledValue("Temperature")),
+   _Ecorr(getMaterialProperty<Real>("Corrosion_potential")),
+   _T(coupledValue("Temperature")),
    _a(getParam<Real>("Alpha")),
    _E(getParam<Real>("Standard_potential")),
    _m(getParam<Real>("m")),
-   _f(getParam<Real>("fraction"))
+   _f(getParam<Real>("fraction")),
+   _Cs(getMaterialProperty<Real>("Saturation")),
+   _T_id(coupled("Temperature"))
 {
 }
 
-ADReal
+Real
 UO2BCCon::computeQpResidual()
 {
 	Real Tref = 298.15;
 	Real F = 96485;
 	Real R = 8.314;
-
-        return _Num * _f * _eps * _k * pow(_u[_qp], _m) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_a * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E));
+     
+	if (_u[_qp] >= _Cs[_qp])
+          return 0;
+	else
+          return -_Num * _f * _eps * _k * pow(_u[_qp], _m) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_a * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E));
 }
+
+Real
+UO2BCCon::computeQpJacobian()
+{
+
+	Real Tref = 298.15;
+	Real F = 96485;
+	Real R = 8.314;
+
+	return -_Num * _f * _eps * _k * _m * _phi[_j][_qp] * pow(_u[_qp], _m-1) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_a * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E));
+}
+
+Real
+UO2BCCon::computeQpOffDiagJacobian(unsigned int jvar)
+{
+	Real Tref = 298.15;
+	Real F = 96485;
+	Real R = 8.314;
+
+	if (_u[_qp] >= _Cs[_qp])
+          return 0;
+        else if	(jvar == _T_id)
+          return -_Num * _f * _eps * _k * pow(_u[_qp], _m) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_a * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E))
+		  * (_DelH - _a * F * (_Ecorr[_qp] - _E)) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp];
+	else
+	       return 0;
+
+}
+

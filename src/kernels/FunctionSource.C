@@ -24,5 +24,6 @@ FunctionSource::FunctionSource(const InputParameters & parameters)
 Real
 FunctionSource::computeQpResidual()
 {
-  	return -_test[_i][_qp] * _S.value(_t,_q_point[_qp]);
+//        printf("this is the function source of H2O2 \n");
+	return -_test[_i][_qp] * _S.value(_t,_q_point[_qp]);
 }

@@ -32,8 +32,8 @@ private:
   MaterialProperty<Real> & _Sat_UO22p;
   Real _UO2CO322mValue;
   MaterialProperty<Real> & _Sat_UO2CO322m;
-  Real _UOOH4Value;
-  MaterialProperty<Real> & _Sat_UOOH4;
+  Real _UOH4Value;
+  MaterialProperty<Real> & _Sat_UOH4;
   Real _Fe2pValue;
   MaterialProperty<Real> & _Sat_Fe2p;
 

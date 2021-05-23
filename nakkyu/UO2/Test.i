@@ -49,7 +49,7 @@
   [./Fe2+]
    block = 'Alpha Solution'
    order = FIRST
-   initial_condition = 0 #mol/m3
+   initial_condition = 1E-6 #mol/m3
   [../]
   [./OH-]
    block = 'Alpha Solution'
@@ -69,7 +69,7 @@
   [./O2]
    block = 'Alpha Solution'
    order = FIRST
-   initial_condition = 0 #mol/m3
+   initial_condition = 1E-3 #mol/m3
   [../]
   [./H2O]
    block = 'Alpha Solution'
@@ -88,12 +88,31 @@
   [../]
 
 
+
   [./T]
     block = 'Alpha Solution'
     order = FIRST
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
+  [./ConsumedH2O2]
+   block = 'Alpha Solution'
+   order = FIRST
+   initial_condition = 0 #mol/m3
+  [../]
+  [./ConsumedFe2+]
+   block = 'Alpha Solution'
+   order = FIRST
+   initial_condition = 0 #mol/m3
+  [../]
+[]
+
+
+[Functions]
+  [H2O2_produce]
+    type = ParsedFunction
+    value = '1.02E-4 * 1E3 * (0.99883 - 11833.90869 * x)^(-1/-0.13308)' #1.02E-4 mol/m3/Gy * 1000 Gy/s
+  []
 []
 
 [Kernels]
@@ -178,6 +197,18 @@
     type = TimeDerivative
     variable = UO2CO334-
   [../]
+  [./dConsumedH2O2_dt]
+    block = 'Alpha Solution'
+    type = TimeDerivative
+    variable = ConsumedH2O2
+  [../]
+  [./dConsumedFe2+_dt]
+    block = 'Alpha Solution'
+    type = TimeDerivative
+    variable = ConsumedFe2+
+  [../]
+
+
 
 
 # Diffusion terms
@@ -270,353 +301,16 @@
     variable = T
   [../]
 
-
-
-## First Order Chemical Reactions
-# M reaction
-  [./UO22+_M]
-    block = 'Alpha Solution'
-    type = ReactantU
-    variable = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./UO32H2O_M]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = UO32H2O
-    v = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = 1
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H+_M]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = H+
-    v = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = 2
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-
-# N reaction
-  [./UO22+_N]
-    block = 'Alpha Solution'
-    type = ReactantU
-    variable = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H2O2_N]
-    block = 'Alpha Solution'
-    type = PreDis1V
+## Radiolysis source
+# H2O2 production
+  [./H2O2_Radiolysis_product]
+    block = 'Alpha'
+    type = FunctionSource
     variable = H2O2
-    v = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./UO2O24H2O_N]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = UO2O24H2O
-    v = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = 1
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H+_N]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = H+
-    v = UO22+
-    Reaction_rate = 1E-3 # 1/s
-    Num = 2
-    Activation_energy = -6E4
-    Saturation = 3E-2 #Unit: mol/m3
-    T = T
-  [../]
-
-# O reaction
-  [./UO2CO322-_O]
-    block = 'Alpha Solution'
-    type = ReactantU
-    variable = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H2O2_O]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = H2O2
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./UO32H2O_O]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = UO32H2O
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = 1
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./CO32-_O]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = CO32-
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = 2
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H+_O]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = H+
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = 2
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
+    Function_Name = H2O2_produce
   [../]
 
 
-# P reaction
-  [./UO2CO322-_P]
-    block = 'Alpha Solution'
-    type = ReactantU
-    variable = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H2O2_P]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = H2O2
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = -1
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./UO2O24H2O_P]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = UO2O24H2O
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = 1
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./H+_P]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = H+
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = 2
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-  [./CO32-_P]
-    block = 'Alpha Solution'
-    type = PreDis1V
-    variable = CO32-
-    v = UO2CO322-
-    Reaction_rate = 1E-4 # 1/s
-    Num = 2
-    Activation_energy = -6E4
-    Saturation = 9E-2 #Unit: mol/m3
-    T = T
-  [../]
-
-
-## Zeroth Order Chemical Reactions
-# Q reactions
-  [./UO22+_Q]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO22+
-    Reaction_rate = 8.6E-7
-    Num = 1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./UO32H2O_Q]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO32H2O
-    Reaction_rate = 8.6E-7
-    Num = -1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./H+_Q]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H+
-    Reaction_rate = 8.6E-7
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
-#R reactions
-  [./UO22+_R]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO22+
-    Reaction_rate = 8.6E-7
-    Num = 1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./H2O2_R]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H2O2
-    Reaction_rate = 8.6E-7
-    Num = 1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./H+_R]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H+
-    Reaction_rate = 8.6E-7
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./UO2O24H2O_R]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H+
-    Reaction_rate = 8.6E-7
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
-
-#S reactions
-  [./UO2CO322-_S]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO2CO322-
-    Reaction_rate = 8.6E-6
-    Num = 1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./UO32H2O_S]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO32H2O
-    Reaction_rate = 8.6E-6
-    Num = -1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./CO32-_S]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = CO32-
-    Reaction_rate = 8.6E-6
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./H+_S]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H+
-    Reaction_rate = 8.6E-6
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
-
-#T reactions
-  [./UO2CO322-_T]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO2CO322-
-    Reaction_rate = 8.6E-6
-    Num = 1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./H2O2_T]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H2O2
-    Reaction_rate = 8.6E-6
-    Num = 1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./UO2O24H2O_T]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = UO2O24H2O
-    Reaction_rate = 8.6E-6
-    Num = -1
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./H+_T]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = H+
-    Reaction_rate = 8.6E-6
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
-  [./CO32-_T]
-    block = 'Alpha Solution'
-    type = ReactionZerothOrder
-    variable = CO32-
-    Reaction_rate = 8.6E-6
-    Num = -2
-    Activation_energy = -6E4
-    T = T
-  [../]
 []
 
 
@@ -625,39 +319,46 @@
 [Materials]
   [./Corrosion_Potential]
     block = 'Alpha Solution'
-    type = UO2
+    type = HandUO2
     C1 = CO32-
     C2 = H2
     C3 = H2O2
     C4 = O2
     T = T
-    Tol = 0.5E-3
+    Tol = 1E-5
     DelE = 0.1E-5
     Porosity = 1
     outputs = exodus
   [../]
+  [./Sat_Property]
+    block = 'Alpha Solution'
+    type = UO2Property
+    UO22p = 1E-2
+    UO2CO322m = 1E-1
+    UOH4 = 4E-7
+    Fe2p = 5E-3
+    outputs = exodus 
+  [../]
 []
+
 
 [ChemicalReactions]
   [./Network]
     block = 'Alpha Solution'
-    species = 'H2O2 Fe2+ OH- Fe2O3 O2 UO22+ UO2_precip UO2CO322-'
+    species = 'H2O2 O2 ConsumedH2O2'
     track_rates = False
+
     equation_constants = 'Ea R T_Re'
     equation_values = '-6E4 8.314 298.15'
-    equation_variables = 'T'  
- 
+    equation_variables = 'T'
+   
     reactions = '
-H2O2 + Fe2+ -> Fe2O3 : {6.9E-2 * exp(Ea/R * (1/T_Re - 1/T))}
-O2 + Fe2+ -> Fe2O3 + Fe2O3 : {5.9E-2 * exp(Ea/R * (1/T_Re - 1/T))}
-UO22+ + Fe2+ -> UO2_precip + Fe2O3 : {1E-2 * exp(Ea/R * (1/T_Re - 1/T))}
-UO2CO322- + Fe2+ -> UO2_precip + CO32- + CO32- + Fe2O3 : {1E-3 * exp(Ea/R * (1/T_Re - 1/T))}
-H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
+  H2O2 -> O2 : {2.25E-7*exp(Ea/R*(1/T_Re-1/T))}
+  H2O2 -> ConsumedH2O2 : {2.25E-7*exp(Ea/R*(1/T_Re-1/T))}
 '
 
   [../]
 []
-
 
 
 
@@ -674,10 +375,11 @@ H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
     Alpha = 0.96
     Standard_potential = 0.453 # Eqauilibrium potentials... -> Have to check the standard potential later!
     fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    Saturation = Sat_UO22p
   [../]
 
   [./BC_UO2CO322-_ProductionB]
-    type = UO2BC
+    type = UO2CO322m_BC
     variable = UO2CO322-
     boundary = 'UO2'
     Num = 1
@@ -685,30 +387,16 @@ H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Chemical = CO32-    
+    v = CO32-    
     Alpha = 0.82
     Standard_potential = 0.046 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 0.66
     fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    Saturation = Sat_UO2CO322m
   [../]
-  [./BC_CO32-_ConsumptionB]
-    type = UO2BCCon
-    variable = CO32-
-    boundary = 'UO2'
-    Num = -2
-    Kinetic = 1.3E-8 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Alpha = 0.82
-    Standard_potential = 0.046 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 0.66
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-
 
   [./BC_UO2CO334-_ProductionC]
-    type = UO2BC
+    type = UO2CO334m_BC
     variable = UO2CO334-
     boundary = 'UO2'
     Num = 1
@@ -716,319 +404,235 @@ H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Chemical = CO32-    
+    v = CO32-    
     Alpha = 0.82
     Standard_potential = 0.184 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 0.66
     fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-  [./BC_CO32-_ConsumptionC]
-    type = UO2BCCon
+
+  [./BC_CO32-_Consumption_B]
+    type = CO32m
     variable = CO32-
     boundary = 'UO2'
-    Num = -3
-    Kinetic = 1.3E-8 #mol/(m2s)
+    Num1 = -2
+    Kinetic1 = 1.3E-8 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Alpha = 0.82
-    Standard_potential = 0.184 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    v = UO2CO322-
+    Alpha1 = 0.82
+    Standard_potential1 = 0.046 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 0.66
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
+    Saturation = Sat_UO2CO322m
   [../]
-
-
-  [./BC_H+_ProductionD]
-    type = UO2BC
-    variable = H+
+  [./BC_CO32-_Consumption_C]
+    type = CO32m_UO2CO334m
+    variable = CO32-
     boundary = 'UO2'
-    Num = 2
-    Kinetic = 3.6E-12 #mol/(m2s)
+    Num1 = -3
+    Kinetic1 = 1.3E-8 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Chemical = H2    
-    Alpha = 0.5
-    Standard_potential = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    Alpha1 = 0.82
+    Standard_potential1 = 0.184 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    m = 0.66
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-  [./BC_CO32-_ConsumptionD]
-    type = UO2BCCon
+
+
+  [./BC_H2_Consumption_D]
+    type = H2
     variable = H2
     boundary = 'UO2'
-    Num = -1
-    Kinetic = 3.6E-12 #mol/(m2s)
+    Num1 = -1
+    Kinetic1 = 3.6E-12 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Alpha = 0.5
-    Standard_potential = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = 0.5
+    Standard_potential1 = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.99 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-
-
-  [./BC_O2_ProductionE]
-    type = UO2BC
-    variable = O2
-    boundary = 'UO2'
-    Num = 1
-    Kinetic = 7.4E-8 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = H2O2    
-    Alpha = 0.41
-    Standard_potential = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_H+_ProductionE]
-    type = UO2BC
-    variable = H+
-    boundary = 'UO2'
-    Num = 2
-    Kinetic = 7.4E-8 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = H2O2    
-    Alpha = 0.41
-    Standard_potential = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_CO32-_ConsumptionE]
-    type = UO2BCCon
-    variable = H2O2
-    boundary = 'UO2'
-    Num = -1
-    Kinetic = 7.4E-8 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Alpha = 0.41
-    Standard_potential = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-
-
-  [./BC_OH-_ProductionF]
-    type = UO2BC
-    variable = OH-
-    boundary = 'UO2'
-    Num = 2
-    Kinetic = 1.2E-12 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = H2O2    
-    Alpha = -0.41
-    Standard_potential = 0.979 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_H2O2_ConsumptionF]
-    type = UO2BCCon
-    variable = H2O2
-    boundary = 'UO2'
-    Num = -1
-    Kinetic = 1.2E-12 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Alpha = -0.41
-    Standard_potential = 0.979 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-
-  [./BC_OH-_ProductionG]
-    type = UO2BC
-    variable = OH-
-    boundary = 'UO2'
-    Num = 4
-    Kinetic = 1.4E-12 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = O2    
-    Alpha = -0.5
-    Standard_potential = 0.444 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_O2_ConsumptionG]
-    type = UO2BCCon
-    variable = O2
-    boundary = 'UO2'
-    Num = -1
-    Kinetic = 1.4E-12 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Alpha = -0.5
-    Standard_potential = 0.444 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-
-
-#NMP (Noble Metal Particles) Surface
-  [./BC_H+_ProductionH]
-    type = UO2BC
-    variable = H+
-    boundary = 'UO2'
-    Num = 2
-    Kinetic = 1E-6 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = H2    
-    Alpha = 0.5
-    Standard_potential = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_CO32-_ConsumptionH]
-    type = UO2BCCon
+  [./BC_H2_Consumption_H]
+    type = H2
     variable = H2
     boundary = 'UO2'
-    Num = -1
-    Kinetic = 1E-6 #mol/(m2s)
+    Num1 = -1
+    Kinetic1 = 1E-6 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Alpha = 0.5
-    Standard_potential = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = 0.5
+    Standard_potential1 = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-
-
-  [./BC_O2_ProductionI]
-    type = UO2BC
-    variable = O2
-    boundary = 'UO2'
-    Num = 1
-    Kinetic = 7.0E-6 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = H2O2    
-    Alpha = 0.41
-    Standard_potential = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_H+_ProductionI]
-    type = UO2BC
+  [./BC_Hp_Production_D]
+    type = Hp
     variable = H+
+    v = H2
     boundary = 'UO2'
-    Num = 2
-    Kinetic = 7.0E-6 #mol/(m2s)
+    Num1 = 2
+    Kinetic1 = 3.6E-12 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Chemical = H2O2    
-    Alpha = 0.41
-    Standard_potential = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = 0.5
+    Standard_potential1 = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.99 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-  [./BC_CO32-_ConsumptionI]
-    type = UO2BCCon
+  [./BC_Hp_Production_H]
+    type = Hp
+    variable = H+
+    v = H2
+    boundary = 'UO2'
+    Num1 = 2
+    Kinetic1 = 1E-6 #mol/(m2s)
+    DelH = 6E4 #J/mol => Have to check the unit later!
+    Corrosion_potential = Ecorr
+    Temperature = T
+    Alpha1 = 0.5
+    Standard_potential1 = 0.049 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    m = 1
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
+  [../]
+
+
+# E,F,G,I,J,K -> For fuel surface and noble metal particles surface
+  
+  [./BC_H2O2_Consumption_E]
+    type = H2
     variable = H2O2
     boundary = 'UO2'
-    Num = -1
-    Kinetic = 7.6E-6 #mol/(m2s)
+    Num1 = -1
+    Kinetic1 = 7.4E-8 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Alpha = 0.41
-    Standard_potential = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = 0.41
+    Standard_potential1 = 0.737
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.99 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-
-
-  [./BC_OH-_ProductionJ]
-    type = UO2BC
-    variable = OH-
-    boundary = 'UO2'
-    Num = 2
-    Kinetic = 1.2E-10 #mol/(m2s)
-    DelH = 6E4 #J/mol => Have to check the unit later!
-    Corrosion_potential = Ecorr
-    Temperature = T
-    Chemical = H2O2    
-    Alpha = -0.41
-    Standard_potential = 0.979 # Eqauilibrium potentials... -> Have to check the standard potential later!
-    m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
-  [../]
-  [./BC_H2O2_ConsumptionJ]
-    type = UO2BCCon
+  [./BC_H2O2_Consumption_I]
+    type = H2
     variable = H2O2
     boundary = 'UO2'
-    Num = -1
-    Kinetic = 1.2E-10 #mol/(m2s)
+    Num1 = -1
+    Kinetic1 = 7E-6 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Alpha = -0.41
-    Standard_potential = 0.979 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = 0.41
+    Standard_potential1 = 0.737
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
+  [../]
+  [./BC_O2_Production_E]
+    type = Hp
+    variable = O2
+    v = H2
+    boundary = 'UO2'
+    Num1 = 1
+    Kinetic1 = 7.4E-8 #mol/(m2s)
+    DelH = 6E4 #J/mol => Have to check the unit later!
+    Corrosion_potential = Ecorr
+    Temperature = T
+    Alpha1 = 0.41
+    Standard_potential1 = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    m = 1
+    fraction = 0.99 #NMP = 0.01. Assumed portion of NMP is 1%
+  [../]
+  [./BC_O2_Production_I]
+    type = Hp
+    variable = O2
+    v = H2
+    boundary = 'UO2'
+    Num1 = 1
+    Kinetic1 = 7E-6 #mol/(m2s)
+    DelH = 6E4 #J/mol => Have to check the unit later!
+    Corrosion_potential = Ecorr
+    Temperature = T
+    Alpha1 = 0.41
+    Standard_potential1 = 0.737 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    m = 1
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
 
-  [./BC_OH-_ProductionK]
-    type = UO2BC
-    variable = OH-
+  [./BC_H2O2_Consumption_F]
+    type = H2
+    variable = H2O2
     boundary = 'UO2'
-    Num = 4
-    Kinetic = 1.4E-10 #mol/(m2s)
+    Num1 = -1
+    Kinetic1 = 1.2E-12 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Chemical = O2    
-    Alpha = -0.5
-    Standard_potential = 0.444 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = -0.41
+    Standard_potential1 = 0.979
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.99 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-  [./BC_O2_ConsumptionK]
-    type = UO2BCCon
+  [./BC_H2O2_Consumption_J]
+    type = H2
+    variable = H2O2
+    boundary = 'UO2'
+    Num1 = -1
+    Kinetic1 = 1.2E-10 #mol/(m2s)
+    DelH = 6E4 #J/mol => Have to check the unit later!
+    Corrosion_potential = Ecorr
+    Temperature = T
+    Alpha1 = -0.41
+    Standard_potential1 = 0.979
+    m = 1
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
+  [../]
+
+  [./BC_H2O2_Consumption_G]
+    type = H2
     variable = O2
     boundary = 'UO2'
-    Num = -1
-    Kinetic = 1.4E-10 #mol/(m2s)
+    Num1 = -1
+    Kinetic1 = 1.4E-12 #mol/(m2s)
     DelH = 6E4 #J/mol => Have to check the unit later!
     Corrosion_potential = Ecorr
     Temperature = T
-    Alpha = -0.5
-    Standard_potential = 0.444 # Eqauilibrium potentials... -> Have to check the standard potential later!
+    Alpha1 = -0.5
+    Standard_potential1 = 0.444
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.99 #NMP = 0.01. Assumed portion of NMP is 1%
   [../]
-
+  [./BC_H2O2_Consumption_K]
+    type = H2
+    variable = O2
+    boundary = 'UO2'
+    Num1 = -1
+    Kinetic1 = 1.4E-10 #mol/(m2s)
+    DelH = 6E4 #J/mol => Have to check the unit later!
+    Corrosion_potential = Ecorr
+    Temperature = T
+    Alpha1 = -0.5
+    Standard_potential1 = 0.444
+    m = 1
+    fraction = 0.01 #NMP = 0.01. Assumed portion of NMP is 1%
+  [../]
 
   [./BC_OH-_ProductionL]
-    type = UO2BC
+    type = Chem
     variable = UOH4
     boundary = 'UO2'
     Num = 1
     Kinetic = 1.9E-12 #mol/(m2s)
     DelH = 0
-    Corrosion_potential = Ecorr
     Temperature = T
-    Chemical = H2O    
-    Alpha = 0
-    Standard_potential = 0 # Eqauilibrium potentials... -> Have to check the standard potential later!
     m = 1
-    fraction = 0.01 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    fraction = 0.99 #UO2 = 0.99, And NMP = 0.01. Assumed portion of NMP is 1%
+    Saturation = Sat_UOH4
   [../]
 
 
@@ -1059,7 +663,7 @@ H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
 #  nl_abs_tol = 1e-12
-  nl_rel_tol = 1e-1 #default = 1e-7
+  nl_rel_tol = 1e-2 #default = 1e-7
   l_max_its = 10
   nl_max_its = 30
   dtmax = 100
@@ -1071,7 +675,7 @@ H2O2 -> O2 : {4.5E-7 * exp(Ea/R * (1/T_Re - 1/T))}
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.99
-    dt = 1e-3
+    dt = 1e-5
     growth_factor = 1.01
   [../]
 []

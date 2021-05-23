@@ -40,7 +40,7 @@ RealGradient
 SurfacePBC::computeQpFluxResidual()
 {
  
-   return -_eps * _n * _S*  _D * _tau * _grad_R1[_qp];   
+   return -_eps * _n * _S*  _D * _tau * _grad_R1[_qp] * _normals[_qp];   
 }
 
 // I have to modify Jacobian (derivation the jacobian first)

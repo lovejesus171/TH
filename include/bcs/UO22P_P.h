@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "ADIntegratedBC.h"
+#include "IntegratedBC.h"
 
 class UO22P_P;
 
@@ -28,7 +28,7 @@ InputParameters validParams<UO22P_P>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class UO22P_P : public ADIntegratedBC
+class UO22P_P : public IntegratedBC
 {
 public:
   static InputParameters validParams();
@@ -36,17 +36,21 @@ public:
   UO22P_P(const InputParameters & parameters);
 
 protected:
-  virtual ADReal computeQpResidual();
+  virtual Real computeQpResidual();
+  virtual Real computeQpJacobian();
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
+
+
 
   const Real & _eps;
   const Real & _kA;
   const Real & _DelH;
-  const ADMaterialProperty<Real> & _Ecorr;
-  const ADVariableValue & _T;
+  const MaterialProperty<Real> & _Ecorr;
+  const VariableValue & _T;
   const Real & _aA;
   const Real & _EA;
-  unsigned int _E_id;
   unsigned int _T_id; 
   const Real & _f;
+  const MaterialProperty<Real> & _Cs;
 
 };

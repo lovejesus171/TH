@@ -47,14 +47,12 @@ PreDis1V::computeQpResidual()
 {
   Real R = 8.314;
   Real T_Re = 298.15;
-  Real k;
 
-  k = _Num * _Reaction_rate * exp(_Ea / R * (1/T_Re - 1/_T[_qp])) * (_v[_qp] - _Cs[_qp]);
 
-  if (k <= 0 )
-	  return 0;
-  else
+  if (_v[_qp] >  _Cs[_qp])
           return -_test[_i][_qp] * _Num * _Reaction_rate * exp(_Ea / R * (1/T_Re - 1/_T[_qp])) * (_v[_qp] - _Cs[_qp]);
+  else
+	  return 0;
 }
 
 Real
@@ -68,15 +66,13 @@ PreDis1V::computeQpOffDiagJacobian(unsigned int jvar)
 {
   Real R = 8.314;
   Real T_Re = 298.15;
-  Real k;
 
-  k = _Num * _Reaction_rate * exp(_Ea / R * (1/T_Re - 1/_T[_qp])) * (_v[_qp] - _Cs[_qp]);
-
-    if (k <= 0)
+    if (_v[_qp] <= _Cs[_qp])
 	return 0;
     else if (jvar == _v_id)
 	return -_test[_i][_qp] * _Num * _Reaction_rate * exp(_Ea/R * (1/T_Re - 1/_T[_qp])) * _phi[_j][_qp];
+    else if (jvar == _T_id)
+	return -_test[_i][_qp] * _Num * _Reaction_rate * _Ea/ (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp] * exp(_Ea/R * (1/T_Re - 1/_T[_qp])) * (_v[_qp] - _Cs[_qp]);
     else
-	return -_test[_i][_qp] * _Num * _Reaction_rate * _Ea/R * 1 / (_phi[_j][_qp] * _T[_qp]) * exp(_Ea/R * (1/T_Re - 1/_T[_qp])) * (_v[_qp] - _Cs[_qp]);
-
+	return 0;
 }

@@ -71,9 +71,9 @@ UO2::validParams()
   params.addParam<Real>("kK", 1.4E-10, "Constant");
 
 
-  params.addParam<Real>("Porosity", 0.05, "Constant");
+  params.addParam<Real>("Porosity", 1, "Constant");
   params.addParam<Real>("NMP_fraction", 0.01, "Constant");
-  params.addParam<Real>("DelH", 6E4, "Constant, J/kg -> Hmm I guess its an activation energy and unit should be J/mol");
+  params.addParam<Real>("DelH", -6E4, "Constant, J/kg -> Hmm I guess its an activation energy and unit should be J/mol");
 
   params.addParam<Real>("Tol",1E-1,"Constant");
   params.addParam<Real>("DelE",1E-4,"Constant");
@@ -217,18 +217,24 @@ UO2::computeQpProperties()
           while (true)
                 {
                   _Isum[_qp] = 
-                  _nA * F * _eps * _kA * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aA * F/(R * _T[_qp]) * (_Ecorr[_qp] - _EA))
+                  (1 - _f) *
+		  (
+		    _nA * F * _eps * _kA * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aA * F/(R * _T[_qp]) * (_Ecorr[_qp] - _EA))
 		  + _nB * F * _eps * _kB * pow(_C1[_qp],0.66) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aB * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EB))
 		  + _nC * F * _eps * _kC * pow(_C1[_qp],0.66) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aC * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EC))
 		  + _nD * F * _eps * _kD * _C2[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aD * F /(R * _T[_qp]) * (_Ecorr[_qp] - _ED))
 		  + _nE * F * _eps * _kE * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aE * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EE))
-		  - _nF * F * _eps * _kF * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF))
-		  - _nG * F * _eps * _kG * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aG * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EG))
-		  + _f * _nH * F * _eps * _kH * _C2[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aH * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EH))
-		  + _f * _nI * F * _eps * _kI * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aI * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EI))
-		  - _f * _nJ * F * _eps * _kJ * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aJ * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EJ))
-		  - _f * _nK * F * _eps * _kK * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aK * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EK));
-
+		  - _nF * F * _eps * _kF * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF))
+		  - _nG * F * _eps * _kG * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aG * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EG))
+                  )
+		  +
+		  _f *
+		  (
+		    _nH * F * _eps * _kH * _C2[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aH * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EH))
+		  + _nI * F * _eps * _kI * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aI * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EI))
+		  - _nJ * F * _eps * _kJ * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aJ * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EJ))
+		  - _nK * F * _eps * _kK * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aK * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EK))
+                  );
 	
 		  if (_Isum[_qp] < -_Tol)
                     _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
@@ -240,16 +246,17 @@ UO2::computeQpProperties()
 		}
   //Calculate current from each reaction
 
-	  _IAA[_qp] =  _nA * F * _eps * _kA * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aA * F/(R * _T[_qp]) * (_Ecorr[_qp] - _EA));
-          _IBB[_qp] = _nB * F * _eps * _kB * pow(_C1[_qp],0.66) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aB * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EB));
-	  _ICC[_qp] = _nC * F * _eps * _kC * pow(_C1[_qp],0.66) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aC * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EC));
-	  _IDD[_qp] = _nD * F * _eps * _kD * _C2[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aD * F /(R * _T[_qp]) * (_Ecorr[_qp] - _ED));
-	  _IEE[_qp] =  _nE * F * _eps * _kE * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aE * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EE));
-	  _IFF[_qp] = - _nF * F * _eps * _kF * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
-	  _IGG[_qp] = - _nG * F * _eps * _kG * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aG * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EG));
+	  _IAA[_qp] = (1 - _f) * _nA * F * _eps * _kA * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aA * F/(R * _T[_qp]) * (_Ecorr[_qp] - _EA));
+          _IBB[_qp] = (1 - _f) * _nB * F * _eps * _kB * pow(_C1[_qp],0.66) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aB * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EB));
+	  _ICC[_qp] = (1 - _f) * _nC * F * _eps * _kC * pow(_C1[_qp],0.66) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aC * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EC));
+	  _IDD[_qp] = (1 - _f) * _nD * F * _eps * _kD * _C2[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aD * F /(R * _T[_qp]) * (_Ecorr[_qp] - _ED));
+	  _IEE[_qp] = (1 - _f) * _nE * F * _eps * _kE * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aE * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EE));
+	  _IFF[_qp] = - (1 - _f) * _nF * F * _eps * _kF * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
+	  _IGG[_qp] = - (1 - _f) *_nG * F * _eps * _kG * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aG * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EG));
 	  _IHH[_qp] = _f * _nH * F * _eps * _kH * _C2[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aH * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EH));
 	  _III[_qp] = _f * _nI * F * _eps * _kI * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aI * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EI));
-	  _IJJ[_qp] = - _f * _nJ * F * _eps * _kJ * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aJ * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EJ));
-	  _IKK[_qp] = - _f * _nK * F * _eps * _kK * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(-_aK * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EK));
+	  _IJJ[_qp] = - _f * _nJ * F * _eps * _kJ * _C3[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aJ * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EJ));
+	  _IKK[_qp] = - _f * _nK * F * _eps * _kK * _C4[_qp] * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_aK * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EK));
 
+	  
 }

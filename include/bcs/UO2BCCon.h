@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "ADIntegratedBC.h"
+#include "IntegratedBC.h"
 
 class UO2BCCon;
 
@@ -28,7 +28,7 @@ InputParameters validParams<UO2BCCon>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class UO2BCCon : public ADIntegratedBC
+class UO2BCCon : public IntegratedBC
 {
 public:
   static InputParameters validParams();
@@ -36,19 +36,21 @@ public:
   UO2BCCon(const InputParameters & parameters);
 
 protected:
-  virtual ADReal computeQpResidual();
+  virtual Real computeQpResidual();
+  virtual Real computeQpJacobian();
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
 
   const Real & _Num;
   const Real & _eps;
   const Real & _k;
   const Real & _DelH;
-  const ADMaterialProperty<Real> & _Ecorr;
-  const ADVariableValue & _T;
+  const MaterialProperty<Real> & _Ecorr;
+  const MaterialProperty<Real> & _Cs;
+  const VariableValue & _T;
   const Real & _a;
   const Real & _E;
-  unsigned int _E_id;
-  unsigned int _T_id;
+  unsigned _T_id;
   const Real & _m; 
-  const Real & _f; 
+  const Real & _f;
 
 };

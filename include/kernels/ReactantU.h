@@ -39,4 +39,5 @@ protected:
   const Real & _Ea;
   const MaterialProperty<Real> & _Cs;
   const VariableValue & _T;
+  unsigned _T_id;
 };

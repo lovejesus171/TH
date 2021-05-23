@@ -9,12 +9,12 @@
 
 #pragma once
 
-#include "ADIntegratedBC.h"
+#include "IntegratedBC.h"
 
-class UO2CO322m;
+class ReactionHProduct;
 
 template <>
-InputParameters validParams<UO2CO322m>();
+InputParameters validParams<ReactionHProduct>();
 
 /**
  * A FluxBC which is consistent with the boundary terms arising from
@@ -28,27 +28,29 @@ InputParameters validParams<UO2CO322m>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class UO2CO322m : public ADIntegratedBC
+class ReactionHProduct : public IntegratedBC
 {
 public:
   static InputParameters validParams();
 
-  UO2CO322m(const InputParameters & parameters);
+  ReactionHProduct(const InputParameters & parameters);
 
 protected:
-  virtual ADReal computeQpResidual();
+  virtual Real computeQpResidual();
+  virtual Real computeQpJacobian();
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
 
   const Real & _Num;
-  const Real & _eps;
-  const Real & _k;
-  const Real & _DelH;
-  const ADMaterialProperty<Real> & _Ecorr;
-  const ADVariableValue & _T;
-  const ADVariableValue & _C;
-  const Real & _a;
-  const Real & _E;
-  unsigned int _E_id;
-  unsigned int _T_id;
-  const Real & _m; 
+  const MaterialProperty<Real> & _eps;
+  const MaterialProperty<Real> & _k1;
+  const MaterialProperty<Real> & _DelH;
+  const MaterialProperty<Real> & _Ecorr;
+  const VariableValue & _T;
+  const VariableValue & _v;
+  const MaterialProperty<Real> & _a1;
+  const MaterialProperty<Real> & _E1;
+  const MaterialProperty<Real> & _f;
+  unsigned _T_id;
+  unsigned _v_id; 
 
 };

@@ -74,6 +74,6 @@ ReactionZerothOrder::computeQpOffDiagJacobian(unsigned int jvar)
   if (z <= 0)
 	  return 0.0;
   else
-          return -_test[_i][_qp] * _Num * _Reaction_rate * _Ea / R * 1 / (_phi[_j][_qp] * _T[_qp])* exp(_Ea / R * (1/T_Re - 1/_T[_qp]));
+          return -_test[_i][_qp] * _Num * _Reaction_rate * _Ea / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp] * exp(_Ea / R * (1/T_Re - 1/_T[_qp]));
 
 }

@@ -1,13 +1,13 @@
 //Production of UO2(CO3)22-
 
-#include "UO2CO322m.h"
+#include "UO2BC.h"
 
-registerMooseObject("corrosionApp", UO2CO322m);
+registerMooseObject("corrosionApp", UO2BC);
 
-defineLegacyParams(UO2CO322m);
+defineLegacyParams(UO2BC);
 
 InputParameters
-UO2CO322m::validParams()
+UO2BC::validParams()
 {
   InputParameters params = ADIntegratedBC::validParams();
   params.addParam<Real>("Num",1.0,"Put the number to decide production or consumption with + and - sign");
@@ -20,6 +20,7 @@ UO2CO322m::validParams()
   params.addParam<Real>("Alpha",0.82,"Transfer coefficient");
   params.addParam<Real>("Standard_potential",0.046,"Standard_potential");
   params.addParam<Real>("m",1,"Reaction order constant");
+  params.addParam<Real>("fraction",1,"Coverage fraction of NMP on UO2");
   params.addClassDescription(
       "Computes a boundary residual contribution consistent with the Diffusion Kernel. "
       "Does not impose a boundary condition; instead computes the boundary "
@@ -28,7 +29,7 @@ UO2CO322m::validParams()
   return params;
 }
 
-UO2CO322m::UO2CO322m(const InputParameters & parameters)
+UO2BC::UO2BC(const InputParameters & parameters)
   : ADIntegratedBC(parameters),
    _Num(getParam<Real>("Num")),
    _eps(getParam<Real>("Porosity")),
@@ -36,19 +37,20 @@ UO2CO322m::UO2CO322m(const InputParameters & parameters)
    _DelH(getParam<Real>("DelH")),
    _Ecorr(getADMaterialProperty<Real>("Corrosion_potential")),
    _T(adCoupledValue("Temperature")),
-   _C(adCoupledValue("Concentration")),
+   _C(adCoupledValue("Chemical")),
    _a(getParam<Real>("Alpha")),
    _E(getParam<Real>("Standard_potential")),
-   _m(getParam<Real>("m"))
+   _m(getParam<Real>("m")),
+   _f(getParam<Real>("fraction"))
 {
 }
 
 ADReal
-UO2CO322m::computeQpResidual()
+UO2BC::computeQpResidual()
 {
 	Real Tref = 298.15;
 	Real F = 96485;
 	Real R = 8.314;
 
-        return _Num * _eps * _k * pow(_C[_qp], _m) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_a * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E));
+        return -_Num * _f * _eps * _k * pow(_C[_qp], _m) * exp(_DelH/R * (1/Tref - 1/_T[_qp])) * exp(_a * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E));
 }

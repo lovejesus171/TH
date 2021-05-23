@@ -143,7 +143,7 @@ ECorr::initQpStatefulProperties()
   _ISS[_qp] = 0;
   _IEE[_qp] = 0;
   _Isum[_qp] = 0;
-  _Ecorr[_qp] = _Ecorr_old[_qp];
+//  _Ecorr[_qp] = _Ecorr_old[_qp];
   _AnodeArea[_qp] = _AnodeAreaValue;
 
 }
@@ -153,27 +153,47 @@ ECorr::computeQpProperties()
 {
   Real F = 96485;
   Real R = 8.314;
-
+//  Real NN = 0;
+//  Real MM = 1;
   //Calculate Corrosion Potential at given time and each quadruture point
           while (true)
                 {
-                  _Isum[_qp] = 
-	           F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp]) *(_Ecorr[_qp] - _EA))
-	         + F *_nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3)) 
-		 - F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE))
-		 - F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EF))
-                 - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
- 		  if (_Isum[_qp] < -_Tol)
-                    _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
-                  else if (_Isum[_qp] > _Tol)
-                    _Ecorr[_qp] = _Ecorr[_qp] - _DelE;
-                  else
-                     break;
-
-		}
+//			NN = NN+1;
+//			printf("fuck you man");
   //Calculate current from each reaction
   _IAA[_qp] = F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_Ecorr[_qp] - _EA)) - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
   _ISS[_qp] = F *  _nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
   _IEE[_qp] = -F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE));
   _IFF[_qp] = -F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
+
+                  _Isum[_qp] = _IAA[_qp] + _ISS[_qp] + _IEE[_qp] + _IFF[_qp];
+//		  if (NN > 100000 || NN == 1)
+//		  {
+//		  printf("Could not find the corrosion potential: Ecorr = %c \n", MM);
+//			  break;
+//		  }
+		  if (_Isum[_qp] < -_Tol)
+		  {                    _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
+//                         std::cout << _Ecorr[_qp] << "\n";
+//			  if (_qp == 1)
+//			  {
+//                         printf("+ Ecorr: %35.32f %f \n", _Ecorr[1], NN);
+//		           printf("+ DelE : %35.32f %f \n", _DelE, NN);
+//			  }
+		  }
+		  else if (_Isum[_qp] > _Tol)
+		  {                    _Ecorr[_qp] = _Ecorr[_qp] - _DelE;
+//			  std::cout << _Ecorr[_qp] << "\n";
+//			  if (_qp == 1)
+//			  {
+//		  printf("- Ecorr: %35.32f %f \n", _Ecorr[1], NN);
+//		  printf("- DelE : %35.32f %f \n", _DelE, NN);
+//			  }
+		  }
+                  else
+		  {
+//		   	  std::cout << _Ecorr[_qp] << "\n";
+                     break;
+		  }
+		}
 }
