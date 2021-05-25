@@ -1,5 +1,5 @@
 [Mesh]
-  file = 'UO2.msh'
+  file = 'UO2_One.msh'
   construct_side_list_from_node_list = true
 []
 
@@ -7,77 +7,77 @@
 [Variables]
   # Name of chemical species
   [./UO22+]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./UO32H2O]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./UO2O24H2O]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./H2]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./H2O2]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 1E-3 #mol/m3
   [../]
   [./H+]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 1E-4 #mol/m3
   [../]
   [./UO2CO322-]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./CO32-]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./Fe2+]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./OH-]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 1E-4 #mol/m3
   [../]
   [./Fe2O3]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./UO2_precip]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./O2]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./UOH4]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./UO2CO334-]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
@@ -85,18 +85,18 @@
 
 
   [./T]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     order = FIRST
     family = LAGRANGE
     initial_condition = 298.15 #[K]
   [../]
   [./ConsumedH2O2]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
   [./ConsumedFe2+]
-   block = 'Alpha Solution'
+   block = 'PotentialZone Alpha Solution'
    order = FIRST
    initial_condition = 0 #mol/m3
   [../]
@@ -113,87 +113,87 @@
 [Kernels]
 # dCi/dt
   [./dUO22+_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UO22+
   [../]
   [./dUO32H2O_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UO32H2O
   [../]
   [./dH2O2_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = H2O2
   [../]
   [./dUO2O24H2O_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UO2O24H2O
   [../]
   [./dH2_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = H2
   [../]
   [./dH+_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = H+
   [../]
   [./dUO2CO322-_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UO2CO322-
   [../]
   [./dCO32-_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = CO32-
   [../]
   [./dFe2+_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = Fe2+
   [../]
   [./dOH-_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = OH-
   [../]
   [./dFe2O3_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = Fe2O3
   [../]
   [./dUO2_precip_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UO2_precip
   [../]
   [./dO2_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = O2
   [../]
   [./dUOH4_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UOH4
   [../]
   [./dUO2CO334-_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = UO2CO334-
   [../]
   [./dConsumedH2O2_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = ConsumedH2O2
   [../]
   [./dConsumedFe2+_dt]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = TimeDerivative
     variable = ConsumedFe2+
   [../]
@@ -203,68 +203,68 @@
 
 # Diffusion terms
   [./DgradHp]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 3.19E-1 #[m2/yr], at 25C
     variable = H+
   [../]
   [./DgradOHm]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 1.52E-1 #[m2/yr], at 25C
     variable = OH-
   [../]
   [./DgradH2O2]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 5.99E-2 #[m2/yr], to be added
     variable = H2O2
   [../]
   [./DgradO2]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 7.88E-2 #[m2/yr], to be added
     variable = O2
   [../]
 
   [./DgradUO22+]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 2.39e-2 #[m2/yr], to be added
     variable = UO22+
   [../]
   [./DgradUO2CO322-]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 2.1E-2 #[m2/yr], to be added
     variable = UO2CO322-
   [../]
   [./DgradUOH4]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 1.89E-2 #[m2/yr], to be added
     variable = UOH4
   [../]
   [./DgradCO32-]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 2.56E-2 #[m2/yr], to be added
     variable = CO32-
   [../]
   [./DgradFe2+]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 2.27E-2 #[m2/yr], to be added
     variable = Fe2+
   [../]
   [./DgradH2]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 1.89E-1 #[m2/yr], to be added
     variable = H2
   [../]
   [./DgradUO2CO334-]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = CoefDiffusion
     coef = 2.1E-2 #[m2/yr], assumed same as UO2CO322-
     variable = UO2CO334-
@@ -275,12 +275,12 @@
 
 # HeatConduction terms
   [./heat]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = HeatConduction
     variable = T
   [../]
   [./ie]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = HeatConductionTimeDerivative
     variable = T
   [../]
@@ -288,7 +288,7 @@
 ## Radiolysis source
 # H2O2 production
   [./H2O2_Radiolysis_product]
-    block = 'Alpha'
+    block = 'PotentialZone Alpha'
     type = FunctionSource
     variable = H2O2
     Function_Name = H2O2_Production
@@ -298,7 +298,7 @@
 ## First Order Chemical Reactions
 # M reaction
   [./UO22+_M]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMReactant
     variable = UO22+
     Reaction_rate = kM
@@ -308,7 +308,7 @@
     T = T
   [../]
   [./UO32H2O_M]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMProduct
     variable = UO32H2O
     v = UO22+
@@ -319,7 +319,7 @@
     T = T
   [../]
   [./H+_M]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMProduct
     variable = H+
     v = UO22+
@@ -332,7 +332,7 @@
 
 # N reaction
   [./UO22+_N]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMReactant
     variable = UO22+
     Reaction_rate = kN
@@ -342,7 +342,7 @@
     T = T
   [../]
   [./H2O2_N]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMProduct
     variable = H2O2
     v = UO22+
@@ -353,7 +353,7 @@
     T = T
   [../]
   [./UO2O24H2O_N]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMProduct
     variable = UO2O24H2O
     v = UO22+
@@ -364,7 +364,7 @@
     T = T
   [../]
   [./H+_N]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = ReactionMProduct
     variable = H+
     v = UO22+
@@ -378,7 +378,7 @@
 
 ## O reaction
 #  [./UO2CO322-_O]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMReactant
 #    variable = UO2CO322-
 #    Reaction_rate = kO
@@ -388,7 +388,7 @@
 #    T = T
 #  [../]
 #  [./UO32H2O_O]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMProduct
 #    variable = UO32H2O
 #    v = UO2CO322-
@@ -399,7 +399,7 @@
 #    T = T
 #  [../]
 #  [./CO32-_O]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMProduct
 #    variable = CO32-
 #    v = UO2CO322-
@@ -410,7 +410,7 @@
 #    T = T
 #  [../]
 #  [./H+_O]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMProduct
 #    variable = H+
 #    v = UO2CO322-
@@ -423,7 +423,7 @@
 
 ## P reaction
 #  [./UO2CO322-_P]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMReactant
 #    variable = UO2CO322-
 #    Reaction_rate = kP
@@ -433,7 +433,7 @@
 #    T = T
 #  [../]
 #  [./UO2O24H2O_P]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMProduct
 #    variable = UO2O24H2O
 #    v = UO2CO322-
@@ -444,7 +444,7 @@
 #    T = T
 #  [../]
 #  [./H+_P]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMProduct
 #    variable = H+
 #    v = UO2CO322-
@@ -455,7 +455,7 @@
 #    T = T
 #  [../]
 #  [./CO32-_P]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionMProduct
 #    variable = CO32-
 #    v = UO2CO322-
@@ -468,77 +468,77 @@
 
 
 ### Zeroth Order Chemical Reactions
-## Q reactions
-#  [./UO22+_Q]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO22+
-#    Reaction_rate = 8.6E-7
-#    Num = 1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./UO32H2O_Q]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO32H2O
-#    Reaction_rate = 8.6E-7
-#    Num = -1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./H+_Q]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO32H2O
-#    Reaction_rate = 8.6E-7
-#    Num = -2
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#
-##R reactions
-#  [./UO22+_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO22+
-#    Reaction_rate = 8.6E-7
-#    Num = 1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./H2O2_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = H2O2
-#    Reaction_rate = 8.6E-7
-#    Num = 1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./UO2O24H2O_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO2O24H2O
-#    Reaction_rate = 8.6E-7
-#    Num = -1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./H+_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = H+
-#    Reaction_rate = 8.6E-7
-#    Num = -2
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#
-#
+# Q reactions
+  [./UO22+_Q]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = UO22+
+    Reaction_rate = kQ
+    Num = 1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./UO32H2O_Q]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = UO32H2O
+    Reaction_rate = kQ
+    Num = -1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./H+_Q]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = UO32H2O
+    Reaction_rate = kQ
+    Num = -2
+    Activation_energy = DelH
+    T = T
+  [../]
+
+#R reactions
+  [./UO22+_R]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = UO22+
+    Reaction_rate = kR
+    Num = 1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./H2O2_R]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = H2O2
+    Reaction_rate = kR
+    Num = 1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./UO2O24H2O_R]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = UO2O24H2O
+    Reaction_rate = kR
+    Num = -1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./H+_R]
+    block = 'PotentialZone Alpha Solution'
+    type = ReactionQ
+    variable = H+
+    Reaction_rate = kR
+    Num = -2
+    Activation_energy = DelH
+    T = T
+  [../]
+
+
 ##S reactions
 #  [./UO2CO322-_S]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = UO2CO322-
 #    Reaction_rate = 8.6E-6
@@ -547,7 +547,7 @@
 #    T = T
 #  [../]
 #  [./UO32H2O_S]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = UO32H2O
 #    Reaction_rate = 8.6E-6
@@ -556,7 +556,7 @@
 #    T = T
 #  [../]
 #  [./CO32-_S]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = CO32-
 #    Reaction_rate = 8.6E-6
@@ -565,7 +565,7 @@
 #    T = T
 #  [../]
 #  [./H+_S]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = H+
 #    Reaction_rate = 8.6E-6
@@ -576,7 +576,7 @@
 #
 ##T reactions
 #  [./UO2CO322-_T]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = UO2CO322-
 #    Reaction_rate = 8.6E-6
@@ -585,7 +585,7 @@
 #    T = T
 #  [../]
 #  [./H2O2_T]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = H2O2
 #    Reaction_rate = 8.6E-6
@@ -594,7 +594,7 @@
 #    T = T
 #  [../]
 #  [./UO2O24H2O_T]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = UO2O24H2O
 #    Reaction_rate = 8.6E-6
@@ -603,7 +603,7 @@
 #    T = T
 #  [../]
 #  [./CO32-_T]
-#    block = 'Alpha Solution'
+#    block = 'PotentialZone Alpha Solution'
 #    type = ReactionZerothOrder
 #    variable = CO32-
 #    Reaction_rate = 8.6E-6
@@ -814,8 +814,8 @@
 
 [Materials]
   [./Corrosion_Potential]
-    block = 'Alpha'
-    type = MatUO2Potential
+    block = 'PotentialZone'
+    type = UO2Potential
     C1 = CO32-
     C2 = H2
     C3 = H2O2
@@ -875,13 +875,13 @@
     DelH = DelH
     
     Tol = 5E-9
-    DelE = 1E-5
+    DelE = 0.5E-5
 
     outputs = exodus
 
   [../]
   [./Sat_Property]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     type = UO2PropertyCollectionYear
     UO22p = 1E-2
     UO2CO322m = 1E-1
@@ -910,7 +910,7 @@
 
 [ChemicalReactions]
   [./Network]
-    block = 'Alpha Solution'
+    block = 'PotentialZone Alpha Solution'
     species = 'H2O2 O2 ConsumedH2O2'
     track_rates = False
 
@@ -1343,9 +1343,9 @@
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
 #  nl_abs_tol = 1e-12
-  nl_rel_tol = 1e-3 #default = 1e-7
+  nl_rel_tol = 1e-5 #default = 1e-7
 #  l_rel_tol = 1e-35
-  l_max_its = 30
+  l_max_its = 10
   nl_max_its = 10
 
 #  scheme = crank-nicolson  
@@ -1358,7 +1358,7 @@
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.9
-    dt = 1e-3
+    dt = 1e-4
     growth_factor = 1.005
   [../]
 []

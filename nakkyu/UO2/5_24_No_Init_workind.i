@@ -815,7 +815,7 @@
 [Materials]
   [./Corrosion_Potential]
     block = 'Alpha'
-    type = MatUO2Potential
+    type = NoInitUO2Potential
     C1 = CO32-
     C2 = H2
     C3 = H2O2

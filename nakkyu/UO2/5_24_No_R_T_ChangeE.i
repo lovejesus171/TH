@@ -815,7 +815,7 @@
 [Materials]
   [./Corrosion_Potential]
     block = 'Alpha'
-    type = MatUO2Potential
+    type = NoInitUO2Potential
     C1 = CO32-
     C2 = H2
     C3 = H2O2
@@ -875,7 +875,7 @@
     DelH = DelH
     
     Tol = 5E-9
-    DelE = 1E-5
+    DelE = 0.5E-5
 
     outputs = exodus
 

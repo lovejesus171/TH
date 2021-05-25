@@ -468,74 +468,74 @@
 
 
 ### Zeroth Order Chemical Reactions
-## Q reactions
-#  [./UO22+_Q]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO22+
-#    Reaction_rate = 8.6E-7
-#    Num = 1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./UO32H2O_Q]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO32H2O
-#    Reaction_rate = 8.6E-7
-#    Num = -1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./H+_Q]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO32H2O
-#    Reaction_rate = 8.6E-7
-#    Num = -2
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#
-##R reactions
-#  [./UO22+_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO22+
-#    Reaction_rate = 8.6E-7
-#    Num = 1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./H2O2_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = H2O2
-#    Reaction_rate = 8.6E-7
-#    Num = 1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./UO2O24H2O_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = UO2O24H2O
-#    Reaction_rate = 8.6E-7
-#    Num = -1
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#  [./H+_R]
-#    block = 'Alpha Solution'
-#    type = ReactionZerothOrder
-#    variable = H+
-#    Reaction_rate = 8.6E-7
-#    Num = -2
-#    Activation_energy = -6E4
-#    T = T
-#  [../]
-#
-#
+# Q reactions
+  [./UO22+_Q]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = UO22+
+    Reaction_rate = kQ
+    Num = 1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./UO32H2O_Q]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = UO32H2O
+    Reaction_rate = kQ
+    Num = -1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./H+_Q]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = UO32H2O
+    Reaction_rate = kQ
+    Num = -2
+    Activation_energy = DelH
+    T = T
+  [../]
+
+#R reactions
+  [./UO22+_R]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = UO22+
+    Reaction_rate = kR
+    Num = 1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./H2O2_R]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = H2O2
+    Reaction_rate = kR
+    Num = 1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./UO2O24H2O_R]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = UO2O24H2O
+    Reaction_rate = kR
+    Num = -1
+    Activation_energy = DelH
+    T = T
+  [../]
+  [./H+_R]
+    block = 'Alpha Solution'
+    type = ReactionQ
+    variable = H+
+    Reaction_rate = kR
+    Num = -2
+    Activation_energy = DelH
+    T = T
+  [../]
+
+
 ##S reactions
 #  [./UO2CO322-_S]
 #    block = 'Alpha Solution'
@@ -815,7 +815,7 @@
 [Materials]
   [./Corrosion_Potential]
     block = 'Alpha'
-    type = MatUO2Potential
+    type = NoInitUO2Potential
     C1 = CO32-
     C2 = H2
     C3 = H2O2
@@ -875,7 +875,7 @@
     DelH = DelH
     
     Tol = 5E-9
-    DelE = 1E-5
+    DelE = 0.5E-5
 
     outputs = exodus
 
@@ -1343,7 +1343,7 @@
 #  l_abs_tol = 1e-12
 #  l_tol = 1e-7 #default = 1e-5
 #  nl_abs_tol = 1e-12
-  nl_rel_tol = 1e-3 #default = 1e-7
+  nl_rel_tol = 1e-5 #default = 1e-7
 #  l_rel_tol = 1e-35
   l_max_its = 30
   nl_max_its = 10
@@ -1358,7 +1358,7 @@
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.9
-    dt = 1e-3
+    dt = 1e-4
     growth_factor = 1.005
   [../]
 []
