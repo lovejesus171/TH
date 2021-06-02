@@ -17,15 +17,15 @@
 #include "Kernel.h"
 
 // Forward Declaration
-class ReactionQReactant;
+class RT;
 
 template <>
-InputParameters validParams<ReactionQReactant>();
+InputParameters validParams<RT>();
 
-class ReactionQReactant : public Kernel
+class RT : public Kernel
 {
 public:
-  ReactionQReactant(const InputParameters & parameters);
+  RT(const InputParameters & parameters);
 
 protected:
   Real computeQpResidual() override;
@@ -34,10 +34,8 @@ protected:
 
 
   // The reaction coefficient
-  const MaterialProperty<Real> & _Reaction_rate;
   const Real & _Num;
-  const MaterialProperty<Real> & _Ea;
-  const VariableValue & _T;
-  const PostprocessorValue & _pp_value;
-  unsigned _T_id;
+  const Real & _k;
+  const Real & _Sat;
+
 };

@@ -38,6 +38,6 @@ protected:
   const Real & _Num;
   const MaterialProperty<Real> & _Ea;
   const VariableValue & _T;
-  const VariableValue & _v;
+  const PostprocessorValue & _pp_value;
   unsigned _T_id;
 };

@@ -46,7 +46,7 @@ protected:
   const MaterialProperty<Real> & _DelH;
   const MaterialProperty<Real> & _Ecorr;
   const VariableValue & _T;
-  const VariableValue & _C;
+  const VariableValue & _v;
   const MaterialProperty<Real> & _a;
   const MaterialProperty<Real> & _E;
   unsigned int _T_id;

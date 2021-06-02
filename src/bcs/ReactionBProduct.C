@@ -39,7 +39,7 @@ ReactionBProduct::ReactionBProduct(const InputParameters & parameters)
    _DelH(getMaterialProperty<Real>("DelH")),
    _Ecorr(getMaterialProperty<Real>("Corrosion_potential")),
    _T(coupledValue("Temperature")),
-   _C(coupledValue("v")),
+   _v(coupledValue("v")),
    _a(getMaterialProperty<Real>("Alpha")),
    _E(getMaterialProperty<Real>("Standard_potential")),
    _f(getMaterialProperty<Real>("fraction")),
@@ -54,8 +54,11 @@ ReactionBProduct::computeQpResidual()
 	Real Tref = 298.15;
 	Real F = 96485;
 	Real R = 8.314;
-     
-          return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k[_qp] * pow(_C[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E[_qp]));
+
+        if (_v[_qp] > 0)	
+          return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k[_qp] * pow(_v[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E[_qp]));
+	else
+		return 0;
 }
 
 Real
@@ -75,10 +78,10 @@ ReactionBProduct::computeQpOffDiagJacobian(unsigned int jvar)
 	Real F = 96485;
 	Real R = 8.314;
 
-	if (jvar == _C_id)
-               return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k[_qp] * 0.66 * _phi[_j][_qp] * pow(_C[_qp], -0.34) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E[_qp]));
-	else if	(jvar == _T_id)
-               return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k[_qp] * pow(_C[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E[_qp])) * (_DelH[_qp] - _a[_qp] * F * (_Ecorr[_qp] - _E[_qp])) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp];
+	if (_v[_qp] > 0 && jvar == _C_id)
+               return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k[_qp] * 0.66 * _phi[_j][_qp] * pow(_v[_qp], -0.34) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E[_qp]));
+	else if	(_v[_qp] > 0 && jvar == _T_id)
+               return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k[_qp] * pow(_v[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E[_qp])) * (_DelH[_qp] - _a[_qp] * F * (_Ecorr[_qp] - _E[_qp])) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp];
 	else
 	       return 0;
 

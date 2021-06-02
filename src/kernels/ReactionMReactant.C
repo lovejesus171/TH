@@ -45,9 +45,13 @@ ReactionMReactant::computeQpResidual()
   Real T_Re = 298.15;
 
   if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
-	  return 0;
+	  {
+		  //printf("Return 0 \n");
+		  return 0;
+	  }
   else
-          return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);
+  {//printf("Return Non Zero \n");
+          return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);}
 }
 
 Real

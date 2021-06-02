@@ -11,10 +11,10 @@
 
 #include "IntegratedBC.h"
 
-class ReactionBProduct;
+class ReactionO2Reactant;
 
 template <>
-InputParameters validParams<ReactionBProduct>();
+InputParameters validParams<ReactionO2Reactant>();
 
 /**
  * A FluxBC which is consistent with the boundary terms arising from
@@ -28,12 +28,12 @@ InputParameters validParams<ReactionBProduct>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class ReactionBProduct : public IntegratedBC
+class ReactionO2Reactant : public IntegratedBC
 {
 public:
   static InputParameters validParams();
 
-  ReactionBProduct(const InputParameters & parameters);
+  ReactionO2Reactant(const InputParameters & parameters);
 
 protected:
   virtual Real computeQpResidual();
@@ -42,15 +42,13 @@ protected:
 
   const Real & _Num;
   const MaterialProperty<Real> & _eps;
-  const MaterialProperty<Real> & _k;
+  const MaterialProperty<Real> & _k1;
   const MaterialProperty<Real> & _DelH;
   const MaterialProperty<Real> & _Ecorr;
   const VariableValue & _T;
-  const VariableValue & _v;
-  const MaterialProperty<Real> & _a;
-  const MaterialProperty<Real> & _E;
-  unsigned int _T_id;
-  unsigned int _C_id;
-  const MaterialProperty<Real> & _f; 
+  const MaterialProperty<Real> & _a1;
+  const MaterialProperty<Real> & _E1;
+  const MaterialProperty<Real> & _f;
+  unsigned _T_id; 
 
 };

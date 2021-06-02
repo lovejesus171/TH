@@ -17,15 +17,15 @@
 #include "Kernel.h"
 
 // Forward Declaration
-class ReactionQReactant;
+class ReactionSProduct;
 
 template <>
-InputParameters validParams<ReactionQReactant>();
+InputParameters validParams<ReactionSProduct>();
 
-class ReactionQReactant : public Kernel
+class ReactionSProduct : public Kernel
 {
 public:
-  ReactionQReactant(const InputParameters & parameters);
+  ReactionSProduct(const InputParameters & parameters);
 
 protected:
   Real computeQpResidual() override;
@@ -38,6 +38,7 @@ protected:
   const Real & _Num;
   const MaterialProperty<Real> & _Ea;
   const VariableValue & _T;
+  const VariableValue & _v;
   const PostprocessorValue & _pp_value;
   unsigned _T_id;
 };

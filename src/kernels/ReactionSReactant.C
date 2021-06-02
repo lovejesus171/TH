@@ -1,13 +1,13 @@
-#include "ReactionQProduct.h"
+#include "ReactionSReactant.h"
 
 // MOOSE includes
 #include "MooseVariable.h"
 
-registerMooseObject("corrosionApp", ReactionQProduct);
+registerMooseObject("corrosionApp", ReactionSReactant);
 
 template <>
 InputParameters
-validParams<ReactionQProduct>()
+validParams<ReactionSReactant>()
 {
   InputParameters params = validParams<Kernel>();
   params.addRequiredParam<MaterialPropertyName>("Reaction_rate","Reaction rate coefficient.");
@@ -25,7 +25,7 @@ validParams<ReactionQProduct>()
   return params;
 }
 
-ReactionQProduct::ReactionQProduct(const InputParameters & parameters)
+ReactionSReactant::ReactionSReactant(const InputParameters & parameters)
   : Kernel(parameters),
     _Reaction_rate(getMaterialProperty<Real>("Reaction_rate")),
     _Num(getParam<Real>("Num")),
@@ -37,19 +37,19 @@ ReactionQProduct::ReactionQProduct(const InputParameters & parameters)
 }
 
 Real
-ReactionQProduct::computeQpResidual()
+ReactionSReactant::computeQpResidual()
 {
   Real R = 8.314;
   Real T_Re = 298.15;
 
-   if (_pp_value > 0)
+   if (_pp_value > 0 && _u[_qp] > 0)
           return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp]));
    else
 	   return 0;
 }
 
 Real
-ReactionQProduct::computeQpJacobian()
+ReactionSReactant::computeQpJacobian()
 {
   Real R = 8.314;
   Real T_Re = 298.15;
@@ -58,14 +58,14 @@ ReactionQProduct::computeQpJacobian()
 }
 
 Real
-ReactionQProduct::computeQpOffDiagJacobian(unsigned int jvar)
+ReactionSReactant::computeQpOffDiagJacobian(unsigned int jvar)
 {
   Real R = 8.314;
   Real T_Re = 298.15;
 
-  if (_pp_value > 0)
-	  return 0;
-  else
+  if (_pp_value > 0 && _u[_qp] > 0)
         return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * _Ea[_qp] / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp]));
 
+  else
+	  return 0;
 }

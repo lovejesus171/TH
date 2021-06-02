@@ -1,16 +1,16 @@
 //Production of UO2(CO3)22-
 
-#include "ReactionBReactant.h"
+#include "ReactionO2Reactant.h"
 
-registerMooseObject("corrosionApp", ReactionBReactant);
+registerMooseObject("corrosionApp", ReactionO2Reactant);
 
-defineLegacyParams(ReactionBReactant);
+defineLegacyParams(ReactionO2Reactant);
 
 InputParameters
-ReactionBReactant::validParams()
+ReactionO2Reactant::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
-  params.addParam<Real>("Num",-2.0,"Put the number to decide production or consumption with + and - sign");
+  params.addParam<Real>("Num",1.0,"Put the number to decide production or consumption with + and - sign");
   params.addRequiredParam<MaterialPropertyName>("Porosity","Kinetic constant");
   params.addRequiredParam<MaterialPropertyName>("Kinetic1","Kinetic constant");
   params.addRequiredParam<MaterialPropertyName>("DelH","transfer coefficient");
@@ -27,7 +27,7 @@ ReactionBReactant::validParams()
   return params;
 }
 
-ReactionBReactant::ReactionBReactant(const InputParameters & parameters)
+ReactionO2Reactant::ReactionO2Reactant(const InputParameters & parameters)
   : IntegratedBC(parameters),
    _Num(getParam<Real>("Num")),
    _eps(getMaterialProperty<Real>("Porosity")),
@@ -43,41 +43,45 @@ ReactionBReactant::ReactionBReactant(const InputParameters & parameters)
 }
 
 Real
-ReactionBReactant::computeQpResidual()
+ReactionO2Reactant::computeQpResidual()
 {
 	Real Tref = 298.15;
 	Real F = 96485;
 	Real R = 8.314;
 
-        if (_u[_qp] > 0)	
- 		return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * pow(_u[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]));
-	else
-		return 0;
+    if (_u[_qp] <= 0)
+       return 0;
+    else    
+       return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * _u[_qp] * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]))
+;
+}
+Real
+ReactionO2Reactant::computeQpJacobian()
+{
+	Real Tref = 298.15;
+	Real F = 96485;
+	Real R = 8.314;
+   
+      if (_u[_qp] < 0)
+         return 0;
+      else      
+         return -_test[_i][_qp] * _Num *  (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * _phi[_j][_qp] * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]))
+;
 }
 
+
 Real
-ReactionBReactant::computeQpJacobian()
+ReactionO2Reactant::computeQpOffDiagJacobian(unsigned int jvar)
 {
 	Real Tref = 298.15;
 	Real F = 96485;
 	Real R = 8.314;
-
-        if (_u[_qp] > 0)
-          return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * 0.66 * _phi[_j][_qp] * pow(_u[_qp], -0.34) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]));
-	else
+        if (_u[_qp] < 0)
 		return 0;
-}
+	else
+          return -_test[_i][_qp] * _Num *  (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * _u[_qp] * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]))
+		  * (_DelH[_qp] - _a1[_qp] * F * (_Ecorr[_qp] - _E1[_qp])) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp]
+	  ;	    
 
-Real
-ReactionBReactant::computeQpOffDiagJacobian(unsigned int jvar)
-{
-	Real Tref = 298.15;
-	Real F = 96485;
-	Real R = 8.314;
-
-	if (_u[_qp] > 0 && jvar == _T_id)
-		return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * pow(_u[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp])) * (_DelH[_qp] - _a1[_qp] * F * (_Ecorr[_qp] - _E1[_qp])) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp];
- 	else
-	       return 0;
 }
 
