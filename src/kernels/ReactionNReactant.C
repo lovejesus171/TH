@@ -1,21 +1,22 @@
-#include "ReactionMReactant.h"
+#include "ReactionNReactant.h"
 
 // MOOSE includes
 #include "MooseVariable.h"
 #include <algorithm>
 #include <limits>
 
-registerMooseObject("corrosionApp", ReactionMReactant);
+registerMooseObject("corrosionApp", ReactionNReactant);
 
 template <>
 InputParameters
-validParams<ReactionMReactant>()
+validParams<ReactionNReactant>()
 {
   InputParameters params = validParams<Kernel>();
   params.addRequiredParam<MaterialPropertyName>("Reaction_rate","Reaction rate coefficient.");
   params.addRequiredParam<Real>("Num", "The stoichiometric coeffient.");
   params.addRequiredParam<MaterialPropertyName>("Activation_energy", "Put the activation energy of the reaction.");
   params.addRequiredParam<MaterialPropertyName>("Saturation","Put the saturated concentration.");
+  params.addRequiredCoupledVar("v","Coupled concentration");
   params.addRequiredCoupledVar("T","Temperature of electrolyte or the system");
 
   params.addParam<std::string>(
@@ -28,24 +29,27 @@ validParams<ReactionMReactant>()
   return params;
 }
 
-ReactionMReactant::ReactionMReactant(const InputParameters & parameters)
+ReactionNReactant::ReactionNReactant(const InputParameters & parameters)
   : Kernel(parameters),
     _Reaction_rate(getMaterialProperty<Real>("Reaction_rate")),
     _Num(getParam<Real>("Num")),
     _Ea(getMaterialProperty<Real>("Activation_energy")),
     _Cs(getMaterialProperty<Real>("Saturation")),
+    _v(coupledValue("v")),
     _T(coupledValue("T")),
     _T_id(coupled("T"))
 {
 }
 
 Real
-ReactionMReactant::computeQpResidual()
+ReactionNReactant::computeQpResidual()
 {
   Real R = 8.314;
   Real T_Re = 298.15;
 
-  if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
+  Real vv = _v[_qp] - _Reaction_rate[_qp] * _v[_qp];
+
+  if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0 || vv <= 0)
 	  {
 		  //printf("Return 0 \n");
 		  return 0;
@@ -56,15 +60,16 @@ ReactionMReactant::computeQpResidual()
 }
 
 Real
-ReactionMReactant::computeQpJacobian()
+ReactionNReactant::computeQpJacobian()
 {
   Real R = 8.314;
   Real T_Re = 298.15;
   Real k;
+  Real vv = _v[_qp] - _Reaction_rate[_qp] * _v[_qp];
 
   k = _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);
 
-    if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
+    if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0 || vv <= 0)
 	return 0;
     else
 	return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * _phi[_j][_qp];
@@ -72,11 +77,12 @@ ReactionMReactant::computeQpJacobian()
 }
 
 Real
-ReactionMReactant::computeQpOffDiagJacobian(unsigned int jvar)
+ReactionNReactant::computeQpOffDiagJacobian(unsigned int jvar)
 {
   Real R = 8.314;
   Real T_Re = 298.15;
-    if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
+  Real vv = _v[_qp] - _Reaction_rate[_qp] * _v[_qp];
+    if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0 || vv <= 0)
 	    return 0;
     else if (jvar == _T_id)
 	return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * _Ea[_qp] / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);
