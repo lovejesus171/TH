@@ -7,9 +7,9 @@
 [UserObjects]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp'
-    number_fluid_phases = 1
-    number_fluid_components = 1
+    porous_flow_vars = pp psteam
+    number_fluid_phases = 2
+    number_fluid_components = 2
   [../]
   [./pc_bentonite]
     type = PorousFlowCapillaryPressureVG
@@ -40,6 +40,10 @@
     order = FIRST
     family = LAGRANGE
   [../]
+  [./psteam]
+    order = FIRST
+    family = LAGRANGE
+  [../]
   [./temperature]
     order = FIRST
     family = LAGRANGE
@@ -63,12 +67,27 @@
   [./dP_dt]
     type = PorousFlowMassTimeDerivative
     variable = pp
+    fluid_component = 0
     block = 'bentonite backfill hostrock'
   [../]
   [./flux_P]
     type = PorousFlowAdvectiveFlux
     variable = pp
     gravity = '0 0 9.81'
+    fluid_component = 0
+    block = 'bentonite backfill hostrock'
+  [../]
+  [./dPsteam_dt]
+    type = PorousFlowMassTimeDerivative
+    variable = psteam
+    fluid_component = 0
+    block = 'bentonite backfill hostrock'
+  [../]
+  [./flux_Psteam]
+    type = PorousFlowAdvectiveFlux
+    variable = psteam
+    gravity = '0 0 9.81'
+    fluid_component = 0
     block = 'bentonite backfill hostrock'
   [../]
 
