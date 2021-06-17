@@ -7,7 +7,7 @@
 [UserObjects]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp'
+    porous_flow_vars = pp
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
