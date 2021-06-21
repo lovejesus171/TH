@@ -2,12 +2,13 @@
 
 [Mesh]
   file = 'KRS+_4parts_new_heavy.msh'
+  construct_side_list_from_node_list = true
 []
 
 [UserObjects]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp temperature'
+    porous_flow_vars = 'pp T'
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
@@ -40,7 +41,7 @@
     order = FIRST
     family = LAGRANGE
   [../]
-  [./temperature]
+  [./T]
     order = FIRST
     family = LAGRANGE
   [../]
@@ -52,15 +53,19 @@
     order = FIRST
     family = LAGRANGE
   [../]
-#  [./Cl-]
-#    order = FIRST
-#    family = LAGRANGE
-#  [../]
+  [./Cl-]
+    order = FIRST
+    family = LAGRANGE
+  [../]
   [./Cu2O]
     order = FIRST
     family = LAGRANGE
   [../]
   [./Cu2S]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./CuCl2-]
     order = FIRST
     family = LAGRANGE
   [../]
@@ -83,18 +88,18 @@
 # Heat Transfer
   [./dT_dt]
     type = PorousFlowEnergyTimeDerivative
-    variable = temperature
+    variable = T
     block = 'bentonite backfill hostrock'
   [../]
   [./Heat_advection]
     type = PorousFlowHeatAdvection
-    variable = temperature
+    variable = T
     gravity = '0 0 0'
     block = 'bentonite backfill hostrock'
   [../]
   [./Heat_conduction]
     type = PorousFlowHeatConduction
-    variable = temperature
+    variable = T
     block = 'bentonite backfill hostrock'
   [../]
 
@@ -125,18 +130,31 @@
     variable = HS-
   [../]
 
-#  [./dCl-_dt]
-#    type = PrimaryTimeDerivative
-#    variable = Cl-
-#  [../]
-#  [./Adve_Cl-]
-#    type = PorousFlowBasicAdvection
-#    variable = Cl-
-#  [../]
-#  [./Diff_Cl-]
-#    type = PorousFlowDiffusion
-#    variable = Cl-
-#  [../]
+  [./dCl-_dt]
+    type = PrimaryTimeDerivative
+    variable = Cl-
+  [../]
+  [./Adve_Cl-]
+    type = PorousFlowBasicAdvection
+    variable = Cl-
+  [../]
+  [./Diff_Cl-]
+    type = PorousFlowDiffusion
+    variable = Cl-
+  [../]
+
+  [./dCuCl2-_dt]
+    type = PrimaryTimeDerivative
+    variable = CuCl2-
+  [../]
+  [./Adve_CuCl2-]
+    type = PorousFlowBasicAdvection
+    variable = CuCl2-
+  [../]
+  [./Diff_CuCl2-]
+    type = PorousFlowDiffusion
+    variable = CuCl2-
+  [../]
 
 # Chemical species accumulation
   [./dCu2O_dt]
@@ -145,7 +163,7 @@
   [../]
   [./Diff_Cu2O]
     type = CoefDiffusion
-    coef = 0
+    coef = 0.5e-16
     variable = Cu2O
   [../]
 
@@ -155,7 +173,7 @@
   [../]
   [./Diff_Cu2S]
     type = CoefDiffusion
-    coef = 0
+    coef = 0.5e-16
     variable = Cu2S
   [../]
 []
@@ -191,13 +209,13 @@
 # Temperature
    [./IC_T]
     type = ConstantIC
-    variable = temperature
+    variable = T
     value = 298.15
     block = 'bentonite backfill'
    [../]
    [./IC_T_hostrock]
     type = FunctionIC
-    variable = temperature
+    variable = T
     function = underground_temp
     block = 'hostrock'
    [../]
@@ -286,13 +304,13 @@
 # Temperature
   [./BC_T_top]
     type = DirichletBC
-    variable = temperature
+    variable = T
     value = '296.65'
     boundary = 'top'
   [../]
   [./BC_T_bottom]
     type = DirichletBC
-    variable = temperature
+    variable = T
     value = '299.65'
     boundary = 'bottom'
   [../]
@@ -300,7 +318,7 @@
 # Heat Flux
   [./BC_HeatFlux]
     type = FunctionNeumannBC
-    variable = temperature
+    variable = T
     boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
     function = Decay_fn
   [../]
@@ -349,8 +367,71 @@
     type = ChemFluxBC
     variable = Cu2S
     Reactant1 = HS-
-    Num = 1
+    Num = 2
     boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+  [../]
+
+# Mixed potential Boundary Conditions
+  [./BC_HS-_mixed_canister_top]
+    type = ADES2
+    variable = HS-
+    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    Faraday_constant = 96485
+    Kinetic = 216 # m4mol/hr at 25
+    AlphaS = 0.5
+    Corrosion_potential = Ecorr
+    Temperature = T
+    AlphaS3 = 0.5
+    Standard_potential2 = -0.747
+    Standard_potential3 = -0.747
+    Num = -1
+    Area = AnodeArea 
+  [../]
+
+  [./BC_Cu2S_mixed_canister_top]
+    type = ADCu2S
+    variable = Cu2S
+    Reactant1 = HS-
+    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    Faraday_constant = 96485
+    Kinetic = 216 # m4mol/hr at 25
+    AlphaS = 0.5
+    Corrosion_potential = Ecorr
+    Temperature = T
+    AlphaS3 = 0.5
+    Standard_potential2 = -0.747
+    Standard_potential3 = -0.747
+    Num = -1
+    Area = AnodeArea
+  [../]
+
+  [./BC_Cl-_mixed_canister_top]
+    type = ADClm
+    variable = Cl-
+    Reactant1 = CuCl2-
+    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    Corrosion_potential = Ecorr
+    Temperature = T
+    kF = 1.188E-4
+    kB = 2.4444E-3
+    StandardPotential = -0.105
+    Num = -2
+    Area = AnodeArea
+  [../]
+
+
+  [./BC_CuCl2-_mixed_canister_top]
+    type = ADCuCl2m
+    variable = CuCl2-
+    Reactant1 = Cl-
+    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    Corrosion_potential = Ecorr
+    kF = 1.188E-4
+    kB = 2.4444E-3
+    Temperature = T
+    StandardPotential = -0.105
+    Num = 1
+    Area = AnodeArea
   [../]
 []
 
@@ -433,7 +514,7 @@
   [../]
   [./temperature_bentonite]
     type = PorousFlowTemperature
-    temperature = temperature
+    temperature = T
     block = 'bentonite backfill hostrock'
   [../]
   [./massfrac_bentonite]
@@ -540,6 +621,23 @@
     prop_names = 'diffusivity tortuosity porosity'
     prop_values = '2.46E-3 0.8 0.01' 
     block = 'hostrock'
+  [../]
+
+# Mixed potential
+  [./Corrosion_potential]
+    type = ECorr
+    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    C1 = CuCl2-
+    C6 = Cl-
+    C9 = HS-
+    Tol = 1E-4
+    T = T
+    DelE = 0.1E-5
+    outputs = exodus
+    kF = 0
+    Porosity = 0.1
+    AnodeAreaValue = 0.1
+    Area = 0.9
   [../]
 []
 
