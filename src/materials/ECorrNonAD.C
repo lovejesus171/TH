@@ -7,14 +7,14 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ECorr.h"
+#include "ECorrNonAD.h"
 
-registerMooseObject("corrosionApp", ECorr);
+registerMooseObject("corrosionApp", ECorrNonAD);
 
 InputParameters
-ECorr::validParams()
+ECorrNonAD::validParams()
 {
-  InputParameters params = ADMaterial::validParams();
+  InputParameters params = Material::validParams();
   params.addCoupledVar("T",298.15,"T");
   params.addRequiredCoupledVar("C9","HS-");
   params.addCoupledVar("C1",0,"C1");
@@ -67,14 +67,14 @@ ECorr::validParams()
   return params;
 }
 
-ECorr::ECorr(const InputParameters & parameters)
+ECorrNonAD::ECorrNonAD(const InputParameters & parameters)
   : Material(parameters),
-    _T(adCoupledValue("T")),
-    _C9(adCoupledValue("C9")),
-    _C1(adCoupledValue("C1")),
-    _C0(adCoupledValue("C0")),
-    _C3(adCoupledValue("C3")),
-    _C6(adCoupledValue("C6")),
+    _T(coupledValue("T")),
+    _C9(coupledValue("C9")),
+    _C1(coupledValue("C1")),
+    _C0(coupledValue("C0")),
+    _C3(coupledValue("C3")),
+    _C6(coupledValue("C6")),
 
     _aS(getParam<Real>("aS")),
     _aC(getParam<Real>("aC")),
@@ -111,12 +111,12 @@ ECorr::ECorr(const InputParameters & parameters)
 
     // Declare that this material is going to have a Real
     // valued property named "diffusivity" that Kernels can use.
-    _IAA(declareADProperty<Real>("IAA")),
-    _ISS(declareADProperty<Real>("ISS")),
-    _IEE(declareADProperty<Real>("IEE")),
-    _IFF(declareADProperty<Real>("IFF")),
-    _Isum(declareADProperty<Real>("Isum")),
-    _Ecorr(declareADProperty<Real>("Ecorr")),
+    _IAA(declareProperty<Real>("IAA")),
+    _ISS(declareProperty<Real>("ISS")),
+    _IEE(declareProperty<Real>("IEE")),
+    _IFF(declareProperty<Real>("IFF")),
+    _Isum(declareProperty<Real>("Isum")),
+    _Ecorr(declareProperty<Real>("Ecorr")),
 
     // Retrieve/use an old value of diffusivity.
     // Note: this is _expensive_ - only do this if you REALLY need it!
@@ -133,53 +133,66 @@ ECorr::ECorr(const InputParameters & parameters)
 
     _Area(getParam<Real>("Area")),
     _AnodeAreaValue(getParam<Real>("AnodeAreaValue")),
-    _AnodeArea(declareADProperty<Real>("AnodeArea"))
+    _AnodeArea(declareProperty<Real>("AnodeArea"))
 {
 }
 
 void
-ECorr::initQpStatefulProperties()
+ECorrNonAD::initQpStatefulProperties()
 {
   _ISS[_qp] = 0;
   _IEE[_qp] = 0;
   _Isum[_qp] = 0;
-  _Ecorr[_qp] = -1.0;
-  //  _Ecorr[_qp] = _Ecorr_old[_qp];
+//  _Ecorr[_qp] = _Ecorr_old[_qp];
   _AnodeArea[_qp] = _AnodeAreaValue;
 
 }
 
 void
-ECorr::computeQpProperties()
+ECorrNonAD::computeQpProperties()
 {
   Real F = 96485;
   Real R = 8.314;
-  Real N = 0;
+//  Real NN = 0;
+//  Real MM = 1;
+  //Calculate Corrosion Potential at given time and each quadruture point
           while (true)
                 {
-			N = N + 1;
+//			NN = NN+1;
+//			printf("fuck you man");
+  //Calculate current from each reaction
   _IAA[_qp] = F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_Ecorr[_qp] - _EA)) - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
   _ISS[_qp] = F *  _nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
   _IEE[_qp] = -F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE));
   _IFF[_qp] = -F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
 
                   _Isum[_qp] = _IAA[_qp] + _ISS[_qp] + _IEE[_qp] + _IFF[_qp];
-		  if (N > 2E5)
-		  {
-                     break;
-		  }
-//                  else if (_C6[_qp] || _C9[_qp] <= 1E-8)
+//		  if (NN > 100000 || NN == 1)
 //		  {
+//		  printf("Could not find the corrosion potential: Ecorr = %c \n", MM);
 //			  break;
 //		  }
-		  else if (_Isum[_qp] < -_Tol)
+		  if (_Isum[_qp] < -_Tol)
 		  {                    _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
+//                         std::cout << _Ecorr[_qp] << "\n";
+//			  if (_qp == 1)
+//			  {
+//                         printf("+ Ecorr: %35.32f %f \n", _Ecorr[1], NN);
+//		           printf("+ DelE : %35.32f %f \n", _DelE, NN);
+//			  }
 		  }
 		  else if (_Isum[_qp] > _Tol)
 		  {                    _Ecorr[_qp] = _Ecorr[_qp] - _DelE;
+//			  std::cout << _Ecorr[_qp] << "\n";
+//			  if (_qp == 1)
+//			  {
+//		  printf("- Ecorr: %35.32f %f \n", _Ecorr[1], NN);
+//		  printf("- DelE : %35.32f %f \n", _DelE, NN);
+//			  }
 		  }
                   else
 		  {
+//		   	  std::cout << _Ecorr[_qp] << "\n";
                      break;
 		  }
 		}

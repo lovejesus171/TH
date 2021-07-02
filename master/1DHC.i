@@ -1,7 +1,7 @@
 # Unsaturated Darcy-Richards flow without using an Action
 
 [Mesh]
-  file = 'KRS+_4parts_new_heavy.msh'
+  file = '1DTHC.msh'
   construct_side_list_from_node_list = true
 []
 
@@ -16,13 +16,7 @@
     type = PorousFlowCapillaryPressureVG
     alpha = 2.6E-7 #[Pa]
     m = 0.2941 #[Unitless]
-    block = bentonite
-  [../]
-  [./pc_backfill]
-    type = PorousFlowCapillaryPressureVG
-    alpha = 3.3E-7 #[Pa]
-    m = 0.5 #[Unitless]
-    block = backfill
+    block = 'copper bentonite'
   [../]
   [./pc_hostrock]
     type = PorousFlowCapillaryPressureVG
@@ -76,31 +70,31 @@
   [./dPwater_dt]
     type = PorousFlowMassTimeDerivative
     variable = pp
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
   [./flux_Pwater]
     type = PorousFlowAdvectiveFlux
     variable = pp
     gravity = '0 0 0'
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
  
 # Heat Transfer
   [./dT_dt]
     type = PorousFlowEnergyTimeDerivative
     variable = T
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
   [./Heat_advection]
     type = PorousFlowHeatAdvection
     variable = T
     gravity = '0 0 0'
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
   [./Heat_conduction]
     type = PorousFlowHeatConduction
     variable = T
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
 
 # Chemical species
@@ -201,7 +195,7 @@
     args = 'swater'
     function = '(4.905E6 - 1.01E5) / 0.41 * swater - 6902973.171'
     variable = effective_pressure
-    block = 'bentonite'
+    block = 'copper bentonite'
   [../]
 []
 
@@ -211,7 +205,7 @@
     type = ConstantIC
     variable = T
     value = 298.15
-    block = 'bentonite backfill'
+    block = 'copper bentonite'
    [../]
    [./IC_T_hostrock]
     type = FunctionIC
@@ -225,25 +219,7 @@
     type = ConstantIC
     variable = pp
     value = -12002599.86 #[Pa]
-    block = 'bentonite'
-  [../]
-  [./IC_P_backfill]
-    type = ConstantIC
-    variable = pp
-    value = -4146909.322 #[Pa]
-    block = 'backfill'
-  [../]
-  [./IC_P_bentonite_surface]
-    type = ConstantIC
-    variable = pp
-    value = -4207287.175 #[Pa]
-    boundary = 'bentonite_surface'
-  [../]
-  [./IC_P_backfill_surface]
-    type = ConstantIC
-    variable = pp
-    value = -2272727.273 #[Pa]
-    boundary = 'backfill_surface'
+    block = 'copper bentonite'
   [../]
   [./IC_P_hostrock]
     type = ConstantIC
@@ -257,13 +233,7 @@
     type = ConstantIC
     variable = O2
     value = 1.685 # mol/m3
-    block = 'bentonite'
-  [../]
-  [./IC_O2_backfill]
-    type = ConstantIC
-    variable = O2
-    value = 1.685 # mol/m3
-    block = 'backfill'
+    block = 'copper bentonite'
   [../]
   [./IC_HS-_hostrock]
     type = ConstantIC
@@ -271,25 +241,13 @@
     value = 0.0907 # mol/m3
     block = 'hostrock'
   [../] 
-  [./IC_HS-_interface]
-    type = ConstantIC
-    variable = HS-
-    value = 0.0907 # mol/m3
-    boundary = 'bentonite_surface backfill_surface'
-  [../] 
 
-#  [./IC_Cl-_hostrock]
-#    type = ConstantIC
-#    variable = Cl-
-#    value = 0.003 # mol/m3
-#    block = 'hostrock'
-#  [../] 
-#  [./IC_Cl-_interface]
-#    type = ConstantIC
-#    variable = Cl-
-#    value = 0.003 # mol/m3
-#    boundary = 'bentonite_surface backfill_surface'
-#   [../] 
+  [./IC_Cl-_hostrock]
+    type = ConstantIC
+    variable = Cl-
+    value = 100 # mol/m3
+    block = 'hostrock'
+  [../] 
 []
 
 [BCs]
@@ -298,28 +256,22 @@
     type = DirichletBC
     variable = pp
     value = -3338
-    boundary = 'top bottom'
+    boundary = 'hostrocksurface'
   [../]
 
 # Temperature
-  [./BC_T_top]
+  [./BC_hostrock]
     type = DirichletBC
     variable = T
-    value = '296.65'
-    boundary = 'top'
-  [../]
-  [./BC_T_bottom]
-    type = DirichletBC
-    variable = T
-    value = '299.65'
-    boundary = 'bottom'
+    value = '298.15'
+    boundary = 'hostrocksurface'
   [../]
  
-# Heat Flux
+ Heat Flux
   [./BC_HeatFlux]
     type = FunctionNeumannBC
     variable = T
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
     function = Decay_fn
   [../]
 
@@ -327,33 +279,21 @@
   [./BC_O2_canister]
     type = DirichletBC
     variable = O2
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
     value = 0
   [../]
-#  [./BC_HS-_canister]
-#    type = DirichletBC
-#    variable = HS-
-#    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
-#    value = 0
-#  [../]
-  [./BC_HS-_surface]
+  [./BC_HS-]
     type = DirichletBC
     variable = HS-
-    boundary = 'bentonite_surface backfill_surface'
+    boundary = 'bentonitehostrockinterface'
     value = 0.0907
   [../]
-#  [./BC_Cl-_canister]
-#    type = DirichletBC
-#    variable = Cl-
-#    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
-#    value = 0
-#  [../]
-#  [./BC_Cl-_top_bottom]
-#    type = DirichletBC
-#    variable = Cl-
-#    boundary = 'top bottom'
-#    value = 0.003
-#  [../]
+  [./BC_Cl-]
+    type = DirichletBC
+    variable = Cl-
+    boundary = 'bentonitehostrockinterface'
+    value = 100
+  [../]
 
 # Chemical species accumulation
   [./BC_O2_accumulation]
@@ -361,21 +301,14 @@
     variable = Cu2O
     Reactant1 = O2
     Num = 2
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
   [../]
-#  [./BC_HS-_accumulation]
-#    type = ChemFluxBC
-#    variable = Cu2S
-#    Reactant1 = HS-
-#    Num = 2
-#    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
-#  [../]
 
 # Mixed potential Boundary Conditions
   [./BC_HS-_mixed_canister_top]
     type = ADES2
     variable = HS-
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
     Faraday_constant = 96485
     Kinetic = 216 # m4mol/hr at 25
     AlphaS = 0.5
@@ -392,7 +325,7 @@
     type = ADCu2S
     variable = Cu2S
     Reactant1 = HS-
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
     Faraday_constant = 96485
     Kinetic = 216 # m4mol/hr at 25
     AlphaS = 0.5
@@ -401,7 +334,7 @@
     AlphaS3 = 0.5
     Standard_potential2 = -0.747
     Standard_potential3 = -0.747
-    Num = -1
+    Num = 1
     Area = AnodeArea
   [../]
 
@@ -409,7 +342,7 @@
     type = ADClm
     variable = Cl-
     Reactant1 = CuCl2-
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
     Corrosion_potential = Ecorr
     Temperature = T
     kF = 1.188E-4
@@ -424,7 +357,7 @@
     type = ADCuCl2m
     variable = CuCl2-
     Reactant1 = Cl-
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    boundary = 'canistersurface'
     Corrosion_potential = Ecorr
     kF = 1.188E-4
     kB = 2.4444E-3
@@ -448,7 +381,7 @@
      type = ParsedFunction
      vars = 'P0 r h yts'
      vals = '26830 0.51 4.83 31536000'
-     value = 'P0 * yts * ((t + 40)^-0.758) / (2 * pi * r * h + 2 * pi * r * r)'
+     value = 'P0 * yts * ((t + 40)^-0.758) / (2 * pi * r * h + 2 * pi * r * r)' #W/m2
   [../]
 []
 
@@ -466,12 +399,7 @@
   [./porosity_bentonite]
     type = PorousFlowPorosity
     porosity_zero = '0.41'
-    block = 'bentonite'
-  [../]
-  [./porosity_backfill]
-    type = PorousFlowPorosity
-    porosity_zero = '0.4'
-    block = 'backfill'
+    block = 'copper bentonite'
   [../]
   [./porosity_hostrock]
     type = PorousFlowPorosity
@@ -481,13 +409,8 @@
 
   [./permeability_bentonite]
     type = PorousFlowPermeabilityConst
-    block = bentonite
+    block = 'copper bentonite'
     permeability = '1.5E-20 0 0   0 1.5E-20 0   0 0 1.5E-20'
-  [../]
-  [./permeability_backfill]
-    type = PorousFlowPermeabilityConst
-    block = backfill
-    permeability = '1.6E-19 0 0   0 1.6E-19 0   0 0 1.9E-19'
   [../]
   [./permeability_hostrock]
     type = PorousFlowPermeabilityConst
@@ -498,13 +421,7 @@
     type = PorousFlow1PhaseP
     porepressure = pp
     capillary_pressure = pc_bentonite
-    block = bentonite
-  [../]
-  [./saturation_calculator_backfill]
-    type = PorousFlow1PhaseP
-    porepressure = pp
-    capillary_pressure = pc_backfill
-    block = backfill
+    block = 'copper bentonite'
   [../]
   [./saturation_calculator_hostrock]
     type = PorousFlow1PhaseP
@@ -515,23 +432,17 @@
   [./temperature_bentonite]
     type = PorousFlowTemperature
     temperature = T
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
   [./massfrac_bentonite]
     type = PorousFlowMassFraction
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
   [./simple_fluid_bentonite]
     type = PorousFlowSingleComponentFluid
     fp = the_simple_fluid
     phase = 0
-    block = bentonite
-  [../]
-  [./simple_fluid_backfill]
-    type = PorousFlowSingleComponentFluid
-    fp = the_simple_fluid
-    phase = 0
-    block = backfill
+    block = 'copper bentonite'
   [../]
   [./simple_fluid_hostrock]
     type = PorousFlowSingleComponentFluid
@@ -543,13 +454,7 @@
     type = PorousFlowRelativePermeabilityCorey
     n = 1.9
     phase = 0
-    block = bentonite
-  [../]
-  [./relperm_backfill]
-    type = PorousFlowRelativePermeabilityCorey
-    n = 1.9
-    phase = 0
-    block = backfill
+    block = 'copper bentonite'
   [../]
   [./relperm_hostrock]
     type = PorousFlowRelativePermeabilityCorey
@@ -560,40 +465,27 @@
   [./darcy_velocity_bentonite]
     type = PorousFlowDarcyVelocityMaterial
     gravity = '0 0 0'
-    block = 'bentonite backfill hostrock'
+    block = 'copper bentonite hostrock'
   [../]
 
 # Heat transfer
   [./Thermal_conductivity_bentonite]
     type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '2.271E7 0 0  0 2.271E7 0  0 0 2.271E7'
-    wet_thermal_conductivity = '3.785E7 0 0  0 3.785E7 0  0 0 3.785E7'
-    block = 'bentonite'
+    dry_thermal_conductivity = '2.27E7 0 0  0 2.27E7 0  0 0 2.27E7'
+    wet_thermal_conductivity = '3.79E7 0 0  0 3.79E7 0  0 0 3.79E7'
+    block = 'copper bentonite'
   [../]
   [./Internal_energy_bentonite]
     type = PorousFlowMatrixInternalEnergy
-    specific_heat_capacity = 966
-    density = 2740
-    block = 'bentonite'
-  [../]
-
-  [./Thermal_conductivity_backfill]
-    type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '3.44E7 0 0  0 3.44E7 0  0 0 3.44E7'
-    wet_thermal_conductivity = '6.78E7 0 0  0 6.78E7 0  0 0 6.78E7'
-    block = 'backfill'
-  [../]
-  [./Internal_energy_backfill]
-    type = PorousFlowMatrixInternalEnergy
-    specific_heat_capacity = 981
-    density = 2680
-    block = 'backfill'
+    specific_heat_capacity = 966 # J/kg/K
+    density = 2740 # kg/m3
+    block = 'copper bentonite'
   [../]
 
   [./Thermal_conductivity_hostrock]
     type = PorousFlowThermalConductivityIdeal
-    dry_thermal_conductivity = '9E7 0 0  0 9E7 0  0 0 9E7'
-    wet_thermal_conductivity = '1E8 0 0  0 1E8 0  0 0 1E8'
+    dry_thermal_conductivity = '9E7 0 0  0 9E7 0  0 0 9E7' #W/m/K
+    wet_thermal_conductivity = '1E8 0 0  0 1E8 0  0 0 1E8' #W/m/K
     block = 'hostrock'
   [../]
   [./Internal_energy_hostrock]
@@ -608,13 +500,7 @@
     type = GenericConstantMaterial
     prop_names = 'diffusivity tortuosity porosity'
     prop_values = '2.46E-4 0.67 0.41'
-    block = 'bentonite'
-  [../]
-  [./Mass_transfer_backfill]
-    type = GenericConstantMaterial
-    prop_names = 'diffusivity tortuosity porosity'
-    prop_values = '2.46E-3 0.67 0.4'
-    block = 'backfill'
+    block = 'copper bentonite'
   [../]
   [./Mass_transfer_hostrock]
     type = GenericConstantMaterial
@@ -626,7 +512,8 @@
 # Mixed potential
   [./Corrosion_potential]
     type = ECorr
-    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    block = 'copper'
+#    boundary = 'canistersurface'
     C1 = CuCl2-
     C6 = Cl-
     C9 = HS-
@@ -641,84 +528,43 @@
   [../]
 []
 
+#[Preconditioning]
+#  active = basic
+#  [./basic]
+#    type = SMP
+#    full = true
+#    petsc_options = '-ksp_diagonal_scale -ksp_diagonal_scale_fix'
+#    petsc_options_iname = '-pc_type -sub_pc_type -sub_pc_factor_shift_type -pc_asm_overlap'
+#    petsc_options_value = ' asm      lu           NONZERO                   2'
+#  [../]
+#  [./preferred_but_might_not_be_installed]
+#    type = SMP
+#    full = true
+#    petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+#    petsc_options_value = ' lu       mumps'
+#  [../]
+#[]
+
 [Preconditioning]
-  active = basic
-  [./basic]
+  [./smp]
     type = SMP
     full = true
-    petsc_options = '-ksp_diagonal_scale -ksp_diagonal_scale_fix'
-    petsc_options_iname = '-pc_type -sub_pc_type -sub_pc_factor_shift_type -pc_asm_overlap'
-    petsc_options_value = ' asm      lu           NONZERO                   2'
-  [../]
-  [./preferred_but_might_not_be_installed]
-    type = SMP
-    full = true
-    petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-    petsc_options_value = ' lu       mumps'
   [../]
 []
 
 [Postprocessors]
-  [./O2_side]
+  [./O2_flux]
     type = SideFluxIntegral
-    boundary = 'spent_fuel'
+    boundary = 'canistersurface'
     variable = O2
     diffusivity = 6.76E-5
-  [../]
-  [./O2_total_side]
-    type = TotalVariableValue
-    value = O2_side
-  [../]
-  [./O2_top]
-    type = SideFluxIntegral
-    boundary = 'spent_fuel_top'
-    variable = O2
-    diffusivity = 6.76E-5
-  [../]
-  [./O2_total_top]
-    type = TotalVariableValue
-    value = O2_top
-  [../]
-  [./O2_bottom]
-    type = SideFluxIntegral
-    boundary = 'spent_fuel_bottom'
-    variable = O2
-    diffusivity = 6.76E-5
-  [../]
-  [./O2_total_bottom]
-    type = TotalVariableValue
-    value = O2_bottom
   [../]
 
-  [./HS-_side]
+  [./HS-_flux]
     type = SideFluxIntegral
-    boundary = 'spent_fuel'
+    boundary = 'canistersurface'
     variable = HS-
     diffusivity = 6.76E-5
-  [../]
-  [./HS-_total_side]
-    type = TotalVariableValue
-    value = HS-_side
-  [../]
-  [./HS-_top]
-    type = SideFluxIntegral
-    boundary = 'spent_fuel_top'
-    variable = HS-
-    diffusivity = 6.76E-5
-  [../]
-  [./HS-_total_top]
-    type = TotalVariableValue
-    value = HS-_top
-  [../]
-  [./HS-_bottom]
-    type = SideFluxIntegral
-    boundary = 'spent_fuel_bottom'
-    variable = HS-
-    diffusivity = 6.76E-5
-  [../]
-  [./HS-_total_bottom]
-    type = TotalVariableValue
-    value = HS-_bottom
   [../]
 []
 
@@ -728,11 +574,17 @@
   end_time = 1E7
 #  nl_abs_tol = 1E-7
   nl_rel_tol = 1E-3
+  l_max_its = 10
+  nl_max_its = 30
+
+  automatic_scaling = true
+  compute_scaling_once = false
+
   [./TimeStepper]
     type = IterationAdaptiveDT
-    cutback_factor = 0.8
-    dt = 0.001
-    growth_factor = 1.2
+    cutback_factor = 0.99
+    dt = 1E-3
+    growth_factor = 1.1
   [../]
 []
 
