@@ -1,20 +1,21 @@
 // 2021.01.24 I have to add reaction products terms. ex) HS- -> Cu+
 
-#include "Cu2S.h"
+#include "ADCu2SEVar.h"
+#include <vector>
 
-registerMooseObject("corrosionApp", Cu2S);
+registerMooseObject("corrosionApp", ADCu2SEVar);
 
-defineLegacyParams(Cu2S);
+defineLegacyParams(ADCu2SEVar);
 
 InputParameters
-Cu2S::validParams()
+ADCu2SEVar::validParams()
 {
-  InputParameters params = IntegratedBC::validParams();
+  InputParameters params = ADIntegratedBC::validParams();
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
   params.addRequiredParam<MaterialPropertyName>("Area","Porosity of porous medium");
   params.addParam<Real>("Kinetic",1.0,"Kinetic constant");
   params.addParam<Real>("AlphaS",0.5,"transfer coefficient");
-  params.addRequiredParam<MaterialPropertyName>("Corrosion_potential","Corrosion potential");
+  params.addRequiredCoupledVar("Corrosion_potential","Corrosion potential");
   params.addParam<Real>("R",8.314,"Reaction order");
   params.addCoupledVar("Temperature",298.15,"Temperature of the system");
   params.addParam<Real>("AlphaS3",0.5,"Transfer coefficient");
@@ -30,59 +31,40 @@ Cu2S::validParams()
   return params;
 }
 
-Cu2S::Cu2S(const InputParameters & parameters)
-  : IntegratedBC(parameters),
+ADCu2SEVar::ADCu2SEVar(const InputParameters & parameters)
+  : ADIntegratedBC(parameters),
    _F(getParam<Real>("Faraday_constant")),
-   _eps(getMaterialProperty<Real>("Area")),
+   _eps(getADMaterialProperty<Real>("Area")),
    _kS(getParam<Real>("Kinetic")),
    _aS(getParam<Real>("AlphaS")),
-   _E(getMaterialProperty<Real>("Corrosion_potential")),
+   _E(adCoupledValue("Corrosion_potential")),
    _R(getParam<Real>("R")),
-   _T(coupledValue("Temperature")),
+   _T(adCoupledValue("Temperature")),
    _aS3(getParam<Real>("AlphaS3")),
    _ES12(getParam<Real>("Standard_potential2")),
    _ES3(getParam<Real>("Standard_potential3")),
    _Num(getParam<Real>("Num")),
-   _C1(coupledValue("Reactant1"))
+   _C1(adCoupledValue("Reactant1"))
 {
 }
 
-Real
-Cu2S::computeQpResidual()
+ADReal
+ADCu2SEVar::computeQpResidual()
 {
-//   if (_u[_qp] - _Num * _test[_i][_qp] * _eps * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3)) >= 0.0)   
-     return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
-//   else 
+
+
+//	int n = _qrule->n_points();
+//	std::array<Real,n> psi = _E[_qp];
+
+//	std::vector<double> psi;
+
+//        std::array<Real,50> psi;
+
+//	for (unsigned int qp = 0; qp < _qrule->n_points(); ++qp)
+//	{
+//	       psi[qp] = _E[qp];
+//	}
+
+//	std::cout << "In BC Ecorr: : " << _E[_qp] << std::endl;
+	return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
 }
-
-
-Real
-Cu2S::computeQpJacobian()
-{
-	   return 0.0;
-}
-
-
-Real
-Cu2S::computeQpOffDiagJacobian(unsigned int jvar)
-{
-  Real Front;
-  Front = - _Num * _test[_i][_qp] * _eps[_qp] * _kS;
-
-  Real Factor;
-  Factor = _F / _R;
-
-  Real ExFactor;
-  ExFactor = exp((1+_aS) * _F / _R / _T[_qp] * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
-
-  if (jvar == _C1_id)
-	  return Front * 2 * _phi[_j][_qp] * _C1[_qp] * ExFactor;
-  else if (jvar == _T_id)
-	  return Front * _C1[_qp] * _C1[_qp] * Factor / (_T[_qp] * _phi[_j][_qp]) * ExFactor * (-(1 + _aS) * _E[_qp] + _ES12 + _aS3 * _ES3);
-  else
-	  return 0.0;
-
-}
-
-
-

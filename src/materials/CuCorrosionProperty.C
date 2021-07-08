@@ -7,21 +7,14 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ECorr.h"
+#include "CuCorrosionProperty.h"
 
-registerMooseObject("corrosionApp", ECorr);
+registerMooseObject("corrosionApp", CuCorrosionProperty);
 
 InputParameters
-ECorr::validParams()
+CuCorrosionProperty::validParams()
 {
   InputParameters params = ADMaterial::validParams();
-  params.addCoupledVar("T",298.15,"T");
-  params.addRequiredCoupledVar("C9","HS-");
-  params.addCoupledVar("C1",0,"C1");
-  params.addCoupledVar("C0",0,"C0");
-  params.addCoupledVar("C3",0,"C3");
-  params.addCoupledVar("C6",0,"C6");
-
   params.addParam<Real>("aS", 0.5, "Constant");
   params.addParam<Real>("aC", 0.37 , "Constant");
   params.addParam<Real>("aD", 0.5, "Constant");
@@ -56,9 +49,6 @@ ECorr::validParams()
 
   params.addParam<Real>("Porosity", 0.05, "Constant");
 
-  params.addParam<Real>("Tol",1E-1,"Constant");
-  params.addParam<Real>("DelE",1E-4,"Constant");
-
   params.addParam<Real>("Area",0,"Area of film");
 
   params.addRequiredParam<Real>("AnodeAreaValue","Put the value for anode area");
@@ -67,15 +57,8 @@ ECorr::validParams()
   return params;
 }
 
-ECorr::ECorr(const InputParameters & parameters)
+CuCorrosionProperty::CuCorrosionProperty(const InputParameters & parameters)
   : Material(parameters),
-    _T(adCoupledValue("T")),
-    _C9(adCoupledValue("C9")),
-    _C1(adCoupledValue("C1")),
-    _C0(adCoupledValue("C0")),
-    _C3(adCoupledValue("C3")),
-    _C6(adCoupledValue("C6")),
-
     _aS(getParam<Real>("aS")),
     _aC(getParam<Real>("aC")),
     _aD(getParam<Real>("aD")),
@@ -108,29 +91,6 @@ ECorr::ECorr(const InputParameters & parameters)
 
     _Porosity(getParam<Real>("Porosity")),
 
-
-    // Declare that this material is going to have a Real
-    // valued property named "diffusivity" that Kernels can use.
-    _IAA(declareADProperty<Real>("IAA")),
-    _ISS(declareADProperty<Real>("ISS")),
-    _IEE(declareADProperty<Real>("IEE")),
-    _IFF(declareADProperty<Real>("IFF")),
-    _Isum(declareADProperty<Real>("Isum")),
-    _Ecorr(declareADProperty<Real>("Ecorr")),
-
-    // Retrieve/use an old value of diffusivity.
-    // Note: this is _expensive_ - only do this if you REALLY need it!
-    _ISS_old(getMaterialPropertyOld<Real>("ISS")),
-    _IEE_old(getMaterialPropertyOld<Real>("IEE")),
-    _IAA_old(getMaterialPropertyOld<Real>("IAA")),
-    _IFF_old(getMaterialPropertyOld<Real>("IFF")),
-    _Isum_old(getMaterialPropertyOld<Real>("Isum")),
-    _Ecorr_old(getMaterialPropertyOld<Real>("Ecorr")),
-
-
-    _Tol(getParam<Real>("Tol")),
-    _DelE(getParam<Real>("DelE")),
-
     _Area(getParam<Real>("Area")),
     _AnodeAreaValue(getParam<Real>("AnodeAreaValue")),
     _AnodeArea(declareADProperty<Real>("AnodeArea"))
@@ -138,52 +98,12 @@ ECorr::ECorr(const InputParameters & parameters)
 }
 
 void
-ECorr::initQpStatefulProperties()
+CuCorrosionProperty::initQpStatefulProperties()
 {
-  _ISS[_qp] = 0;
-  _IEE[_qp] = 0;
-  _Isum[_qp] = 0;
-  _Ecorr[_qp] = -1.0;
-  //  _Ecorr[_qp] = _Ecorr_old[_qp];
   _AnodeArea[_qp] = _AnodeAreaValue;
-
 }
 
 void
-ECorr::computeQpProperties()
+CuCorrosionProperty::computeQpProperties()
 {
-  Real F = 96485;
-  Real R = 8.314;
-  Real N = 0;
-
-//  std::cout << "Iteration in a material kernel" << std::endl;
-          while (true)
-                {
-			N = N + 1;
-  _IAA[_qp] = F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_Ecorr[_qp] - _EA)) - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
-  _ISS[_qp] = F *  _nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
-  _IEE[_qp] = -F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE));
-  _IFF[_qp] = -F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
-
-                  _Isum[_qp] = _IAA[_qp] + _ISS[_qp] + _IEE[_qp] + _IFF[_qp];
-		  if (N > 2E4)
-		  {
-                     break;
-		  }
-//                  else if (_C6[_qp] || _C9[_qp] <= 1E-8)
-//		  {
-//			  break;
-//		  }
-		  else if (_Isum[_qp] < -_Tol)
-		  {                    _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
-		  }
-		  else if (_Isum[_qp] > _Tol)
-		  {                    _Ecorr[_qp] = _Ecorr[_qp] - _DelE;
-		  }
-                  else
-		  {
-                     break;
-		  }
-		}
-
 }

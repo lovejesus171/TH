@@ -7,14 +7,16 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ECorr.h"
+#include "ADAuxEcorr.h"
 
-registerMooseObject("corrosionApp", ECorr);
+registerMooseObject("corrosionApp", ADAuxEcorr);
 
+template <>
 InputParameters
-ECorr::validParams()
+validParams<ADAuxEcorr>()
 {
-  InputParameters params = ADMaterial::validParams();
+  InputParameters params = validParams<AuxKernel>();
+
   params.addCoupledVar("T",298.15,"T");
   params.addRequiredCoupledVar("C9","HS-");
   params.addCoupledVar("C1",0,"C1");
@@ -57,18 +59,17 @@ ECorr::validParams()
   params.addParam<Real>("Porosity", 0.05, "Constant");
 
   params.addParam<Real>("Tol",1E-1,"Constant");
+  params.addParam<Real>("Ecorr",-1,"To update Ecorr in auxvariable");
   params.addParam<Real>("DelE",1E-4,"Constant");
 
   params.addParam<Real>("Area",0,"Area of film");
 
   params.addRequiredParam<Real>("AnodeAreaValue","Put the value for anode area");
-
-
   return params;
 }
 
-ECorr::ECorr(const InputParameters & parameters)
-  : Material(parameters),
+ADAuxEcorr::ADAuxEcorr(const InputParameters & parameters)
+  : AuxKernel(parameters),
     _T(adCoupledValue("T")),
     _C9(adCoupledValue("C9")),
     _C1(adCoupledValue("C1")),
@@ -109,76 +110,56 @@ ECorr::ECorr(const InputParameters & parameters)
     _Porosity(getParam<Real>("Porosity")),
 
 
-    // Declare that this material is going to have a Real
-    // valued property named "diffusivity" that Kernels can use.
-    _IAA(declareADProperty<Real>("IAA")),
-    _ISS(declareADProperty<Real>("ISS")),
-    _IEE(declareADProperty<Real>("IEE")),
-    _IFF(declareADProperty<Real>("IFF")),
-    _Isum(declareADProperty<Real>("Isum")),
-    _Ecorr(declareADProperty<Real>("Ecorr")),
-
-    // Retrieve/use an old value of diffusivity.
-    // Note: this is _expensive_ - only do this if you REALLY need it!
-    _ISS_old(getMaterialPropertyOld<Real>("ISS")),
-    _IEE_old(getMaterialPropertyOld<Real>("IEE")),
-    _IAA_old(getMaterialPropertyOld<Real>("IAA")),
-    _IFF_old(getMaterialPropertyOld<Real>("IFF")),
-    _Isum_old(getMaterialPropertyOld<Real>("Isum")),
-    _Ecorr_old(getMaterialPropertyOld<Real>("Ecorr")),
-
 
     _Tol(getParam<Real>("Tol")),
+    _Ecorr(getParam<Real>("Ecorr")),
     _DelE(getParam<Real>("DelE")),
 
     _Area(getParam<Real>("Area")),
-    _AnodeAreaValue(getParam<Real>("AnodeAreaValue")),
-    _AnodeArea(declareADProperty<Real>("AnodeArea"))
+    _AnodeAreaValue(getParam<Real>("AnodeAreaValue"))
 {
 }
 
-void
-ECorr::initQpStatefulProperties()
+/**
+ * Auxiliary Kernels override computeValue() instead of computeQpResidual().  Aux Variables
+ * are calculated either one per elemenet or one per node depending on whether we declare
+ * them as "Elemental (Constant Monomial)" or "Nodal (First Lagrange)".  No changes to the
+ * source are necessary to switch from one type or the other.
+ */
+Real
+ADAuxEcorr::computeValue()
 {
-  _ISS[_qp] = 0;
-  _IEE[_qp] = 0;
-  _Isum[_qp] = 0;
-  _Ecorr[_qp] = -1.0;
-  //  _Ecorr[_qp] = _Ecorr_old[_qp];
-  _AnodeArea[_qp] = _AnodeAreaValue;
-
-}
-
-void
-ECorr::computeQpProperties()
-{
-  Real F = 96485;
+	  Real F = 96485;
   Real R = 8.314;
   Real N = 0;
-
-//  std::cout << "Iteration in a material kernel" << std::endl;
+  Real IAA = 0;
+  Real ISS = 0;
+  Real IEE = 0;
+  Real IFF = 0;
+  Real Isum = 0;
+//  Real dE = 1E-4;
           while (true)
                 {
 			N = N + 1;
-  _IAA[_qp] = F * _nA * _AnodeArea[_qp] * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_Ecorr[_qp] - _EA)) - F * _nA * _AnodeArea[_qp] * _kBB * _C1[_qp];
-  _ISS[_qp] = F *  _nS * _AnodeArea[_qp] * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _Ecorr[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
-  _IEE[_qp] = -F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_Ecorr[_qp] - _EE));
-  _IFF[_qp] = -F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F /(R * _T[_qp]) * (_Ecorr[_qp] - _EF));
+  IAA = MetaPhysicL::raw_value(F * _nA * _AnodeAreaValue * _kA * _C6[_qp] * _C6[_qp] * exp(F /(R * _T[_qp])*(_u[_qp] - _EA)) - F * _nA * _AnodeAreaValue * _kBB * _C1[_qp]);
+  ISS = MetaPhysicL::raw_value(F *  _nS * _AnodeAreaValue * _kS * _C9[_qp] * _C9[_qp] * exp((1 + _aS) * F / (R * _T[_qp]) * _u[_qp]) * exp(-F / (R * _T[_qp]) * (_ES12 + _aS3 * _ES3)));
+  IEE = MetaPhysicL::raw_value(-F * _nE * (1 - _Porosity + _Area) * _kE * _C9[_qp] * exp(-_aE * F / (R * _T[_qp]) * (_u[_qp] - _EE)));
+  IFF = MetaPhysicL::raw_value(-F * _nF * (1 - _Porosity + _Area) * _kF * exp(-_aF * F /(R * _T[_qp]) * (_u[_qp] - _EF)));
 
-                  _Isum[_qp] = _IAA[_qp] + _ISS[_qp] + _IEE[_qp] + _IFF[_qp];
-		  if (N > 2E4)
+                  Isum = IAA + ISS + IEE + IFF;
+		  if (N > 2E6)
 		  {
                      break;
 		  }
-//                  else if (_C6[_qp] || _C9[_qp] <= 1E-8)
-//		  {
-//			  break;
-//		  }
-		  else if (_Isum[_qp] < -_Tol)
-		  {                    _Ecorr[_qp] = _Ecorr[_qp] + _DelE;
+		  else if (Isum < -_Tol)
+		  {
+//                       _Ecorr += dE;
+			  _Ecorr = _Ecorr + _DelE;
 		  }
-		  else if (_Isum[_qp] > _Tol)
-		  {                    _Ecorr[_qp] = _Ecorr[_qp] - _DelE;
+		  else if (Isum > _Tol)
+		  {
+//                       _Ecorr -= dE;
+			  _Ecorr = _Ecorr - _DelE;
 		  }
                   else
 		  {
@@ -186,4 +167,9 @@ ECorr::computeQpProperties()
 		  }
 		}
 
+          std::cout << "Number of iterations: " << N << std::endl;
+
+	  std::cout << "Value: " << _Ecorr << std::endl;
+
+return _Ecorr;
 }

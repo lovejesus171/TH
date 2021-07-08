@@ -1,13 +1,13 @@
 // 2021.01.24 I have to add reaction products terms. ex) HS- -> Cu+
 
-#include "Cu2S.h"
+#include "HS.h"
 
-registerMooseObject("corrosionApp", Cu2S);
+registerMooseObject("corrosionApp", HS);
 
-defineLegacyParams(Cu2S);
+defineLegacyParams(HS);
 
 InputParameters
-Cu2S::validParams()
+HS::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
@@ -21,7 +21,6 @@ Cu2S::validParams()
   params.addParam<Real>("Standard_potential2",0.0,"Standard_potential");
   params.addParam<Real>("Standard_potential3",0.0,"Standard_potentia3");
   params.addParam<Real>("Num",1,"Number of produced or consumed chemical species per reaction");
-  params.addRequiredCoupledVar("Reactant1","HS- anions");
   params.addClassDescription(
       "Computes a boundary residual contribution consistent with the Diffusion Kernel. "
       "Does not impose a boundary condition; instead computes the boundary "
@@ -30,7 +29,7 @@ Cu2S::validParams()
   return params;
 }
 
-Cu2S::Cu2S(const InputParameters & parameters)
+HS::HS(const InputParameters & parameters)
   : IntegratedBC(parameters),
    _F(getParam<Real>("Faraday_constant")),
    _eps(getMaterialProperty<Real>("Area")),
@@ -43,46 +42,30 @@ Cu2S::Cu2S(const InputParameters & parameters)
    _ES12(getParam<Real>("Standard_potential2")),
    _ES3(getParam<Real>("Standard_potential3")),
    _Num(getParam<Real>("Num")),
-   _C1(coupledValue("Reactant1"))
+   _T_id(coupled("Temperature"))
 {
 }
 
 Real
-Cu2S::computeQpResidual()
+HS::computeQpResidual()
 {
-//   if (_u[_qp] - _Num * _test[_i][_qp] * _eps * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3)) >= 0.0)   
-     return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * _C1[_qp] * _C1[_qp] * exp((1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
-//   else 
+    return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * _u[_qp] * _u[_qp] * exp(( 1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F / (_R * _T[_qp]) * (_ES12 + _aS3 * _ES3 ));   
 }
-
 
 Real
-Cu2S::computeQpJacobian()
+HS::computeQpJacobian()
 {
-	   return 0.0;
+    return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * 2 *_u[_qp] * _phi[_j][_qp] * exp(( 1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F / (_R * _T[_qp]) * (_ES12 + _aS3 * _ES3 ));   
 }
-
 
 Real
-Cu2S::computeQpOffDiagJacobian(unsigned int jvar)
+HS::computeQpOffDiagJacobian(unsigned int jvar)
 {
-  Real Front;
-  Front = - _Num * _test[_i][_qp] * _eps[_qp] * _kS;
-
-  Real Factor;
-  Factor = _F / _R;
-
-  Real ExFactor;
-  ExFactor = exp((1+_aS) * _F / _R / _T[_qp] * _E[_qp]) * exp(-_F/(_R * _T[_qp]) * (_ES12 + _aS3 * _ES3));
-
-  if (jvar == _C1_id)
-	  return Front * 2 * _phi[_j][_qp] * _C1[_qp] * ExFactor;
-  else if (jvar == _T_id)
-	  return Front * _C1[_qp] * _C1[_qp] * Factor / (_T[_qp] * _phi[_j][_qp]) * ExFactor * (-(1 + _aS) * _E[_qp] + _ES12 + _aS3 * _ES3);
-  else
-	  return 0.0;
-
+	if (jvar == _T_id)
+    return -_Num * _test[_i][_qp] * _eps[_qp] * _kS * _u[_qp] *_u[_qp] * exp(( 1.0 + _aS) * _F /(_R * _T[_qp]) * _E[_qp]) * exp(-_F / (_R * _T[_qp]) * (_ES12 + _aS3 * _ES3 ))  
+	    * (-(1 + _aS) * _F / (_R * _T[_qp]) * _phi[_j][_qp] + _F / (_R * _T[_qp]) * (_ES12 + _aS3 * _ES3) * _phi[_j][_qp]) 
+	    ;   
+	else
+	        return 0;
 }
-
-
 

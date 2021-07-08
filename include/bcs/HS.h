@@ -11,10 +11,10 @@
 
 #include "IntegratedBC.h"
 
-class Clm;
+class HS;
 
 template <>
-InputParameters validParams<Clm>();
+InputParameters validParams<HS>();
 
 /**
  * A FluxBC which is consistent with the boundary terms arising from
@@ -28,30 +28,30 @@ InputParameters validParams<Clm>();
  * residual contribution corresponding to the current value of grad(u)
  * is computed and accumulated into the residual vector.
  */
-class Clm : public IntegratedBC
+class HS : public IntegratedBC
 {
 public:
   static InputParameters validParams();
 
-  Clm(const InputParameters & parameters);
+  HS(const InputParameters & parameters);
 
 protected:
   virtual Real computeQpResidual() override;
   virtual Real computeQpJacobian() override;
   virtual Real computeQpOffDiagJacobian(unsigned int jvar) override;
 
-  const MaterialProperty<Real> & _E;
-  const VariableValue & _C1;
-  const VariableValue & _T;
 
   const Real & _F;
   const MaterialProperty<Real> & _eps;
+  const Real & _kS;
+  const Real & _aS;
+  const MaterialProperty<Real> & _E;
   const Real & _R;
-  const Real & _kF;
-  const Real & _kB;
-  const Real & _EA;
+  const VariableValue & _T;
+  const Real & _aS3;
+  const Real & _ES12;
+  const Real & _ES3;
   const Real & _Num;
+  unsigned int _T_id; 
 
-  unsigned _T_id;
-  unsigned _C1_id;
 };

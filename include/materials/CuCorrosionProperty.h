@@ -9,29 +9,24 @@
 
 #pragma once
 
-#include "DirichletBCBase.h"
-
-class EcorrBC;
-
-template <>
-InputParameters validParams<EcorrBC>();
+#include "ADMaterial.h"
 
 /**
- * Boundary condition of a Dirichlet type
- *
- * Sets the value in the node
+ * Stateful material class that defines a few properties.
  */
-class EcorrBC : public DirichletBCBase
+class CuCorrosionProperty : public ADMaterial
 {
 public:
   static InputParameters validParams();
 
-  EcorrBC(const InputParameters & parameters);
+  CuCorrosionProperty(const InputParameters & parameters);
 
 protected:
-  virtual Real computeQpValue() override;
+  virtual void initQpStatefulProperties();
+  virtual void computeQpProperties();
 
-  /// The value for this BC
+private:
+
   Real _aS;
   Real _aC;
   Real _aD;
@@ -64,20 +59,14 @@ protected:
 
   Real _Porosity;
 
-  Real _Tol;
-  Real _Ecorr;
-  Real _DelE;
-
   Real _Area;
-  
+
+  /**
+   * Create two MooseArray Refs to hold the current
+   * and previous material properties respectively
+   */
+
   Real _AnodeAreaValue;
-
-  const ADVariableValue & _T;
-  const ADVariableValue & _C9;
-  const ADVariableValue & _C1;
-  const ADVariableValue & _C0;
-  const ADVariableValue & _C3;
-  const ADVariableValue & _C6;
-
+  ADMaterialProperty<Real> & _AnodeArea;
 
 };

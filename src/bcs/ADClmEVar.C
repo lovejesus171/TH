@@ -1,16 +1,16 @@
 // 2021.01.24 I have to add reaction products terms. ex) HS- -> Cu+
 
-#include "Clm.h"
+#include "ADClmEVar.h"
 
-registerMooseObject("corrosionApp", Clm);
+registerMooseObject("corrosionApp", ADClmEVar);
 
-defineLegacyParams(Clm);
+defineLegacyParams(ADClmEVar);
 
 InputParameters
-Clm::validParams()
+ADClmEVar::validParams()
 {
-  InputParameters params = IntegratedBC::validParams();
-  params.addRequiredParam<MaterialPropertyName>("Corrosion_potential","Corrosion potential");
+  InputParameters params = ADIntegratedBC::validParams();
+  params.addRequiredCoupledVar("Corrosion_potential","Corrosion potential");
   params.addCoupledVar("Reactant1",0.0,"CuCl2-");
   params.addCoupledVar("Temperature",0.0,"Temperature of the system");
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
@@ -25,42 +25,26 @@ Clm::validParams()
   return params;
 }
 
-Clm::Clm(const InputParameters & parameters)
-  : IntegratedBC(parameters),
-   _E(getMaterialProperty<Real>("Corrosion_potential")),
-   _C1(coupledValue("Reactant1")),
-   _T(coupledValue("Temperature")),
+ADClmEVar::ADClmEVar(const InputParameters & parameters)
+  : ADIntegratedBC(parameters),
+   _E(adCoupledValue("Corrosion_potential")),
+   _C1(adCoupledValue("Reactant1")),
+   _T(adCoupledValue("Temperature")),
    _F(getParam<Real>("Faraday_constant")),
-   _eps(getMaterialProperty<Real>("Area")),
+   _eps(getADMaterialProperty<Real>("Area")),
    _R(getParam<Real>("R")),
    _kF(getParam<Real>("kF")),
    _kB(getParam<Real>("kB")),
    _EA(getParam<Real>("StandardPotential")),
-   _Num(getParam<Real>("Num")),
-   _T_id(coupled("Temperature")),
-   _C1_id(coupled("Reactant1"))
+   _Num(getParam<Real>("Num"))
 {
 }
 
-Real
-Clm::computeQpResidual()
+ADReal
+ADClmEVar::computeQpResidual()
 {
+//   if (_u[_qp] -_Num * _test[_i][_qp] * _eps * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]) >= 0.0)
      return -_Num * _test[_i][_qp] * _eps[_qp] * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]); 
+//   else
 }
 
-Real
-Clm::computeQpJacobian()
-{
-     return -_Num * _test[_i][_qp] * _eps[_qp] * _kF * 2 * _u[_qp] * _phi[_j][_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)); 
-}
-
-Real
-Clm::computeQpOffDiagJacobian(unsigned int jvar)
-{
-  if (jvar == _C1_id)
-     return -_Num * _test[_i][_qp] * _eps[_qp] * (- _kB * _phi[_j][_qp]);
-  else if (jvar == _T_id)
-     return -_Num * _test[_i][_qp] * _eps[_qp] * _kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) * -_F / (_R * _T[_qp]) * _phi[_j][_qp]; 
-  else
-     return 0;
-}

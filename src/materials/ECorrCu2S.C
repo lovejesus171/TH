@@ -7,20 +7,21 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ECorr.h"
+#include "ECorrCu2S.h"
 
-registerMooseObject("corrosionApp", ECorr);
+registerMooseObject("corrosionApp", ECorrCu2S);
 
 InputParameters
-ECorr::validParams()
+ECorrCu2S::validParams()
 {
-  InputParameters params = ADMaterial::validParams();
+  InputParameters params = Material::validParams();
   params.addCoupledVar("T",298.15,"T");
   params.addRequiredCoupledVar("C9","HS-");
   params.addCoupledVar("C1",0,"C1");
   params.addCoupledVar("C0",0,"C0");
   params.addCoupledVar("C3",0,"C3");
   params.addCoupledVar("C6",0,"C6");
+  params.addCoupledVar("Cu2SVar",0,"Cu2S Variable");
 
   params.addParam<Real>("aS", 0.5, "Constant");
   params.addParam<Real>("aC", 0.37 , "Constant");
@@ -67,14 +68,15 @@ ECorr::validParams()
   return params;
 }
 
-ECorr::ECorr(const InputParameters & parameters)
+ECorrCu2S::ECorrCu2S(const InputParameters & parameters)
   : Material(parameters),
-    _T(adCoupledValue("T")),
-    _C9(adCoupledValue("C9")),
-    _C1(adCoupledValue("C1")),
-    _C0(adCoupledValue("C0")),
-    _C3(adCoupledValue("C3")),
-    _C6(adCoupledValue("C6")),
+    _T(coupledValue("T")),
+    _C9(coupledValue("C9")),
+    _C1(coupledValue("C1")),
+    _C0(coupledValue("C0")),
+    _C3(coupledValue("C3")),
+    _C6(coupledValue("C6")),
+    _Cu2SVar(coupledValue("Cu2SVar")),
 
     _aS(getParam<Real>("aS")),
     _aC(getParam<Real>("aC")),
@@ -111,13 +113,14 @@ ECorr::ECorr(const InputParameters & parameters)
 
     // Declare that this material is going to have a Real
     // valued property named "diffusivity" that Kernels can use.
-    _IAA(declareADProperty<Real>("IAA")),
-    _ISS(declareADProperty<Real>("ISS")),
-    _IEE(declareADProperty<Real>("IEE")),
-    _IFF(declareADProperty<Real>("IFF")),
-    _Isum(declareADProperty<Real>("Isum")),
-    _Ecorr(declareADProperty<Real>("Ecorr")),
+    _IAA(declareProperty<Real>("IAA")),
+    _ISS(declareProperty<Real>("ISS")),
+    _IEE(declareProperty<Real>("IEE")),
+    _IFF(declareProperty<Real>("IFF")),
+    _Isum(declareProperty<Real>("Isum")),
+    _Ecorr(declareProperty<Real>("Ecorr")),
 
+    _Cu2SMat(declareProperty<Real>("Cu2SMat")),
     // Retrieve/use an old value of diffusivity.
     // Note: this is _expensive_ - only do this if you REALLY need it!
     _ISS_old(getMaterialPropertyOld<Real>("ISS")),
@@ -133,12 +136,12 @@ ECorr::ECorr(const InputParameters & parameters)
 
     _Area(getParam<Real>("Area")),
     _AnodeAreaValue(getParam<Real>("AnodeAreaValue")),
-    _AnodeArea(declareADProperty<Real>("AnodeArea"))
+    _AnodeArea(declareProperty<Real>("AnodeArea"))
 {
 }
 
 void
-ECorr::initQpStatefulProperties()
+ECorrCu2S::initQpStatefulProperties()
 {
   _ISS[_qp] = 0;
   _IEE[_qp] = 0;
@@ -150,7 +153,7 @@ ECorr::initQpStatefulProperties()
 }
 
 void
-ECorr::computeQpProperties()
+ECorrCu2S::computeQpProperties()
 {
   Real F = 96485;
   Real R = 8.314;
@@ -185,5 +188,7 @@ ECorr::computeQpProperties()
                      break;
 		  }
 		}
+
+	  _Cu2SMat[_qp] = _Cu2SVar[_qp]; //Save Cu2S Variable value as a material property
 
 }

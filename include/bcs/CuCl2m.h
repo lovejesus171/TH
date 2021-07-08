@@ -36,22 +36,22 @@ public:
   CuCl2m(const InputParameters & parameters);
 
 protected:
-  virtual Real computeQpResidual();
-  virtual Real computeQpJacobian();
-  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
+  virtual Real computeQpResidual() override;
+  virtual Real computeQpJacobian() override;
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar) override;
 
-  const VariableValue & _E;
+  const MaterialProperty<Real> & _E;
   const VariableValue & _C1;
   const VariableValue & _T;
 
   const Real & _F;
-  const Real & _eps;
+  const MaterialProperty<Real> & _eps;
   const Real & _R;
   const Real & _kF;
   const Real & _kB;
   const Real & _EA;
-  unsigned int _E_id;
-  unsigned int _T_id;
-  unsigned int _C_id;
   const Real & _Num;
+
+  unsigned _T_id;
+  unsigned _C1_id;
 };

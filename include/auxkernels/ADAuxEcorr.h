@@ -9,29 +9,30 @@
 
 #pragma once
 
-#include "DirichletBCBase.h"
+#include "AuxKernel.h"
 
-class EcorrBC;
+#include "metaphysicl/raw_type.h"
+// Forward Declarations
+class ADAuxEcorr;
 
 template <>
-InputParameters validParams<EcorrBC>();
+InputParameters validParams<ADAuxEcorr>();
 
 /**
- * Boundary condition of a Dirichlet type
- *
- * Sets the value in the node
+ * Coupled auxiliary value
  */
-class EcorrBC : public DirichletBCBase
+class ADAuxEcorr : public AuxKernel
 {
 public:
-  static InputParameters validParams();
-
-  EcorrBC(const InputParameters & parameters);
+  /**
+   * Factory constructor, takes parameters so that all derived classes can be built using the same
+   * constructor.
+   */
+  ADAuxEcorr(const InputParameters & parameters);
 
 protected:
-  virtual Real computeQpValue() override;
+  virtual Real computeValue() override;
 
-  /// The value for this BC
   Real _aS;
   Real _aC;
   Real _aD;
@@ -81,3 +82,4 @@ protected:
 
 
 };
+
