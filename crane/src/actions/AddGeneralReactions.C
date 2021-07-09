@@ -76,7 +76,7 @@ AddGeneralReactions::act()
   // std::vector<bool> reactant_aux; // This says whether each reactant is an aux variable or not.
   // This is important because aux variables do not contribute to the jacobian!
   std::vector<std::string> other_variables;
-  other_variables.resize(5);
+  other_variables.resize(3);
   other_variables[0] = "v";
   other_variables[1] = "w";
   other_variables[2] = "x";
@@ -318,7 +318,7 @@ AddGeneralReactions::act()
       else
       {
         energy_kernel_name += "Rate";
-	if (_reactants[i].size() == 1)
+        if (_reactants[i].size() == 1)
         {
           product_kernel_name = "ProductFirstOrder";
           reactant_kernel_name = "ReactantFirstOrder";

@@ -37,7 +37,7 @@ CraneApp::registerAll(Factory & f, ActionFactory & af, Syntax & s)
   s.registerActionSyntax("AddReactions", "ChemicalReactions/Network");
   s.registerActionSyntax("ChemicalReactionsBase", "ChemicalReactions/Network");
 
-  // Spatial network actions2
+  // Spatial network actions
   s.registerActionSyntax("AddReactions", "ChemicalReactions/Network2");
   s.registerActionSyntax("ChemicalReactionsBase", "ChemicalReactions/Network2");
 

@@ -9,28 +9,28 @@
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 
   [./N2]
     family = SCALAR
     order = FIRST
     initial_condition = 2.4474637681159418e+19
-    scaling = 1e-10
+    #scaling = 1e-10
   [../]
 
   [./N2A]
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-8
+    #scaling = 1e-8
   [../]
 
   [./N2B]
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 
   [./N2a1]
@@ -43,35 +43,35 @@
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 
   [./N+]
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 
   [./N2+]
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 
   [./N3+]
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 
   [./N4+]
     family = SCALAR
     order = FIRST
     initial_condition = 0.0
-    scaling = 1e-5
+    #scaling = 1e-5
   [../]
 []
 
@@ -127,22 +127,21 @@
   [../]
 []
 
-[ChemicalReactions]
-  [ScalarNetwork]
+[GlobalReactions]
+  [nitrogen]
     species = 'N N2 N2A N2B N2a1 N2C N+ N2+ N3+ N4+'
-    aux_species = 'e'
-    file_location = 'Example4'
+    file_location = 'data'
 
     # These are parameters required equation-based rate coefficients
     equation_variables = 'Te Teff'
     rate_provider_var = 'reduced_field'
 
 
-    reactions = 'e + N2 -> e + N2A          : EEDF
-                 e + N2 -> e + N2B          : EEDF
-                 e + N2 -> e + N2a1         : EEDF
-                 e + N2 -> e + N2C          : EEDF
-                 e + N2 -> e + e + N2+      : EEDF
+    reactions = 'e + N2 -> e + N2A          : EEDF (N2A_excitation)
+                 e + N2 -> e + N2B          : EEDF (N2B_excitation)
+                 e + N2 -> e + N2a1         : EEDF (N2a1_excitation)
+                 e + N2 -> e + N2C          : EEDF (N2C_excitation)
+                 e + N2 -> e + e + N2+      : EEDF (N2_ionization)
                  N2A + N2a1 -> N4+ + e      : 4.0e-12
                  N2a1 + N2a1 -> N4+ + e     : 4.0e-11
                  N+ + e + N2 -> N + N2      : {6.0e-27*(300/(Te*11600))^1.5}
@@ -203,8 +202,7 @@
     variable = reduced_field
     # scale_factor = 1e-21
     use_time = true
-    property_file = 'Example4/reduced_field.txt'
-    # execute_on = 'INITIAL TIMESTEP_END'
+    property_file = 'data/reduced_field.txt'
     execute_on = 'TIMESTEP_BEGIN'
   [../]
 
@@ -213,7 +211,8 @@
     variable = Te
     scale_factor = 1.5e-1
     sampler = reduced_field
-    property_file = 'Example4/electron_temperature.txt'
+    property_file = 'data/electron_temperature.txt'
+    # execute_on = 'TIMESTEP_BEGIN'
     execute_on = 'TIMESTEP_BEGIN'
   [../]
 
@@ -221,7 +220,8 @@
     type = ScalarLinearInterpolation
     variable = e
     use_time = true
-    property_file = 'Example4/electron_density.txt'
+    property_file = 'data/electron_density.txt'
+    # execute_on = 'INITIAL TIMESTEP_END'
     execute_on = 'TIMESTEP_BEGIN'
   [../]
 
@@ -238,25 +238,17 @@
 
 [Executioner]
   type = Transient
+  automatic_scaling = true
   end_time = 2.5e-3
-  solve_type = LINEAR
-  line_search = basic
-  nl_rel_tol = 1e-5
-  dtmax = 1e-5
-  [./TimeStepper]
-    type = IterationAdaptiveDT
-    cutback_factor = 0.4
-    dt = 1e-8
-    growth_factor = 1.2
-    optimal_iterations = 15
-  [../]
+  solve_type = linear
+  dt = 1e-6
 []
 
 [Preconditioning]
   [./smp]
     type = SMP
     full = true
-    # ksp_norm = none
+    #ksp_norm = none
   [../]
 []
 
