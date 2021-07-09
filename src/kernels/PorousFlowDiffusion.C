@@ -8,6 +8,7 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "PorousFlowDiffusion.h"
+#include<math.h>
 
 registerMooseObject("corrosionApp", PorousFlowDiffusion);
 
@@ -16,13 +17,14 @@ PorousFlowDiffusion::validParams()
 {
   InputParameters params = Diffusion::validParams();
   params.addClassDescription("Diffusion of primary species");
+  params.addRequiredParam<Real>("Diffusion_coeff","Put the value of diffusion coefficient");
   return params;
 }
 
 PorousFlowDiffusion::PorousFlowDiffusion(const InputParameters & parameters)
   : Diffusion(parameters),
+	_diff_coeff(getParam<Real>("Diffusion_coeff")),
        	_porosity(getMaterialProperty<Real>("porosity")),
-       	_diffusivity(getMaterialProperty<Real>("diffusivity")),
        	_tortuosity(getMaterialProperty<Real>("tortuosity"))
 {
 }
@@ -30,11 +32,11 @@ PorousFlowDiffusion::PorousFlowDiffusion(const InputParameters & parameters)
 Real
 PorousFlowDiffusion::computeQpResidual()
 {
-  return _porosity[_qp] * _tortuosity[_qp] * _diffusivity[_qp] * Diffusion::computeQpResidual();
+  return _porosity[_qp] * _tortuosity[_qp] * _diff_coeff * Diffusion::computeQpResidual();
 }
 
 Real
 PorousFlowDiffusion::computeQpJacobian()
 {
-  return _porosity[_qp] * _tortuosity[_qp] * _diffusivity[_qp] * Diffusion::computeQpJacobian();
+  return _porosity[_qp] * _tortuosity[_qp] * _diff_coeff * Diffusion::computeQpJacobian();
 }

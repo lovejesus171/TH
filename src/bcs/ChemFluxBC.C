@@ -12,6 +12,7 @@ ChemFluxBC::validParams()
   InputParameters params = ADIntegratedBC::validParams();
   params.addParam<Real>("Num",1,"Number of produced or consumed chemical species per reaction");
   params.addRequiredCoupledVar("Reactant1","HS- anions");
+  params.addRequiredParam<Real>("Diffusion_coeff", "Put the value of diffusion coefficient");
   params.addClassDescription(
       "Computes a boundary residual contribution consistent with the Diffusion Kernel. "
       "Does not impose a boundary condition; instead computes the boundary "
@@ -22,10 +23,10 @@ ChemFluxBC::validParams()
 
 ChemFluxBC::ChemFluxBC(const InputParameters & parameters)
   : ADIntegratedBC(parameters),
-   _diffusivity(getMaterialProperty<Real>("diffusivity")),
    _porosity(getMaterialProperty<Real>("porosity")),
    _tortuosity(getMaterialProperty<Real>("tortuosity")),
    _Num(getParam<Real>("Num")),
+   _diff_coeff(getParam<Real>("Diffusion_coeff")),
    _C1(adCoupledValue("Reactant1")),
    _grad_C1(adCoupledGradient("Reactant1"))
 {
@@ -34,5 +35,5 @@ ChemFluxBC::ChemFluxBC(const InputParameters & parameters)
 ADReal
 ChemFluxBC::computeQpResidual()
 {
-     return _test[_i][_qp] * _Num * _diffusivity[_qp] * _porosity[_qp] * _tortuosity[_qp] * _grad_C1[_qp] * _normals[_qp];
+     return _test[_i][_qp] * _Num * _diff_coeff * _porosity[_qp] * _tortuosity[_qp] * _grad_C1[_qp] * _normals[_qp];
 }

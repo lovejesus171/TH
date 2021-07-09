@@ -10,11 +10,11 @@ InputParameters
 Clm::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
-  params.addRequiredParam<MaterialPropertyName>("Corrosion_potential","Corrosion potential");
+  params.addCoupledVar("Corrosion_potential",0.0,"Corrosion potential");
   params.addCoupledVar("Reactant1",0.0,"CuCl2-");
   params.addCoupledVar("Temperature",0.0,"Temperature of the system");
   params.addParam<Real>("Faraday_constant",96485.3329,"Faraday constants, C/mol");
-  params.addRequiredParam<MaterialPropertyName>("Area","Area of anode surface");
+  params.addParam<Real>("Porosity",1.0,"Porosity of porous medium");
   params.addParam<Real>("R",8.314,"Reaction order");
   params.addParam<Real>("kF",0.0,"Kinetic constant");
   params.addParam<Real>("kB",0.0,"Kinetic constant");
@@ -27,40 +27,52 @@ Clm::validParams()
 
 Clm::Clm(const InputParameters & parameters)
   : IntegratedBC(parameters),
-   _E(getMaterialProperty<Real>("Corrosion_potential")),
+   _E(coupledValue("Corrosion_potential")),
    _C1(coupledValue("Reactant1")),
    _T(coupledValue("Temperature")),
    _F(getParam<Real>("Faraday_constant")),
-   _eps(getMaterialProperty<Real>("Area")),
+   _eps(getParam<Real>("Porosity")),
    _R(getParam<Real>("R")),
    _kF(getParam<Real>("kF")),
    _kB(getParam<Real>("kB")),
    _EA(getParam<Real>("StandardPotential")),
-   _Num(getParam<Real>("Num")),
+   _E_id(coupled("Corrosion_potential")),
    _T_id(coupled("Temperature")),
-   _C1_id(coupled("Reactant1"))
+   _C1_id(coupled("Reactant1")),
+   _Num(getParam<Real>("Num"))
 {
 }
 
 Real
 Clm::computeQpResidual()
 {
-     return -_Num * _test[_i][_qp] * _eps[_qp] * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]); 
+   return -_Num * _test[_i][_qp] * _eps * (_kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) - _kB * _C1[_qp]); 
 }
+
 
 Real
 Clm::computeQpJacobian()
 {
-     return -_Num * _test[_i][_qp] * _eps[_qp] * _kF * 2 * _u[_qp] * _phi[_j][_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)); 
+   return -_Num * _test[_i][_qp] * _eps * 2 * _kF * _phi[_j][_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)); 
 }
 
 Real
 Clm::computeQpOffDiagJacobian(unsigned int jvar)
 {
-  if (jvar == _C1_id)
-     return -_Num * _test[_i][_qp] * _eps[_qp] * (- _kB * _phi[_j][_qp]);
-  else if (jvar == _T_id)
-     return -_Num * _test[_i][_qp] * _eps[_qp] * _kF * _u[_qp] * _u[_qp] * exp(_F  / (_R * _T[_qp]) * (_E[_qp] - _EA)) * -_F / (_R * _T[_qp]) * _phi[_j][_qp]; 
-  else
-     return 0;
+
+   Real Front;
+   Front =  -_Num * _test[_i][_qp] * _eps * _kF * _u[_qp] * _u[_qp];
+
+   Real Factor;
+   Factor = _F /_R;
+
+   if (jvar == _E_id)
+     return Front * (Factor/_T[_qp]) * _phi[_j][_qp] * exp(Factor / _T[_qp] * (_E[_qp] - _EA));
+   else if (jvar == _T_id)
+     return Front * (-Factor * (_E[_qp] - _EA) / _phi[_j][_qp] / _T[_qp]) * exp(Factor / _T[_qp] * (_E[_qp] - _EA));
+   else if (jvar == _C1_id)
+     return _Num * _test[_i][_qp] * _eps * _kB * _phi[_j][_qp];
+   else
+     return 0.0;
+   
 }

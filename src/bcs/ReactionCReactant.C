@@ -10,7 +10,7 @@ InputParameters
 ReactionCReactant::validParams()
 {
   InputParameters params = IntegratedBC::validParams();
-  params.addParam<Real>("Num",-2.0,"Put the number to decide production or consumption with + and - sign");
+  params.addParam<Real>("Num",3.0,"Put the number to decide production or consumption with + and - sign");
   params.addRequiredParam<MaterialPropertyName>("Porosity","Kinetic constant");
   params.addRequiredParam<MaterialPropertyName>("Kinetic1","Kinetic constant");
   params.addRequiredParam<MaterialPropertyName>("DelH","transfer coefficient");
@@ -48,11 +48,10 @@ ReactionCReactant::computeQpResidual()
 	Real Tref = 298.15;
 	Real F = 96485;
 	Real R = 8.314;
+     
+          return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * pow(_u[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]))
+;
 
-        if (_u[_qp] > 0)	
- 		return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * pow(_u[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]));
-	else
-		return 0;
 }
 
 Real
@@ -62,10 +61,9 @@ ReactionCReactant::computeQpJacobian()
 	Real F = 96485;
 	Real R = 8.314;
 
-        if (_u[_qp] > 0)
-          return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * 0.66 * _phi[_j][_qp] * pow(_u[_qp], -0.34) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]));
-	else
-		return 0;
+          return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * 0.66 * _phi[_j][_qp] * pow(_u[_qp], 0.34) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp]))
+;
+
 }
 
 Real
@@ -75,9 +73,8 @@ ReactionCReactant::computeQpOffDiagJacobian(unsigned int jvar)
 	Real F = 96485;
 	Real R = 8.314;
 
-	if (_u[_qp] > 0 && jvar == _T_id)
-		return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * pow(_u[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp])) * (_DelH[_qp] - _a1[_qp] * F * (_Ecorr[_qp] - _E1[_qp])) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp];
- 	else
-	       return 0;
+	return -_test[_i][_qp] * _Num * (1 - _f[_qp]) * _eps[_qp] * _k1[_qp] * pow(_u[_qp], 0.66) * exp(_DelH[_qp]/R * (1/Tref - 1/_T[_qp])) * exp(_a1[_qp] * F /(R * _T[_qp]) * (_Ecorr[_qp] - _E1[_qp])) * (_DelH[_qp] - _a1[_qp] * F * (_Ecorr[_qp] - _E1[_qp])) / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp];
+;
+
 }
 

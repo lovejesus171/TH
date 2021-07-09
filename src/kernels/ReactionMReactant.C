@@ -34,8 +34,7 @@ ReactionMReactant::ReactionMReactant(const InputParameters & parameters)
     _Num(getParam<Real>("Num")),
     _Ea(getMaterialProperty<Real>("Activation_energy")),
     _Cs(getMaterialProperty<Real>("Saturation")),
-    _T(coupledValue("T")),
-    _T_id(coupled("T"))
+    _T(coupledValue("T"))
 {
 }
 
@@ -45,14 +44,10 @@ ReactionMReactant::computeQpResidual()
   Real R = 8.314;
   Real T_Re = 298.15;
 
-  if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
-	  {
-		  //printf("Return 0 \n");
-		  return 0;
-	  }
+  if (_u[_qp] <= _Cs[_qp] )
+	  return 0;
   else
-  {//printf("Return Non Zero \n");
-          return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);}
+          return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);
 }
 
 Real
@@ -64,7 +59,7 @@ ReactionMReactant::computeQpJacobian()
 
   k = _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);
 
-    if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
+    if (_u[_qp] <= _Cs[_qp])
 	return 0;
     else
 	return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * _phi[_j][_qp];
@@ -76,7 +71,7 @@ ReactionMReactant::computeQpOffDiagJacobian(unsigned int jvar)
 {
   Real R = 8.314;
   Real T_Re = 298.15;
-    if (_u[_qp] <= _Cs[_qp] || _u[_qp] <= 0)
+    if (_u[_qp] <= _Cs[_qp])
 	    return 0;
     else if (jvar == _T_id)
 	return -_test[_i][_qp] * _Num * _Reaction_rate[_qp] * _Ea[_qp] / (R * _T[_qp] * _T[_qp]) * _phi[_j][_qp] * exp(_Ea[_qp] / R * (1/T_Re - 1/_T[_qp])) * (_u[_qp] - _Cs[_qp]);

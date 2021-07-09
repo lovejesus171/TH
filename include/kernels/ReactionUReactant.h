@@ -37,6 +37,7 @@ protected:
   const MaterialProperty<Real> & _Reaction_rate;
   const Real & _Num;
   const MaterialProperty<Real> & _Ea;
+  const MaterialProperty<Real> & _Cs;
   const VariableValue & _T;
   const VariableValue & _v;
   unsigned _T_id;

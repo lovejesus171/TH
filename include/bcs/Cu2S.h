@@ -41,18 +41,18 @@ protected:
   virtual Real computeQpOffDiagJacobian(unsigned int jvar) override;
 
   const Real & _F;
-  const MaterialProperty<Real> & _eps;
+  const Real & _eps;
   const Real & _kS;
   const Real & _aS;
-  const MaterialProperty<Real> & _E;
+  const VariableValue & _E;
   const Real & _R;
   const VariableValue & _T;
   const Real & _aS3;
   const Real & _ES12;
   const Real & _ES3;
   const Real & _Num;
+  unsigned int _E_id;
+  unsigned int _T_id; 
   const VariableValue & _C1;
-  unsigned int _T_id;
   unsigned int _C1_id;
-
 };

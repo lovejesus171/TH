@@ -28,7 +28,8 @@ protected:
   virtual Real computeQpJacobian() override;
 
   /// Material property of dispersion-diffusion coefficient.
-  const MaterialProperty<Real> & _diffusivity;
   const MaterialProperty<Real> & _porosity;
   const MaterialProperty<Real> & _tortuosity;
+
+  const Real & _diff_coeff;
 };

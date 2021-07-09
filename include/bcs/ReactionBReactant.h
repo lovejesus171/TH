@@ -47,6 +47,7 @@ protected:
   const MaterialProperty<Real> & _DelH;
   const MaterialProperty<Real> & _Ecorr;
   const VariableValue & _T;
+  const VariableValue & _v;
   const MaterialProperty<Real> & _a1;
   const MaterialProperty<Real> & _E1;
   const MaterialProperty<Real> & _f; 

@@ -42,7 +42,8 @@ protected:
   const ADVariableValue & _C1;
   const ADVariableGradient & _grad_C1;
 
-  const MaterialProperty<Real> & _diffusivity;
   const MaterialProperty<Real> & _porosity;
   const MaterialProperty<Real> & _tortuosity;
+
+  const Real & _diff_coeff;
 };
