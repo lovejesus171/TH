@@ -127,8 +127,8 @@
   [./Diff_O2]
     type = TwoPhaseDiffusion
     variable = O2
-    Diffusion_coeff_aq = 0.031536 # m2/yr
-    Diffusion_coeff_gas = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 5.36E-2 # m2/yr
+    Diffusion_coeff_gas = 5.2E2 # m2/yr
   [../]
 
   [./dHS-_dt]
@@ -142,7 +142,7 @@
   [./Diff_HS-]
     type = AqPhaseDiffusion
     variable = HS-
-    Diffusion_coeff_aq = 0.015768 # m2/yr
+    Diffusion_coeff_aq = 1.58E-2 # m2/yr
   [../]
 
   [./dFe2+_dt]
@@ -156,7 +156,7 @@
   [./Diff_Fe2+]
     type = AqPhaseDiffusion
     variable = Fe2+
-    Diffusion_coeff_aq = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 1.58E-2 # m2/yr
   [../]
 
   [./dSO4_2-_dt]
@@ -170,7 +170,7 @@
   [./Diff_SO4_2-]
     type = AqPhaseDiffusion
     variable = SO4_2-
-    Diffusion_coeff_aq = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 3.15E-2 # m2/yr
   [../]
 
   [./dCH3CO2H_dt]
@@ -184,7 +184,7 @@
   [./Diff_CH3CO2H]
     type = AqPhaseDiffusion
     variable = CH3CO2H
-    Diffusion_coeff_aq = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 3.15E-2 # m2/yr
   [../]
 
   [./dCu2O_dt]
@@ -299,14 +299,13 @@
  
     equation_variables = 'SRB1 SRB2 swater porosity'
 
-    reactions = 'O2 -> ABS                 : 6.93792e-3 * swater * porosity * O2consum
+    reactions = 'Fe2+ + HS- -> FeS         : 31536 * swater * porosity
+                 gypsum -> SO4_2-          : 252.288 * swater * porosity
+                 organic -> CH3CO2H        : 6.93792e-3 * swater * porosity
+                 SO4_2- + CH3CO2H -> HS-   : 409.968 * SRB1 * swater * porosity'
 
-#    reactions = 'Fe2+ + HS- -> FeS         : 31536 * swater * porosity
-#                 O2 -> ABS                 : 6.93792e-3 * swater * porosity
-#                 gypsum -> SO4_2-          : 252.288 * swater * porosity
-#                 organic -> CH3CO2H        : 6.93792e-3 * swater * porosity
-#                 SO4_2- + CH3CO2H -> HS-   : 409.968 * SRB1 * swater * porosity
-#                 SO4_2- -> HS-             : 179.7552 * SRB2 * swater * porosity'
+#                 SO4_2- -> HS-             : 179.7552 * SRB2 * swater * porosity
+#                 O2 -> ABS                 : 6.93792e-3 * swater * porosity * O2consum
 
     block = 'bentonite hostrock backfill'
   [../]
@@ -358,6 +357,7 @@
     value = 0.213 #[mol/m3]
     block = 'backfill'
   [../]
+
   [./IC_Fe2+_backfill]
     type = ConstantIC
     variable = Fe2+

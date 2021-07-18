@@ -23,6 +23,7 @@ public:
 protected:
   virtual Real computeQpResidual() override;
   virtual Real computeQpJacobian() override;
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar) override;
 
   /// The fluid component index
   const unsigned int _ph;
@@ -39,7 +40,12 @@ protected:
   /// Nodal fluid saturation
   const MaterialProperty<std::vector<Real>> & _fluid_saturation_nodal;
 
-  /// Diffusion coefficient of gas and aqueous O2
-  const Real & _diff_coeff_gas;
+  /// Calculation of diffusion coefficient
+  const MaterialProperty<Real> & _D_gas;
+  const MaterialProperty<Real> & _EA_gas;
+
+  ///Coupled Variable
+  const VariableValue & _T;
+  unsigned _T_id;
 
 };

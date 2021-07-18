@@ -1,5 +1,4 @@
 # Unsaturated Darcy-Richards flow without using an Action
-# Initial condition: CSM 4-1a
 
 [Mesh]
   file = 'KRS+_4parts_new_light_light.msh'
@@ -9,7 +8,7 @@
 [UserObjects]
   [./dictator]
     type = PorousFlowDictator
-    porous_flow_vars = 'pp'
+    porous_flow_vars = 'pp T'
     number_fluid_phases = 1
     number_fluid_components = 1
   [../]
@@ -42,6 +41,10 @@
     order = FIRST
     family = LAGRANGE
   [../]
+  [./T]
+    order = FIRST
+    family = LAGRANGE
+  [../]
   [./O2]
     order = FIRST
     family = LAGRANGE
@@ -50,55 +53,42 @@
     order = FIRST
     family = LAGRANGE
   [../]
-  [./Fe2+]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./gypsum]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./SO4_2-]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./FeS]
-    order = FIRST
-    family = LAGRANGE
-  [../]
+#  [./Cu2O]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#  [./Cu2S]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#  [./Fe2+]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#  [./gypsum]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#  [./SO4_2-]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#  [./FeS]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
   [./ABS]
     order = FIRST
     family = LAGRANGE
   [../]
-  [./SRB1]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./SRB2]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./CH3CO2H]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./organic]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  
-  [./Cu2O]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./Cu2S]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./O2consum]
-    order = FIRST
-    family = LAGRANGE
-  [../]
+#  [./SRB1]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
+#  [./SRB2]
+#    order = FIRST
+#    family = LAGRANGE
+#  [../]
 []
 
 [Kernels]
@@ -114,163 +104,147 @@
     gravity = '0 0 0'
     block = 'bentonite backfill hostrock'
   [../]
+ 
+# Heat Transfer
+  [./dT_dt]
+    type = PorousFlowEnergyTimeDerivative
+    variable = T
+    block = 'bentonite backfill hostrock'
+  [../]
+  [./Heat_advection]
+    type = PorousFlowHeatAdvection
+    variable = T
+    gravity = '0 0 0'
+    block = 'bentonite backfill hostrock'
+  [../]
+  [./Heat_conduction]
+    type = PorousFlowHeatConduction
+    variable = T
+    block = 'bentonite backfill hostrock'
+  [../]
 
-# Chemical spcies
+# Chemical species
   [./dO2_dt]
-    type = O2TimeDerivative
+    type = TwoPhaseTimeDerivative
     variable = O2
-  [../] 
-  [./Conv_O2]
+  [../]
+  [./Adve_O2]
     type = PorousFlowBasicAdvection
     variable = O2
   [../]
   [./Diff_O2]
     type = TwoPhaseDiffusion
     variable = O2
-    Diffusion_coeff_aq = 0.031536 # m2/yr
-    Diffusion_coeff_gas = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 5.36E-2
+    Diffusion_coeff_gas = 5.2E-2
   [../]
 
   [./dHS-_dt]
     type = AqPhaseTimeDerivative
     variable = HS-
-  [../] 
-  [./Conv_HS-]
+  [../]
+  [./Adve_HS-]
     type = PorousFlowBasicAdvection
     variable = HS-
   [../]
   [./Diff_HS-]
     type = AqPhaseDiffusion
     variable = HS-
-    Diffusion_coeff_aq = 0.015768 # m2/yr
+    Diffusion_coeff_aq = 1.58E-2
   [../]
 
-  [./dFe2+_dt]
-    type = AqPhaseTimeDerivative
-    variable = Fe2+
-  [../] 
-  [./Conv_Fe2+]
-    type = PorousFlowBasicAdvection
-    variable = Fe2+
-  [../]
-  [./Diff_Fe2+]
-    type = AqPhaseDiffusion
-    variable = Fe2+
-    Diffusion_coeff_aq = 0.031536 # m2/yr
-  [../]
+#  [./dFe2+_dt]
+#    type = PrimaryTimeDerivative
+#    variable = Fe2+
+#  [../]
+#  [./Adve_Fe2+]
+#    type = PorousFlowBasicAdvection
+#    variable = Fe2+
+#  [../]
+#  [./Diff_Fe2+]
+#    type = PorousFlowDiffusion
+#    variable = Fe2+
+#    pressure = pp
+#  [../]
 
-  [./dSO4_2-_dt]
-    type = AqPhaseTimeDerivative
-    variable = SO4_2-
-  [../] 
-  [./Conv_SO4_2-]
-    type = PorousFlowBasicAdvection
-    variable = SO4_2-
-  [../]
-  [./Diff_SO4_2-]
-    type = AqPhaseDiffusion
-    variable = SO4_2-
-    Diffusion_coeff_aq = 0.031536 # m2/yr
-  [../]
+#  [./dgypsum_dt]
+#    type = PrimaryTimeDerivative
+#    variable = gypsum
+#  [../]
+#  [./Adve_gypsum]
+#    type = PorousFlowBasicAdvection
+#    variable = gypsum
+#  [../]
+#  [./Diff_gypsum]
+#    type = PorousFlowDiffusion
+#    variable = gypsum
+#    pressure = pp
+#  [../]
 
-  [./dCH3CO2H_dt]
-    type = AqPhaseTimeDerivative
-    variable = CH3CO2H
-  [../] 
-  [./Conv_CH3CO2H]
-    type = PorousFlowBasicAdvection
-    variable = CH3CO2H
-  [../]
-  [./Diff_CH3CO2H]
-    type = AqPhaseDiffusion
-    variable = CH3CO2H
-    Diffusion_coeff_aq = 0.031536 # m2/yr
-  [../]
+#  [./dSO4_2-_dt]
+#    type = PrimaryTimeDerivative
+#    variable = SO4_2-
+#  [../]
+#  [./Adve_SO4_2-]
+#    type = PorousFlowBasicAdvection
+#    variable = SO4_2-
+#  [../]
+#  [./Diff_SO4_2-]
+#    type = PorousFlowDiffusion
+#    variable = SO4_2-
+#    pressure = pp
+#  [../]
 
-  [./dCu2O_dt]
-    type = TimeDerivative
-    variable = Cu2O
-  [../]
-  [./diff_Cu2O]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = Cu2O
-  [../]
 
-  [./dCu2S_dt]
-    type = TimeDerivative
-    variable = Cu2S
-  [../]
-  [./diff_CuS2]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = Cu2S
-  [../]
+# Chemical species accumulation
+#  [./dCu2O_dt]
+#    type = PrimaryTimeDerivative
+#    variable = Cu2O
+#  [../]
+#  [./Diff_Cu2O]
+#    type = CoefDiffusion
+#    coef = 0.5e-20
+#    variable = Cu2O
+#  [../]
 
-  [./dgypsum_dt]
-    type = TimeDerivative
-    variable = gypsum
-  [../]
-  [./diff_gypsum]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = gypsum
-  [../]
-
-  [./dFeS_dt]
-    type = TimeDerivative
-    variable = FeS
-  [../]
-  [./diff_FeS]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = FeS
-  [../]
-
-  [./dorganic_dt]
-    type = TimeDerivative
-    variable = organic
-  [../]
-  [./diff_organic]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = organic
-  [../]
-
-  [./dSRB1_dt]
-    type = TimeDerivative
-    variable = SRB1
-  [../]
-  [./diff_SRB1]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = SRB1
-  [../]
-
-  [./dSRB2_dt]
-    type = TimeDerivative
-    variable = SRB2
-  [../]
-  [./diff_SRB2]
-    type = CoefDiffusion
-    coef = 0.5e-20
-    variable = SRB2
-  [../]
+#  [./dFeS_dt]
+#    type = PrimaryTimeDerivative
+#    variable = FeS
+#  [../]
+#  [./Diff_FeS]
+#    type = CoefDiffusion
+#    coef = 0.5e-20
+#    variable = FeS
+#  [../]
 
   [./dABS_dt]
-    type = TimeDerivative
+    type = PrimaryTimeDerivative
     variable = ABS
   [../]
-  [./diff_ABS]
+  [./Diff_ABS]
     type = CoefDiffusion
     coef = 0.5e-20
     variable = ABS
   [../]
 
-  [./dO2consum_dt]
-    type = TimeDerivative
-    variable = O2consum
-  [../]
+#  [./dCu2S_dt]
+#    type = PrimaryTimeDerivative
+#    variable = Cu2S
+#  [../]
+#  [./Diff_Cu2S]
+#    type = CoefDiffusion
+#    coef = 0.5e-16
+#    variable = Cu2S
+#  [../]
+
+#  [./dSRB1_dt]
+#    type = PrimaryTimeDerivative
+#    variable = SRB1
+#  [../]
+#  [./dSRB2_dt]
+#    type = PrimaryTimeDerivative
+#    variable = SRB2
+#  [../]
 []
 
 [AuxVariables]
@@ -290,29 +264,49 @@
     variable = swater
     property = saturation
   [../]
-[]
 
-[ChemicalReactions]
-  [./Network]
-    species = 'O2 Fe2+ gypsum SO4_2- HS- FeS ABS'
-    track_rates = True
- 
-    equation_variables = 'SRB1 SRB2 swater porosity'
-
-    reactions = 'O2 -> ABS                 : 6.93792e-3 * swater * porosity * O2consum
-
-#    reactions = 'Fe2+ + HS- -> FeS         : 31536 * swater * porosity
-#                 O2 -> ABS                 : 6.93792e-3 * swater * porosity
-#                 gypsum -> SO4_2-          : 252.288 * swater * porosity
-#                 organic -> CH3CO2H        : 6.93792e-3 * swater * porosity
-#                 SO4_2- + CH3CO2H -> HS-   : 409.968 * SRB1 * swater * porosity
-#                 SO4_2- -> HS-             : 179.7552 * SRB2 * swater * porosity'
-
-    block = 'bentonite hostrock backfill'
+  [./effective_pressure_bentonite]
+    type = ParsedAux
+    args = 'swater'
+    function = '(4.905E6 - 1.01E5) / 0.41 * swater - 6902973.171'
+    variable = effective_pressure
+    block = 'bentonite'
   [../]
 []
 
+#[ChemicalReactions]
+#  [./Network]
+#    species = 'O2 Fe2+ gypsum SO4_2- HS- FeS Cu2O Cu2S ABS'
+#    track_rates = True
+
+#    equation_variables = 'SRB1 SRB2'
+
+#    reactions = 'Fe2+ + HS- -> FeS       : 3.1536E7
+#                 O2 -> ABS               : 6.93792e-3
+#                 gypsum -> SO4_2-        : 252.288
+#                 SO4_2- -> HS-           : 41
+#                 SO4_2- -> HS-           : 18
+#                 Cu2O + HS- -> Cu2S      : 6.275664E7'
+
+#    block = 'bentonite hostrock backfill'
+#  [../]
+#[]
+
 [ICs]
+# Temperature
+   [./IC_T]
+    type = ConstantIC
+    variable = T
+    value = 298.15
+    block = 'bentonite backfill'
+   [../]
+   [./IC_T_hostrock]
+    type = FunctionIC
+    variable = T
+    function = underground_temp
+    block = 'hostrock'
+   [../]
+
 # Pressure
   [./IC_P_bentonite]
     type = ConstantIC
@@ -349,118 +343,100 @@
   [./IC_O2_bentonite]
     type = ConstantIC
     variable = O2
-    value = 0.361 #[mol/m3]
+    value = 0.361 # mol/m3
     block = 'bentonite'
   [../]
   [./IC_O2_backfill]
     type = ConstantIC
     variable = O2
-    value = 0.213 #[mol/m3]
+    value = 1.685 # mol/m3
     block = 'backfill'
   [../]
+ 
   [./IC_Fe2+_backfill]
     type = ConstantIC
     variable = Fe2+
-    value = 1E-2 # mol/m3
+    value = 1E-5 # mol/m3
     block = 'hostrock'
   [../]
 
   [./IC_HS-_hostrock]
     type = ConstantIC
     variable = HS-
-    value = 1E-2 # mol/m3
+    value = 1E-5 # mol/m3
     block = 'hostrock'
-  [../]
+  [../] 
 
   [./IC_SO4_2-_bentonite]
     type = ConstantIC
     variable = SO4_2-
-    value = 15.46 # mol/m3
+    value = 0.149 # mol/m3
     block = 'bentonite'
-  [../]
+  [../] 
   [./IC_SO4_2-_backfill]
     type = ConstantIC
     variable = SO4_2-
-    value = 14.2 # mol/m3
+    value = 0.479 # mol/m3
     block = 'backfill'
-  [../]
+  [../] 
   [./IC_SO4_2-_hostrock]
     type = ConstantIC
     variable = SO4_2-
-    value = 9.4 # mol/m3
+    value = 0.0094 # mol/m3
     block = 'hostrock'
-  [../]
+  [../] 
 
   [./IC_gypsum_bentonite]
     type = ConstantIC
     variable = gypsum
-    value = 36.5 # mol/m3
+    value = 0.0365 # mol/m3
     block = 'bentonite'
-  [../]
+  [../] 
   [./IC_gypsum_backfill]
     type = ConstantIC
     variable = gypsum
-    value = 190 # mol/m3
-    block = 'backfill'
-  [../]
-
-  [./IC_organic_bentonite]
-    type = ConstantIC
-    variable = organic
-    value = 10.5 # mol/m3
-    block = 'bentonite'
-  [../]
-  [./IC_organic_backfill]
-    type = ConstantIC
-    variable = organic
-    value = 5.73 # mol/m3
+    value = 0.19 # mol/m3
     block = 'backfill'
   [../]
 
   [./IC_SRB1_bentonite]
     type = ConstantIC
     variable = SRB1
-    value = 9E-5 # mol/m3
+    value = 9E-8 # mol/m3
     block = 'bentonite'
-  [../]
+  [../] 
   [./IC_SRB1_backfill]
     type = ConstantIC
     variable = SRB1
-    value = 1E-3 # mol/m3
+    value = 1E-6 # mol/m3
     block = 'backfill'
   [../]
   [./IC_SRB1_hostrock]
     type = ConstantIC
     variable = SRB1
-    value = 3E-5 # mol/m3
+    value = 3E-8 # mol/m3
     block = 'hostrock'
-  [../]
+  [../] 
 
   [./IC_SRB2_bentonite]
     type = ConstantIC
     variable = SRB2
-    value = 9E-5 # mol/m3
+    value = 9E-8 # mol/m3
     block = 'bentonite'
-  [../]
+  [../] 
   [./IC_SRB2_backfill]
     type = ConstantIC
     variable = SRB2
-    value = 1E-3 # mol/m3
+    value = 1E-6 # mol/m3
     block = 'backfill'
   [../]
   [./IC_SRB2_hostrock]
     type = ConstantIC
     variable = SRB2
-    value = 3E-5 # mol/m3
+    value = 3E-8 # mol/m3
     block = 'hostrock'
-  [../]
+  [../] 
 
-  [./IC_O2consum]
-    type = ConstantIC
-    variable = O2consum
-    value = 1 # mol/m3
-    block = 'bentonite backfill'
-  [../]
 []
 
 [BCs]
@@ -472,7 +448,29 @@
     boundary = 'top bottom'
   [../]
 
-#Chemical species
+# Temperature
+  [./BC_T_top]
+    type = DirichletBC
+    variable = T
+    value = '296.65'
+    boundary = 'top'
+  [../]
+  [./BC_T_bottom]
+    type = DirichletBC
+    variable = T
+    value = '299.65'
+    boundary = 'bottom'
+  [../]
+ 
+# Heat Flux
+  [./BC_HeatFlux]
+    type = FunctionNeumannBC
+    variable = T
+    boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
+    function = Decay_fn
+  [../]
+
+# Chemical species
   [./BC_O2_canister]
     type = DirichletBC
     variable = O2
@@ -486,32 +484,12 @@
     value = 0
   [../]
 
-  [./BC_Fe2+_hostrock]
-    type = DirichletBC
-    variable = Fe2+
-    boundary = 'top bottom'
-    value = 1E-2
-  [../]
-  [./BC_HS-_hostrock]
-    type = DirichletBC
-    variable = HS-
-    boundary = 'top bottom'
-    value = 1E-2
-  [../]
-  [./BC_SO4_2-_canister]
-    type = DirichletBC
-    variable = SO4_2-
-    boundary = 'top bottom'
-    value = 9.4
-  [../]
-
 # Chemical species accumulation
   [./BC_O2_accumulation]
     type = ChemFluxBC
     variable = Cu2O
     Reactant1 = O2
     Num = 4
-    Diffusion_coeff = 5.36112
     boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
   [../]
   [./BC_HS-_accumulation]
@@ -519,7 +497,6 @@
     variable = Cu2S
     Reactant1 = HS-
     Num = 2
-    Diffusion_coeff = 1.5768
     boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
   [../]
 []
@@ -528,6 +505,16 @@
   [./hydro_static]
      type = ParsedFunction
      value = '-1000 * 9.81 * y' #[Pa] positive
+  [../]
+  [./underground_temp]
+     type = ParsedFunction
+     value = '283.15 - 0.03 * y'
+  [../]
+  [./Decay_fn]
+     type = ParsedFunction
+     vars = 'P0 r h yts'
+     vals = '26830 0.51 4.83 31536000'
+     value = 'if(t<100, (3940 * exp(-0.0269 * t) + 62284 * exp(-0.7273 * t) + 100) / 10 , (3292 * exp(-0.0221 * t) + 113.36 * exp(-0.0017 * t) + 19.79 * exp(-0.000053 * t) + 20) / 10)'
   [../]
 []
 
@@ -543,17 +530,17 @@
 [Materials]
   [./porosity_bentonite]
     type = PorousFlowPorosity
-    porosity_zero = '0.05'
+    porosity_zero = '0.41'
     block = 'bentonite'
   [../]
   [./porosity_backfill]
     type = PorousFlowPorosity
-    porosity_zero = '0.22'
+    porosity_zero = '0.4'
     block = 'backfill'
   [../]
   [./porosity_hostrock]
     type = PorousFlowPorosity
-    porosity_zero = '0.003'
+    porosity_zero = '0.01'
     block = 'hostrock'
   [../]
 
@@ -592,6 +579,7 @@
   [../]
   [./temperature_bentonite]
     type = PorousFlowTemperature
+    temperature = T
     block = 'bentonite backfill hostrock'
   [../]
   [./massfrac_bentonite]
@@ -640,168 +628,64 @@
     block = 'bentonite backfill hostrock'
   [../]
 
+# Heat transfer
+  [./Thermal_conductivity_bentonite]
+    type = PorousFlowThermalConductivityIdeal
+    dry_thermal_conductivity = '2.271E7 0 0  0 2.271E7 0  0 0 2.271E7'
+    wet_thermal_conductivity = '3.785E7 0 0  0 3.785E7 0  0 0 3.785E7'
+    block = 'bentonite'
+  [../]
+  [./Internal_energy_bentonite]
+    type = PorousFlowMatrixInternalEnergy
+    specific_heat_capacity = 966
+    density = 2740
+    block = 'bentonite'
+  [../]
+
+  [./Thermal_conductivity_backfill]
+    type = PorousFlowThermalConductivityIdeal
+    dry_thermal_conductivity = '3.44E7 0 0  0 3.44E7 0  0 0 3.44E7'
+    wet_thermal_conductivity = '6.78E7 0 0  0 6.78E7 0  0 0 6.78E7'
+    block = 'backfill'
+  [../]
+  [./Internal_energy_backfill]
+    type = PorousFlowMatrixInternalEnergy
+    specific_heat_capacity = 981
+    density = 2680
+    block = 'backfill'
+  [../]
+
+  [./Thermal_conductivity_hostrock]
+    type = PorousFlowThermalConductivityIdeal
+    dry_thermal_conductivity = '9E7 0 0  0 9E7 0  0 0 9E7'
+    wet_thermal_conductivity = '1E8 0 0  0 1E8 0  0 0 1E8'
+    block = 'hostrock'
+  [../]
+  [./Internal_energy_hostrock]
+    type = PorousFlowMatrixInternalEnergy
+    specific_heat_capacity = 820
+    density = 2650
+    block = 'hostrock'
+  [../]
+
 # Chemical species
   [./Mass_transfer_bentonite]
     type = GenericConstantMaterial
-    prop_names = 'tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
-    prop_values = '0.1 0.05 0.2941 3.8462E6'
+    prop_names = 'diffusivity tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
+    prop_values = '2.46E-4 0.67 0.41 0.2941 3.8462E6'
     block = 'bentonite'
   [../]
   [./Mass_transfer_backfill]
     type = GenericConstantMaterial
-    prop_names = 'tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
-    prop_values = '0.1 0.22 0.5 3.03E6'
+    prop_names = 'diffusivity tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
+    prop_values = '2.46E-3 0.67 0.4 0.5 3.03E6'
     block = 'backfill'
   [../]
   [./Mass_transfer_hostrock]
     type = GenericConstantMaterial
-    prop_names = 'tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
-    prop_values = '0.1 0.003 0.6 2E6'
+    prop_names = 'diffusivity tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
+    prop_values = '2.46E-3 0.8 0.01 0.6 2E6' 
     block = 'hostrock'
-  [../]
-[]
-
-[Postprocessors]
-# Total amount of O2 
-  [./O2_bentonite]
-    type = ElementIntegralVariablePostprocessor
-    block = 'bentonite'
-    variable = O2
-  [../]
-  [./O2_backfill]
-     type = ElementIntegralVariablePostprocessor
-     block = 'backfill'
-     variable = O2
-  [../]
-  [./O2_hostrock]
-     type = ElementIntegralVariablePostprocessor
-     block = 'hostrock'
-     variable = O2
-  [../]
-  [./O2_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = O2
-  [../]
-
-# Total amount of HS- 
-  [./Total_HS-_bentonite]
-    type = ElementIntegralVariablePostprocessor
-    block = 'bentonite'
-    variable = HS-
-  [../]
-  [./Total_HS-_backfill]
-     type = ElementIntegralVariablePostprocessor
-     block = 'backfill'
-     variable = HS-
-  [../]
-  [./Total_HS-_hostrock]
-     type = ElementIntegralVariablePostprocessor
-     block = 'hostrock'
-     variable = HS-
-  [../]
-  [./Total_HS-_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = HS-
-  [../]
- 
-  [./O2_side]
-    type = SideDiffusiveFluxIntegral
-    boundary = 'spent_fuel'
-    variable = O2
-    diffusivity = 0.00015768 # m2/yr 
-  [../]
-  [./O2_total_side]
-    type = TotalVariableValue
-    value = O2_side
-  [../]
-  [./O2_top]
-    type = SideDiffusiveFluxIntegral
-    boundary = 'spent_fuel_top'
-    variable = O2
-    diffusivity = 0.00015768 # m2/yr 
-  [../]
-  [./O2_total_top]
-    type = TotalVariableValue
-    value = O2_top
-  [../]
-  [./O2_bottom]
-    type = SideDiffusiveFluxIntegral
-    boundary = 'spent_fuel_bottom'
-    variable = O2
-    diffusivity = 0.00015768 # m2/yr 
-  [../]
-  [./O2_total_bottom]
-    type = TotalVariableValue
-    value = O2_bottom
-  [../]
-
-  [./HS-_side]
-    type = SideDiffusiveFluxIntegral
-    boundary = 'spent_fuel'
-    variable = HS-
-    diffusivity = 7.884E-5 # m2/yr 
-  [../]
-  [./HS-_total_side]
-    type = TotalVariableValue
-    value = HS-_side
-  [../]
-  [./HS-_top]
-    type = SideDiffusiveFluxIntegral
-    boundary = 'spent_fuel_top'
-    variable = HS-
-    diffusivity = 7.884E-5 # m2/yr 
-  [../]
-  [./HS-_total_top]
-    type = TotalVariableValue
-    value = HS-_top
-  [../]
-  [./HS-_bottom]
-    type = SideDiffusiveFluxIntegral
-    boundary = 'spent_fuel_bottom'
-    variable = HS-
-    diffusivity = 7.884E-5 # m2/yr 
-  [../]
-  [./HS-_total_bottom]
-    type = TotalVariableValue
-    value = HS-_bottom
-  [../]
-
-  [./Fe2+_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = Fe2+
-  [../]
-
-  [./FeS_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = FeS
-  [../]
-
-  [./gypsum_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = gypsum
-  [../]
-
-  [./SO4_2-_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = SO4_2-
-  [../]
-
-  [./organic_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = organic
-  [../]
-
-  [./CH3CO2H_total]
-     type = ElementIntegralVariablePostprocessor
-     block = 'bentonite backfill hostrock'
-     variable = CH3CO2H
   [../]
 []
 
@@ -822,6 +706,70 @@
   [../]
 []
 
+[Postprocessors]
+  [./O2_side]
+    type = SideFluxIntegral
+    boundary = 'spent_fuel'
+    variable = O2
+    diffusivity = 6.76E-5
+  [../]
+  [./O2_total_side]
+    type = TotalVariableValue
+    value = O2_side
+  [../]
+  [./O2_top]
+    type = SideFluxIntegral
+    boundary = 'spent_fuel_top'
+    variable = O2
+    diffusivity = 6.76E-5
+  [../]
+  [./O2_total_top]
+    type = TotalVariableValue
+    value = O2_top
+  [../]
+  [./O2_bottom]
+    type = SideFluxIntegral
+    boundary = 'spent_fuel_bottom'
+    variable = O2
+    diffusivity = 6.76E-5
+  [../]
+  [./O2_total_bottom]
+    type = TotalVariableValue
+    value = O2_bottom
+  [../]
+
+  [./HS-_side]
+    type = SideFluxIntegral
+    boundary = 'spent_fuel'
+    variable = HS-
+    diffusivity = 6.76E-5
+  [../]
+  [./HS-_total_side]
+    type = TotalVariableValue
+    value = HS-_side
+  [../]
+  [./HS-_top]
+    type = SideFluxIntegral
+    boundary = 'spent_fuel_top'
+    variable = HS-
+    diffusivity = 6.76E-5
+  [../]
+  [./HS-_total_top]
+    type = TotalVariableValue
+    value = HS-_top
+  [../]
+  [./HS-_bottom]
+    type = SideFluxIntegral
+    boundary = 'spent_fuel_bottom'
+    variable = HS-
+    diffusivity = 6.76E-5
+  [../]
+  [./HS-_total_bottom]
+    type = TotalVariableValue
+    value = HS-_bottom
+  [../]
+[]
+
 [Executioner]
   type = Transient
   solve_type = NEWTON
@@ -830,9 +778,9 @@
   nl_rel_tol = 1E-3
   [./TimeStepper]
     type = IterationAdaptiveDT
-    cutback_factor = 0.9
-    dt = 0.01
-    growth_factor = 1.1
+    cutback_factor = 0.8
+    dt = 0.00001
+    growth_factor = 1.2
   [../]
 []
 

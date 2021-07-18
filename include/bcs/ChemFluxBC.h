@@ -44,6 +44,6 @@ protected:
 
   const MaterialProperty<Real> & _porosity;
   const MaterialProperty<Real> & _tortuosity;
+  const MaterialProperty<Real> & _diff_coeff;
 
-  const Real & _diff_coeff;
 };

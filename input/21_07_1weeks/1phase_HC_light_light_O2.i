@@ -127,8 +127,8 @@
   [./Diff_O2]
     type = TwoPhaseDiffusion
     variable = O2
-    Diffusion_coeff_aq = 0.031536 # m2/yr
-    Diffusion_coeff_gas = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 5.36E-2 # m2/yr
+    Diffusion_coeff_gas = 5.2E2 # m2/yr
   [../]
 
   [./dHS-_dt]
@@ -142,7 +142,7 @@
   [./Diff_HS-]
     type = AqPhaseDiffusion
     variable = HS-
-    Diffusion_coeff_aq = 0.015768 # m2/yr
+    Diffusion_coeff_aq = 1.58E-2 # m2/yr
   [../]
 
   [./dFe2+_dt]
@@ -156,7 +156,7 @@
   [./Diff_Fe2+]
     type = AqPhaseDiffusion
     variable = Fe2+
-    Diffusion_coeff_aq = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 1.58E-2 # m2/yr
   [../]
 
   [./dSO4_2-_dt]
@@ -170,7 +170,7 @@
   [./Diff_SO4_2-]
     type = AqPhaseDiffusion
     variable = SO4_2-
-    Diffusion_coeff_aq = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 3.15E-2 # m2/yr
   [../]
 
   [./dCH3CO2H_dt]
@@ -184,7 +184,7 @@
   [./Diff_CH3CO2H]
     type = AqPhaseDiffusion
     variable = CH3CO2H
-    Diffusion_coeff_aq = 0.031536 # m2/yr
+    Diffusion_coeff_aq = 3.15E-2 # m2/yr
   [../]
 
   [./dCu2O_dt]
@@ -299,7 +299,7 @@
  
     equation_variables = 'SRB1 SRB2 swater porosity'
 
-    reactions = 'O2 -> ABS                 : 6.93792e-3 * swater * porosity * O2consum
+    reactions = 'O2 -> ABS                  : 6.93792e-3 * swater * porosity * O2consum'
 
 #    reactions = 'Fe2+ + HS- -> FeS         : 31536 * swater * porosity
 #                 O2 -> ABS                 : 6.93792e-3 * swater * porosity
@@ -511,7 +511,7 @@
     variable = Cu2O
     Reactant1 = O2
     Num = 4
-    Diffusion_coeff = 5.36112
+    Diffusion_coeff = 1.472E-2
     boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
   [../]
   [./BC_HS-_accumulation]
@@ -519,7 +519,7 @@
     variable = Cu2S
     Reactant1 = HS-
     Num = 2
-    Diffusion_coeff = 1.5768
+    Diffusion_coeff = 4.34E-3
     boundary = 'spent_fuel spent_fuel_top spent_fuel_bottom'
   [../]
 []
@@ -543,17 +543,17 @@
 [Materials]
   [./porosity_bentonite]
     type = PorousFlowPorosity
-    porosity_zero = '0.05'
+    porosity_zero = '0.41'
     block = 'bentonite'
   [../]
   [./porosity_backfill]
     type = PorousFlowPorosity
-    porosity_zero = '0.22'
+    porosity_zero = '0.4'
     block = 'backfill'
   [../]
   [./porosity_hostrock]
     type = PorousFlowPorosity
-    porosity_zero = '0.003'
+    porosity_zero = '0.01'
     block = 'hostrock'
   [../]
 
@@ -644,19 +644,19 @@
   [./Mass_transfer_bentonite]
     type = GenericConstantMaterial
     prop_names = 'tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
-    prop_values = '0.1 0.05 0.2941 3.8462E6'
+    prop_values = '0.67 0.41 0.2941 3.8462E6'
     block = 'bentonite'
   [../]
   [./Mass_transfer_backfill]
     type = GenericConstantMaterial
     prop_names = 'tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
-    prop_values = '0.1 0.22 0.5 3.03E6'
+    prop_values = '0.67 0.4 0.5 3.03E6'
     block = 'backfill'
   [../]
   [./Mass_transfer_hostrock]
     type = GenericConstantMaterial
     prop_names = 'tortuosity porosity van_genuchten_coeff van_genuchten_parameter'
-    prop_values = '0.1 0.003 0.6 2E6'
+    prop_values = '0.8 0.01 0.6 2E6'
     block = 'hostrock'
   [../]
 []
@@ -710,7 +710,7 @@
     type = SideDiffusiveFluxIntegral
     boundary = 'spent_fuel'
     variable = O2
-    diffusivity = 0.00015768 # m2/yr 
+    diffusivity = 0.01472 # m2/yr 
   [../]
   [./O2_total_side]
     type = TotalVariableValue
@@ -720,7 +720,7 @@
     type = SideDiffusiveFluxIntegral
     boundary = 'spent_fuel_top'
     variable = O2
-    diffusivity = 0.00015768 # m2/yr 
+    diffusivity = 0.01472 # m2/yr 
   [../]
   [./O2_total_top]
     type = TotalVariableValue
@@ -730,7 +730,7 @@
     type = SideDiffusiveFluxIntegral
     boundary = 'spent_fuel_bottom'
     variable = O2
-    diffusivity = 0.00015768 # m2/yr 
+    diffusivity = 0.01472 # m2/yr 
   [../]
   [./O2_total_bottom]
     type = TotalVariableValue
@@ -741,7 +741,7 @@
     type = SideDiffusiveFluxIntegral
     boundary = 'spent_fuel'
     variable = HS-
-    diffusivity = 7.884E-5 # m2/yr 
+    diffusivity = 4.3403E-3 # m2/yr 
   [../]
   [./HS-_total_side]
     type = TotalVariableValue
@@ -751,7 +751,7 @@
     type = SideDiffusiveFluxIntegral
     boundary = 'spent_fuel_top'
     variable = HS-
-    diffusivity = 7.884E-5 # m2/yr 
+    diffusivity = 4.3403E-3 # m2/yr 
   [../]
   [./HS-_total_top]
     type = TotalVariableValue
@@ -761,7 +761,7 @@
     type = SideDiffusiveFluxIntegral
     boundary = 'spent_fuel_bottom'
     variable = HS-
-    diffusivity = 7.884E-5 # m2/yr 
+    diffusivity = 4.3403E-3 # m2/yr 
   [../]
   [./HS-_total_bottom]
     type = TotalVariableValue
